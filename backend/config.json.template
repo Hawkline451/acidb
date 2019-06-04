@@ -1,0 +1,11 @@
+{
+    "ALLOWED_HOSTS": [ "<ip>" ],
+    "DB": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": <table name>,
+        "USER": <username>,
+        "PASSWORD": <password>,
+        "HOST": <host or ip>,
+        "PORT": <port>
+    }
+}
