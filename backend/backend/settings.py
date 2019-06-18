@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import json
 import os
+
+# Load config file 
+with open('config.json', 'r') as f:
+    config = json.load(f)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +36,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,6 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',                  
     'rest_framework', 
     'acidb',
+    'django.contrib.admin',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -79,12 +85,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'acidb',
-        'USER': 'postgres',
-        'PASSWORD': 'changeme',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': config['DB']['ENGINE'],
+        'NAME': config['DB']['NAME'],
+        'USER': config['DB']['USER'],
+        'PASSWORD': config['DB']['PASSWORD'],
+        'HOST': config['DB']['HOST'],
+        'PORT': config['DB']['PORT'],
     }
 }
 
