@@ -25,7 +25,7 @@ class Organism(models.Model):
     access_id = models.CharField(max_length=50, default=None, null=True, blank=True)
     biosample = models.CharField(max_length=50, default=None, null=True, blank=True)
     bioproject = models.CharField(max_length=50, default=None, null=True, blank=True)
-    ftp_url = models.CharField(max_length=200, default=None, null=True, blank=True)
+    ftp_url = models.CharField(max_length=250, default=None, null=True, blank=True)
     annotation = models.CharField(max_length=10, default=None, null=True, blank=True)
 
 # One organism can have one or more strains names  
@@ -56,40 +56,43 @@ class Taxonomy(models.Model):
         verbose_name_plural = "Taxonomy"
 
 
-class Confidence(models.Model):
+class GrowthDetail(models.Model):
     organism = models.OneToOneField(
         Organism,
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    ph = models.CharField(max_length=50, default=None, null=True, blank=True)
-    temp = models.CharField(max_length=50, default=None, null=True, blank=True)
+    ph_confidence = models.CharField(max_length=50, default=None, null=True, blank=True)
+    temp_confidence = models.CharField(max_length=50, default=None, null=True, blank=True)
+    ph_src = models.CharField(max_length=250, default=None, null=True, blank=True)
+    temp_src = models.CharField(max_length=250, default=None, null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = "Confidence"
+        verbose_name_plural = "GrowthDetail"
+
 
 '''
-
 # Protein models
 
 class Protein(models.Model):
     nr_id = models.AutoField(primary_key=True)
-    prote_len =
-    isoleectric_p =
+    prote_len = models.IntegerField()
+    isoelectric_p =
     mol_weight =
     tmpred =
     psort =
     kegg =
     pfam =
     superfamily =
-    cog =
+    cog = models.CharField(max_length=10, default=None, null=True, blank=True)
 
 
 # nr : non redundant
 class Proteom(models.Model):
     organism = models.ForeignKey(Organism, on_delete=models.CASCADE)
     nr_id = models.ForeignKey(Protein, on_delete=models.CASCADE)
-    models.CharField(max_length=50, default=None, null=True, blank=True)
+    
+    prot_id = models.CharField(max_length=50, default=None, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Proteom"

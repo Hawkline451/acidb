@@ -1,26 +1,43 @@
-import React from 'react';
+import React, { Component, Suspense } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+import NavBar from './components/NavBar'
+
+function Page() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavBar />
     </div>
   );
 }
 
-export default App;
+// loading component for suspense fallback
+const Loader = () => (
+  <div className="App">
+    <img src={logo} className="App-logo" alt="logo" />
+    <div>loading...</div>
+  </div>
+);
+
+class App extends Component {
+  render() {
+    return (
+      <Suspense fallback={<Loader />}>
+        <Page />
+      </Suspense>
+    )
+  }
+}
+export default App
+
+
+/** 
+export default function App() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <Page />
+    </Suspense>
+  );
+}
+**/
