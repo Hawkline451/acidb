@@ -1,25 +1,36 @@
-import React, { Component, Suspense } from 'react';
-import logo from './logo.svg';
+import React, { Component} from 'react';
+import {BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+
 import './App.css';
+//Pages
+import AppPage from './pages/app';
+import HomePage from './pages/home';
+import NotFoundPage from './pages/404';
 
-import NavBar from './components/NavBar'
 
-function Page() {
-  return (
-    <div>
-      <NavBar />
-    </div>
-  );
+
+class App extends Component {
+  render() {
+    return (
+      <Router>
+        <Switch>
+          <Route exact path='/' component={HomePage} />
+          <Route exact path='/app' component={AppPage} />
+          <Route exact path ='/404' component ={NotFoundPage}/>
+          <Route exact path='/tree' component={AppPage} />
+          <Route exact path='/tools' component={AppPage} />
+          <Route exact path='/home' component={HomePage} />
+
+
+          <Redirect to='/404'/>
+        </Switch>
+      </Router> 
+    )
+  }
 }
+export default App
 
-// loading component for suspense fallback
-const Loader = () => (
-  <div className="App">
-    <img src={logo} className="App-logo" alt="logo" />
-    <div>loading...</div>
-  </div>
-);
-
+/**
 class App extends Component {
   render() {
     return (
@@ -32,7 +43,7 @@ class App extends Component {
 export default App
 
 
-/** 
+
 export default function App() {
   return (
     <Suspense fallback={<Loader />}>

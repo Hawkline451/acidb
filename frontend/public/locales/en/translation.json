@@ -6,7 +6,10 @@
   },
   "navbar":{
     "title": "AciDB",
-    "search": "Search ..."
+    "search": "Search ...",
+    "home" : "Home",
+    "tools" : "Tools",
+    "tree" : "Tree"
   }
   
 }
