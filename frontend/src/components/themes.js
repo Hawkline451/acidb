@@ -1,4 +1,4 @@
-// Themes
+// Themes & Styles
 import {
   createMuiTheme
 } from '@material-ui/core/styles';
@@ -14,7 +14,7 @@ import {
 
 
 
-
+// Theme
 export const theme = createMuiTheme({
   palette: {
     primary: {
@@ -34,6 +34,7 @@ export const theme = createMuiTheme({
   },
 });
 
+// Component Styles
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
     paddingTop: 50,

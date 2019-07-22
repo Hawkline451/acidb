@@ -28,12 +28,12 @@ export default function NavBar() {
   const { t } = useTranslation();
 
   // Tab underline state
-  const [value, setValue] = React.useState(false);
-  function handleChange(event, newValue) {
-    setValue(newValue);
+  const [tabVal, setTabState] = React.useState(false);
+  function handleChange(event, newVal) {
+    setTabState(newVal);
   }
   function cleanState(event) {
-    setValue(false);
+    setTabState(false);
   }
 
   // Responsive drawer state
@@ -67,7 +67,7 @@ export default function NavBar() {
                 {t('navbar.title')}
               </Typography>
 
-              <Tabs value={value} onChange={handleChange}>
+              <Tabs value={tabVal} onChange={handleChange}>
                 <Tab label={t('navbar.tree')} component={Link} to="/app/tree" className={classes.tabRoot} />
                 <Tab label={t('navbar.tools')} component={Link} to="/app/tools" className={classes.tabRoot} />
               </Tabs>
@@ -91,11 +91,10 @@ export default function NavBar() {
         <MediaQuery maxWidth={800}>
           <AppBar position='static'>
             <Toolbar>
-              <Drawer open={drawerOpen}>
+              <Drawer open={drawerOpen} >
                 <ClickAwayListener onClickAway={handleClickAway}>
                   <List>
                     <ListItem button onClick={handleToogle} label="Home" component={Link} to="/app" className={classes.tabRoot} >{t('navbar.home')}</ListItem>
-
                     <ListItem button onClick={handleToogle} label="Tree" component={Link} to="/app/tree" className={classes.tabRoot} >{t('navbar.tree')}</ListItem>
                     <ListItem button onClick={handleToogle} label="Tools" component={Link} to="/app/tools" className={classes.tabRoot} >{t('navbar.tools')}</ListItem>
                   </List>
