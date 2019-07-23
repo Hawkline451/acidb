@@ -1,9 +1,6 @@
 import React, { useState, useCallback } from "react";
-import ReactDOM from "react-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Switch from "@material-ui/core/Switch";
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import FolderOpenIcon from "@material-ui/icons/FolderOpen";
 import FolderIcon from "@material-ui/icons/Folder";
@@ -50,11 +47,18 @@ const useStyles = makeStyles({
   }
 });
 
+// Little hack, dont show fold/unfold icon
+function EmptyComponent() {
+  return (
+      <span></span>
+  )
+}
 
-const TestComponent = () => {
+
+export default function TestComponent() {
   const classes = useStyles();
   const [state, setState] = useState({
-    alignRight: false,
+    alignRight: true,
     data: {
       path: "material-ui-tree",
       type: "tree",
@@ -187,13 +191,13 @@ const TestComponent = () => {
         labelKey="path"
         valueKey="sha"
         childrenKey="tree"
-        foldIcon={<ArrowDropDownIcon />}
-        unfoldIcon={<ArrowDropUpIcon />}
+        foldIcon={<EmptyComponent />}
+        unfoldIcon={<EmptyComponent />}
         loadMoreIcon={<MoreHorizIcon />}
         renderLabel={renderLabel}
         renderLoadMoreText={(page, pageSize, total) =>
           `Loaded: ${(page + 1) *
-            pageSize} / Total: ${total}. Click here to load more...`
+          pageSize} / Total: ${total}. Click here to load more...`
         }
         pageSize={10}
         actionsAlignRight={state.alignRight}
@@ -204,4 +208,5 @@ const TestComponent = () => {
   );
 };
 
-export default TestComponent
+
+

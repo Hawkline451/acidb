@@ -10,6 +10,9 @@
     "home" : "Home",
     "tools" : "Tools",
     "tree" : "Tree"
+  },
+  "tree":{
+    "title": "Taxonomic Tree"
   }
   
 }

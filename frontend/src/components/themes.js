@@ -21,7 +21,7 @@ export const theme = createMuiTheme({
       main: '#B35FA6'
     },
     secondary: {
-      main: '#66B34D'
+      main: '#703D80'
     },
     error: red,
     // Used by `getContrastText()` to maximize the contrast between the background and
@@ -39,20 +39,57 @@ export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
     paddingTop: 50,
   },
-  tabLabel: {
-    fontSize: 25
+  footer: {
+    alignSelf: "end",
+    textAlign: "center"
   },
 
 }));
 
-export const stylesAppNav = makeStyles(theme => ({
+export const stylesInput = makeStyles({
   root: {
-    flexGrow: 1,
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
   },
+  input: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  select: {
+    flex: 0.5,
+    textAlign: 'center'
+  },
+  iconButton: {
+    padding: 10,
+  },
+  divider: {
+    width: 1,
+    height: 28,
+    margin: 4,
+  },
+});
+
+export const stylesTree = makeStyles({
+  container: {
+    margin: 20
+  },
+  icon: {
+    fontSize: 20
+  },
+  node: {
+    display: "flex",
+    alignContent: "center"
+  }
+});
+
+export const stylesAppNav = makeStyles(theme => ({
 
   tabRoot: {
     minWidth: 20,
+    fontSize: 20,
   },
+
   search: {
     marginLeft: 'auto',
     marginRight: -10,
@@ -65,21 +102,5 @@ export const stylesAppNav = makeStyles(theme => ({
     },
     width: 'auto',
   },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create('width'),
-    width: '100%',
-  },
+
 }));
