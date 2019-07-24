@@ -15,7 +15,8 @@
     "react-responsive": "^7.0.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "superagent": "^5.1.0"
+    "superagent": "^5.1.0",
+    "typeface-roboto": "0.0.75"
   },
   "scripts": {
     "start": "react-scripts start",

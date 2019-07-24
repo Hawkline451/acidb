@@ -10,9 +10,7 @@ import {
   fade,
   makeStyles
 } from '@material-ui/core/styles';
-
-
-
+import { borderColor } from '@material-ui/system';
 
 // Theme
 export const theme = createMuiTheme({
@@ -22,6 +20,10 @@ export const theme = createMuiTheme({
     },
     secondary: {
       main: '#703D80'
+    },
+    text: {
+      primary: "#000000",
+      secondary: "#ffffff"
     },
     error: red,
     // Used by `getContrastText()` to maximize the contrast between the background and
@@ -37,7 +39,7 @@ export const theme = createMuiTheme({
 // Component Styles
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
-    paddingTop: 50,
+    paddingTop: 60,
   },
   footer: {
     alignSelf: "end",
@@ -51,14 +53,15 @@ export const stylesInput = makeStyles({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
+    //borderRadius: 2,
   },
   input: {
     marginLeft: 8,
-    flex: 1,
+    width: '70%',
   },
   select: {
-    flex: 0.5,
-    textAlign: 'center'
+    width: '30%',
+    textAlign: 'center',    
   },
   iconButton: {
     padding: 10,
@@ -86,21 +89,24 @@ export const stylesTree = makeStyles({
 export const stylesAppNav = makeStyles(theme => ({
 
   tabRoot: {
-    minWidth: 20,
-    fontSize: 20,
+    fontSize: 18,
+    width :'20%'
+  },
+  tabMenu: {
+    fontSize: 18,
+    width :'10%'
   },
 
+  homeButton: {
+    backgroundColor: 'transparent',
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
   search: {
     marginLeft: 'auto',
     marginRight: -10,
-
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    width: 'auto',
+    width:'25%'
   },
 
 }));

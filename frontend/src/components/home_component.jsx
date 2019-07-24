@@ -1,6 +1,9 @@
 import React from 'react';
 import {
-  AppBar, Box, Toolbar, List, ListItem, Container,
+  Link
+} from 'react-router-dom';
+import {
+  AppBar, Box, Toolbar, List, ListItem, Container, Button,
   Tab, Tabs, Drawer, ClickAwayListener, Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -123,19 +126,27 @@ export default function Home() {
                     </ClickAwayListener>
                   </Drawer>
                   <MenuIcon onClick={() => setState({ drawerOpen: true })} />
-                  <Typography variant='h5' noWrap>
-                    {t('navbar.title')}
-                  </Typography>
+                  <Button
+                    className={classes.homeButton}
+                    component={Link} to='/'>
+                    <Typography variant='h5' color='textSecondary' noWrap>
+                      {t('navbar.title')}
+                    </Typography>
+                  </Button>
                 </Toolbar>
               </AppBar>
             </MediaQuery>
 
             <MediaQuery minWidth={800}>
-              <Typography variant='h5' noWrap>
-                {t('navbar.title')}
-              </Typography>
+              <Button
+                className={classes.homeButton}
+                component={Link} to='/'>
+                <Typography variant='h5' color='textSecondary' noWrap>
+                  {t('navbar.title')}
+                </Typography>
+              </Button>
               <Box>
-                <Tabs value={false} centered>
+                <Tabs value={false}>
                   <Tab label={<span className={classes.tabRoot}>Home</span>} href="#about" />
                   <Tab label={<span className={classes.tabRoot}>Features</span>} href="#features" />
                   <Tab label={<span className={classes.tabRoot}>App</span>} href="/app" />
