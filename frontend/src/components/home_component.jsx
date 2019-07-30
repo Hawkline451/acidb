@@ -147,9 +147,9 @@ export default function Home() {
               </Button>
               <Box>
                 <Tabs value={false}>
-                  <Tab label={<span className={classes.tabRoot}>Home</span>} href="#about" />
-                  <Tab label={<span className={classes.tabRoot}>Features</span>} href="#features" />
-                  <Tab label={<span className={classes.tabRoot}>App</span>} href="/app" />
+                  <Tab label={'Home'} className={classes.tabRoot}  href="#about"/>
+                  <Tab label={'Features'} className={classes.tabRoot} href="#features"/>
+                  <Tab label={'App'}  className={classes.tabRoot} href="/app" />
                 </Tabs>
               </Box>
             </MediaQuery>

@@ -8,6 +8,7 @@
     "classnames": "^2.2.6",
     "i18next": "^17.0.6",
     "i18next-xhr-backend": "^3.0.0",
+    "match-sorter": "^4.0.0",
     "material-ui-tree": "^2.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -15,6 +16,7 @@
     "react-responsive": "^7.0.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "react-table": "^6.10.0",
     "superagent": "^5.1.0",
     "typeface-roboto": "0.0.75"
   },

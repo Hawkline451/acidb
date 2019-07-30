@@ -4,6 +4,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import logo from '../logo.svg';
 import NavBar from '../components/navbar'
 import TreeComponent from '../components/tree'
+import TableComponent from '../components/table_component'
 
 // loading component for suspense fallback
 const Loader = () => (
@@ -35,6 +36,7 @@ function Page() {
             <Switch>
               <Route path="/app/tree" render={() => <TreeComponent />} />
               <Route path="/app/tools" render={() => <Todo />} />
+              <Route path="/app/tools_table" render={() => <TableComponent />} />
             </Switch>
           )}
         />

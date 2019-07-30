@@ -7,10 +7,8 @@ import {
 } from '@material-ui/core/colors';
 
 import {
-  fade,
   makeStyles
 } from '@material-ui/core/styles';
-import { borderColor } from '@material-ui/system';
 
 // Theme
 export const theme = createMuiTheme({
@@ -61,7 +59,7 @@ export const stylesInput = makeStyles({
   },
   select: {
     width: '30%',
-    textAlign: 'center',    
+    textAlign: 'center',
   },
   iconButton: {
     padding: 10,
@@ -90,11 +88,11 @@ export const stylesAppNav = makeStyles(theme => ({
 
   tabRoot: {
     fontSize: 18,
-    width :'20%'
+    width: '20%'
   },
   tabMenu: {
     fontSize: 18,
-    width :'10%'
+    width: '10%'
   },
 
   homeButton: {
@@ -106,7 +104,18 @@ export const stylesAppNav = makeStyles(theme => ({
   search: {
     marginLeft: 'auto',
     marginRight: -10,
-    width:'25%'
+    width: '25%'
   },
 
 }));
+
+export const stylesTable = makeStyles({
+  formControl: {
+      margin: 20,
+      minWidth: '10%',
+      wrap: 'nowrap'
+    },
+  errorInput:{
+    background: '#ffdbdb'
+  }
+  });

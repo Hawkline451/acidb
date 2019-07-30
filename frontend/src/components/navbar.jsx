@@ -17,7 +17,7 @@ import { theme, stylesAppNav, stylesInput } from './themes'
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
-const useStylesAppNav = stylesAppNav
+const useStylesNav = stylesAppNav
 const useStylesInput = stylesInput
 
 //Search Component
@@ -83,7 +83,7 @@ function CustomSearchInput() {
 
 // Tab Menu component
 function TabMenu(props) {
-  const classes = useStylesAppNav();
+  const classes = useStylesNav();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -115,7 +115,7 @@ function TabMenu(props) {
             <MenuItem onClick={handleItemClick} component={Link} to='/app/tools'>
               Tool 1
             </MenuItem>
-            <MenuItem onClick={handleItemClick}>
+            <MenuItem onClick={handleItemClick}  component={Link} to='/app/tools_table'>
               Tool 2
             </MenuItem>
           </MenuList>
@@ -128,7 +128,7 @@ function TabMenu(props) {
 //NavBar component
 export default function NavBar() {
 
-  const classes = useStylesAppNav();
+  const classes = useStylesNav();
   const { t } = useTranslation();
 
   // Tab underline state
