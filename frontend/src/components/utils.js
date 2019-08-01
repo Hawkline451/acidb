@@ -12,9 +12,10 @@ const range = len => {
 
 const newPerson = () => {
   const statusChance = Math.random();
+  var myArray = ['asd1', 'asd2', 'asd3']; 
   return {
-    firstName: 'asd',
-    lastName: 'qwe',
+    firstName: myArray[Math.floor(Math.random() * myArray.length)],
+    lastName: myArray[Math.floor(Math.random() * myArray.length)],
     age: Math.floor(Math.random() * 30),
     visits: Math.floor(Math.random() * 100),
     progress: Math.floor(Math.random() * 100),
@@ -41,64 +42,62 @@ export const Tips = () =>
 
 
 // Filter table using a expression eg: <9;>3
-export function miniEval(strExp) {
-  // Replace space and brackets
-  strExp = strExp.replace(/\s/g, '')
-  strExp = strExp.replace(/[\])}[{(]/g, '')
-
+function tokenize(strExp) {
   var expression = strExp.split(/[,;]+/)
-  var ast = []
-  var valid = true
+  var tokens = []
 
-  if (expression.length > 2) {
-    return []
-  } 
-  else {
-    try {
-      expression.forEach((element) => {
-        var exp = element.split(/(>=|<=|>|<)/).filter(Boolean)
-        ast.push(exp)
-        // If there is not numbers is an invalid exp (>asd is invalid)
-        // If length is greter than 2 is invalid (>1>2 is invalid)
-        valid = (isNaN(exp[0]) && isNaN(exp[1])) || exp.length > 2 ? false : valid
-      });
-    } catch (e) {
-      return []
-    }
 
-    if (valid) {
-      return ast
-    } else {
-      return []
-    }
-  }
+  expression.forEach((element) => {
+    var exp = element.split(/(>=|<=|>|<)/).filter(Boolean)
+    tokens.push(exp)
+    // If there is not numbers is an invalid exp (>asd is invalid)
+    // If length is greter than 2 is invalid (>1>2 is invalid)
+    });
+  return tokens
 }
 
-export function customFilter(rows, filter, operation) {
+function customEval(rows, filter, operation) {
   var op = isNaN(operation[1]) ? operation[1] : operation[0]
-  var val =  isNaN(operation[1]) ? operation[0] : operation[1]
   var tmp_result = []
-  // eg x < y
-  switch (String(op)) {
-    case '>':
+  // eg x < y  
       tmp_result = rows.filter((row) => {
         var var_1 = isNaN(operation[0]) ? row[filter.id] : operation[0] 
         var var_2 = isNaN(operation[0]) ? operation[1] : row[filter.id]
         var expression = String(var_1)+String(op)+String(var_2)
         //console.log(expression)
-
         return eval(expression)
-      });
-      break;
-    case '>=':
-      tmp_result = rows.filter((row) => {return row[filter.id] >= val});
-      break;
-    case '<':
-      tmp_result = rows.filter((row) => {return row[filter.id] < val});
-      break;
-    case '<=':
-      tmp_result = rows.filter((row) => {return row[filter.id] <= val});
-      break;
-  }
+      });  
   return tmp_result
 }
+
+export function verboseFilter(filter, rows) {
+  var result = []
+  // If is number
+  if (!isNaN(filter.value)) {
+    result = rows.filter((row) => {
+      //console.log(row[filter.id] == filter.value)
+      return String(row[filter.id]) === String(filter.value);
+    });
+  }
+  // Expression
+  else {
+    result = rows
+    var exps = tokenize(filter.value)
+    //console.log("exps")
+    //console.log(exps)
+
+    // TODO Remove and refactor, this block does nothing
+    if (exps === undefined || exps.length === 0) {
+      console.log("bad input")
+      return [-1]
+    }
+
+    for (var i = 0; i < exps.length; i++) {
+      var expression = exps[i]
+      result = customEval(result, filter, expression)
+    }
+  }
+  console.log(expression)
+  return result
+}
+

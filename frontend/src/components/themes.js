@@ -117,5 +117,11 @@ export const stylesTable = makeStyles({
     },
   errorInput:{
     background: '#ffdbdb'
+  },
+  customWidth: {
+    maxWidth: '50%',
+  },
+  specialTextInput: {
+    width: '100%'
   }
   });

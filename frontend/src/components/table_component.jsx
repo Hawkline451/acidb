@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-import { makeData, Tips, miniEval, customFilter } from "./utils";
+import { makeData, Tips, verboseFilter } from "./utils";
 import matchSorter from 'match-sorter'
 
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, 
 } from '@material-ui/core';
 import {
-  Close as CloseIcon,
+  HelpOutline as HelpIcon,
 } from '@material-ui/icons';
 
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
+// Override some classes exported from npm modules
+import "./css/override.css"
 
-
+// Styles
+import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesTable } from './themes'
 
 
@@ -26,32 +29,64 @@ const colNames = [
 const useStylesTable = stylesTable
 
 
+/*
+ * Sub components
+ */
+
 // Filter box component
-function FilterInput(props){
+function CustomFilterInput(props) {
 
   const classes = useStylesTable();
   const [state, setState] = useState({
     valid: false
   });
-  function handlerWarapper(val){
-    var match = String(val).match(/((>=|<=|>|<)\d+|\d+(>=|<=|>|<))(;(>=|<=|>|<)\d+|\d+(>=|<=|>|<))?/)
-    if (match == null || match[0] != String(val) ){
+  function handlerWarapper(val) {
+    // Replace space and brackets
+    val = val.replace(/\s/g, '')
+    val = val.replace(/[\])}[{(]/g, '')
+    // Match operator + number or number + operator or expression semi colon expression 
+    var match = String(val).match(/(((>=|<=|>|<)\d+|\d+(>=|<=|>|<))(;(>=|<=|>|<)\d+|;\d+(>=|<=|>|<))?)|\d+/)
+    // If val dont match expression and is not empty
+    if ((match == null || match[0] !== String(val)) && String(val) !== '') {
       console.log("bad")
       console.log(match)
-      setState({valid: true})
+      setState({ valid: true })
     }
-    else{
+    else {
       console.log("good")
       console.log(match)
       props.handler(val)
-      setState({valid: false})
+      setState({ valid: false })
     }
   }
-  var label = state.valid ? 'error' : 'wrong filter'
+  const longText = `
+You can filter using expresssions eg filter every value greater than 10 and lower or equal than 15, [ >10;<=15 ] 
+`;
+  var label = state.valid ? 'wrong filter' : 'filter'
   return (
-    <TextField label={label} onChange={event => handlerWarapper(event.target.value)} style={{ width: "100%" }} error={state.valid}></TextField>
+    <TextField label={label} onChange={event => handlerWarapper(event.target.value)} error={state.valid} className={classes.specialTextInput}
+      InputProps={{
+        endAdornment:
+          <Tooltip className={classes.customWidth} disableFocusListener title={longText}>
+            <HelpIcon />
+          </Tooltip>
+        ,
+      }}
+    />
   )
 }
+
+// Basic input component
+function FilterInput(props) {
+  var label = 'filter'
+  return (
+    <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}></TextField>
+  )
+}
+
+/**
+ * Main Component
+ */
 
 function TableComponent() {
 
@@ -70,41 +105,12 @@ function TableComponent() {
     setChipState({ name: event.target.value })
   }
 
-  function verboseFilter(filter, rows) {
-    var result = []
-    // If is number
-    if (!isNaN(filter.value)) {
-      result = rows.filter((row) => {
-        //console.log(row[filter.id] == filter.value)
-        return row[filter.id] == filter.value;
-      });
-    }
-    // Expression
-    else {
-      result = []
-      var exps = miniEval(filter.value)
-      //console.log("exps")
-      //console.log(exps)
-
-      // TODO Remove and refactor, this block does nothing
-      if (exps === undefined || exps.length === 0) {
-        console.log("bad input")
-        return [-1]
-      }
-     
-      for (var i = 0; i < exps.length; i++) {
-        var expression = exps[i]
-        result  = customFilter(rows, filter, expression)
-      }
-    }
-    return result
-  }
 
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <div>
         <FormControl className={classes.formControl}>
-          <InputLabel label='Select Columns' htmlFor="select-multiple-chip">Select Columns</InputLabel>
+          <InputLabel label='Select Columns' htmlFor="select-multiple-chip" focused={true}>Select Columns</InputLabel>
           <Select
             multiple
             value={chipState.name}
@@ -153,8 +159,12 @@ function TableComponent() {
                   show: true ? chipState.name.includes(colNames[0]) : false,
                   Header: colNames[0],
                   accessor: "firstName",
-                  filterMethod: (filter, row) =>
-                    row[filter.id].startsWith(filter.value)
+                  Cell: ({ value }) => <div onClick={() => { console.log(value) }} >{value}</div>,
+                  filterMethod: (filter, rows) =>
+                    matchSorter(rows, filter.value, { keys: ["firstName"] }),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
                 },
                 {
                   show: true ? chipState.name.includes(colNames[1]) : false,
@@ -163,9 +173,11 @@ function TableComponent() {
                   accessor: d => d.lastName,
                   filterMethod: (filter, rows) =>
                     matchSorter(rows, filter.value, { keys: ["lastName"] }),
-                  filterAll: true
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
                 }
-              ]
+              ],
             },
             {
               Header: "Info",
@@ -177,8 +189,8 @@ function TableComponent() {
                   filterMethod: (filter, rows) =>
                     verboseFilter(filter, rows),
                   filterAll: true,
-                  Filter: ({ onChange }) =>                  
-                  <FilterInput handler={onChange}/>
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
                 },
                 {
                   show: true ? chipState.name.includes(colNames[3]) : false,
@@ -215,9 +227,8 @@ function TableComponent() {
         <br />
         <Tips />
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
-
 
 export default TableComponent;
