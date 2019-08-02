@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { makeData, Tips, verboseFilter } from "./utils";
 import matchSorter from 'match-sorter'
-
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, 
+  Link
+} from 'react-router-dom';
+import {
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button
 } from '@material-ui/core';
 import {
-  HelpOutline as HelpIcon,
+  HelpOutline as HelpIcon, Add as AddIcon
 } from '@material-ui/icons';
 
 // Import React Table
@@ -159,7 +161,15 @@ function TableComponent() {
                   show: true ? chipState.name.includes(colNames[0]) : false,
                   Header: colNames[0],
                   accessor: "firstName",
-                  Cell: ({ value }) => <div onClick={() => { console.log(value) }} >{value}</div>,
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      <Button
+                        component={Link} to='/app/organism' 
+                        style={{ marginRight: '5%' }}>
+                          <AddIcon />
+                      </Button>
+                      {value}
+                    </div>,
                   filterMethod: (filter, rows) =>
                     matchSorter(rows, filter.value, { keys: ["firstName"] }),
                   filterAll: true,
@@ -171,6 +181,10 @@ function TableComponent() {
                   Header: colNames[1],
                   id: "lastName",
                   accessor: d => d.lastName,
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
                   filterMethod: (filter, rows) =>
                     matchSorter(rows, filter.value, { keys: ["lastName"] }),
                   filterAll: true,
@@ -186,6 +200,10 @@ function TableComponent() {
                   show: true ? chipState.name.includes(colNames[2]) : false,
                   Header: colNames[2],
                   accessor: "age",
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
                   filterMethod: (filter, rows) =>
                     verboseFilter(filter, rows),
                   filterAll: true,
@@ -197,7 +215,10 @@ function TableComponent() {
                   Header: colNames[3],
                   accessor: "age",
                   id: "over",
-                  Cell: ({ value }) => (value >= 21 ? "Yes" : "No"),
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {(value >= 21 ? "Yes" : "No")}
+                    </div>,
                   filterMethod: (filter, row) => {
                     if (filter.value === "all") {
                       return true;

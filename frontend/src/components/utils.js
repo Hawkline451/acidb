@@ -91,7 +91,6 @@ export function verboseFilter(filter, rows) {
       console.log("bad input")
       return [-1]
     }
-
     for (var i = 0; i < exps.length; i++) {
       var expression = exps[i]
       result = customEval(result, filter, expression)

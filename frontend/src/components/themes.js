@@ -123,5 +123,10 @@ export const stylesTable = makeStyles({
   },
   specialTextInput: {
     width: '100%'
-  }
+  },
+  verticalAlign:{
+    display: 'flex',
+    alignItems: 'center',
+    height : '100%'
+  },
   });
