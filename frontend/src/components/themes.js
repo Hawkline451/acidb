@@ -118,7 +118,7 @@ export const stylesTable = makeStyles({
   errorInput:{
     background: '#ffdbdb'
   },
-  customWidth: {
+  customTooltip: {
     maxWidth: '50%',
   },
   specialTextInput: {

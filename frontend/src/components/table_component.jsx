@@ -5,17 +5,17 @@ import {
   Link
 } from 'react-router-dom';
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid
 } from '@material-ui/core';
 import {
-  HelpOutline as HelpIcon, Add as AddIcon
+  HelpOutline as HelpIcon, ZoomIn as ZoomIcon
 } from '@material-ui/icons';
 
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 // Override some classes exported from npm modules
-import "./css/override.css"
+//import "./css/override.css"
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
@@ -62,27 +62,36 @@ function CustomFilterInput(props) {
     }
   }
   const longText = `
-You can filter using expresssions eg filter every value greater than 10 and lower or equal than 15, [ >10;<=15 ] 
-`;
-  var label = state.valid ? 'wrong filter' : 'filter'
+                    You can filter using expresssions eg: filter every value greater than 10 and lower or equal than 15, [ >10;<=15 ] 
+                    `;
+  var label = state.valid ? 'Wrong filter' : 'Filter'
   return (
-    <TextField label={label} onChange={event => handlerWarapper(event.target.value)} error={state.valid} className={classes.specialTextInput}
-      InputProps={{
-        endAdornment:
-          <Tooltip className={classes.customWidth} disableFocusListener title={longText}>
-            <HelpIcon />
-          </Tooltip>
-        ,
-      }}
-    />
+    <Grid container spacing={0} alignItems="flex-end" item>
+      <Grid item xs={11}>
+        <TextField
+          label={label}
+          onChange={event => handlerWarapper(event.target.value)}
+          error={state.valid}
+          className={classes.specialTextInput}
+        />
+      </Grid>
+      <Grid item xs={1}>
+        <Tooltip className={classes.customTooltip} disableFocusListener title={longText}>
+          <HelpIcon />
+        </Tooltip>
+      </Grid>
+    </Grid>
   )
 }
 
 // Basic input component
 function FilterInput(props) {
-  var label = 'filter'
+  var label = 'Filter'
   return (
-    <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}></TextField>
+    <Grid container>
+      <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}></TextField>
+    </Grid>
+
   )
 }
 
@@ -163,11 +172,14 @@ function TableComponent() {
                   accessor: "firstName",
                   Cell: ({ value }) =>
                     <div className={classes.verticalAlign}>
-                      <Button
-                        component={Link} to='/app/organism' 
-                        style={{ marginRight: '5%' }}>
-                          <AddIcon />
-                      </Button>
+                      <Tooltip title="View organism detail" >
+                        <Button
+                          component={Link} to={'/app/organism/'+value}
+                          onClick={()=>console.log(value)}
+                          style={{ marginRight: '5%' }}>
+                          <ZoomIcon />
+                        </Button>
+                      </Tooltip>
                       {value}
                     </div>,
                   filterMethod: (filter, rows) =>

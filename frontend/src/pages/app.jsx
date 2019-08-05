@@ -35,10 +35,10 @@ function Page() {
           path="/app"
           render={() => (
             <Switch>
-               <Route path="/app/organism" render={() => <OrganismComponent />} />
-              <Route path="/app/tree" render={() => <TreeComponent />} />
-              <Route path="/app/tools" render={() => <Todo />} />
-              <Route path="/app/tools_table" render={() => <TableComponent />} />
+              <Route path="/app/organism/:id" component={OrganismComponent} />
+              <Route path="/app/tree" component={TreeComponent} />
+              <Route path="/app/tools" component={Todo} />
+              <Route path="/app/tools_table" component={TableComponent} />
             </Switch>
           )}
         />

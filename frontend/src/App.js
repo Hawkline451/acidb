@@ -10,27 +10,19 @@ import NotFoundPage from './pages/404';
 // Test page
 import TestComponent from './components/test';
 
-
-
-function testDetail(props)  {
-      return (<h1>{props.match.params.id}</h1>);
-  
-}
-
 class App extends Component {
   render() {
     return (
       <Router>
         <Switch>
           <Route exact path='/' component={HomePage} />
+
           <Route exact path='/app' component={AppPage} />
-          <Route exact path='/app/organism' component={AppPage} />
+          <Route exact path='/app/organism/:id' component={AppPage} />
           <Route exact path='/app/tree' component={AppPage} />
           <Route exact path='/app/tools' component={AppPage} />
           <Route exact path='/app/tools_table' component={AppPage} />
 
-          {/* Test parameter route*/}
-          <Route exact path="/test/:id" component={testDetail}/>
           {/* Test page*/}
           <Route exact path="/test_page" component={TestComponent}/>
 
