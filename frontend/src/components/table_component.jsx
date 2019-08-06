@@ -47,7 +47,7 @@ function CustomFilterInput(props) {
     val = val.replace(/\s/g, '')
     val = val.replace(/[\])}[{(]/g, '')
     // Match operator + number or number + operator or expression semi colon expression 
-    var match = String(val).match(/(((>=|<=|>|<)\d+|\d+(>=|<=|>|<))(;(>=|<=|>|<)\d+|;\d+(>=|<=|>|<))?)|\d+/)
+    var match = String(val).match(/(((>=|<=|>|<|=)\d+\.?\d*|\d+\.?\d*(>=|<=|>|<|=))(;(>=|<=|>|<|=)\d+\.?\d*|;\d+\.?\d*(>=|<=|>|<|=))?)|\d+\.?\d*/)
     // If val dont match expression and is not empty
     if ((match == null || match[0] !== String(val)) && String(val) !== '') {
       console.log("bad")

@@ -30,7 +30,9 @@ SECRET_KEY = 'l7s!4oxs%r@q0iytaww8on5esoti=$^dy(%@pvkw9dl052z*&h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+DEFAULT_CHARSET = 'utf-8'
+
+ALLOWED_HOSTS = config['ALLOWED_HOSTS']
 
 
 # Application definition
@@ -78,6 +80,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+
+# REST config
+REST_FRAMEWORK = {
+
+}
 
 
 # Database

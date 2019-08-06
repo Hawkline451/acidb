@@ -48,7 +48,7 @@ function tokenize(strExp) {
 
 
   expression.forEach((element) => {
-    var exp = element.split(/(>=|<=|>|<)/).filter(Boolean)
+    var exp = element.split(/(>=|<=|>|<|=)/).filter(Boolean)
     tokens.push(exp)
     // If there is not numbers is an invalid exp (>asd is invalid)
     // If length is greter than 2 is invalid (>1>2 is invalid)
@@ -58,6 +58,7 @@ function tokenize(strExp) {
 
 function customEval(rows, filter, operation) {
   var op = isNaN(operation[1]) ? operation[1] : operation[0]
+  op = (op==='=') ? '==' : op
   var tmp_result = []
   // eg x < y  
       tmp_result = rows.filter((row) => {

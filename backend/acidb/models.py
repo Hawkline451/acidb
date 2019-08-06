@@ -7,7 +7,7 @@ class Organism(models.Model):
     id_organism = models.AutoField(primary_key=True)
     visibility = models.BooleanField(default=True)
     name = models.CharField(max_length=50, default=None, null=True)
-    isolated =  models.CharField(max_length=50, default=None, null=True, blank=True)
+    isolated =  models.BooleanField(default=None, null=True, blank=True)
     state = models.CharField(max_length=50, default=None, null=True, blank=True)
     seq_date = models.DateField(default=None, null=True, blank=True)
     gen_size = models.FloatField(default=None, null=True, blank=True)
