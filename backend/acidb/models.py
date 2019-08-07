@@ -30,18 +30,18 @@ class Organism(models.Model):
 
 # One organism can have one or more strains names  
 class Strain(models.Model):
-    organism = models.ForeignKey(Organism, on_delete=models.CASCADE)
+    organism = models.ForeignKey(Organism, on_delete=models.CASCADE, related_name='strains')
     strain_name = models.CharField(max_length=50, default=None, null=True, blank=True)
 
 # One organism can have one or more references
 class Reference(models.Model):
-    organism = models.ForeignKey(Organism, on_delete=models.CASCADE)
+    organism = models.ForeignKey(Organism, on_delete=models.CASCADE, related_name='references')
     ref_text = models.CharField(max_length=1000, default=None, null=True, blank=True)
 
 
 # It's possible to have more than one taxonomy but the database only have the NCBI classification 
 class Taxonomy(models.Model):
-    organism = models.ForeignKey(Organism, on_delete=models.CASCADE)
+    organism = models.ForeignKey(Organism, on_delete=models.CASCADE, related_name='taxonomy')
     tax_src = models.CharField(max_length=20, default=None, null=True, blank=True)
     tax_id = models.IntegerField(default=None, null=True, blank=True)
     domain = models.CharField(max_length=50, default=None, null=True, blank=True)
