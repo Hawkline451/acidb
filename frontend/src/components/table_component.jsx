@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeData, Tips, verboseFilter } from "./utils";
 import matchSorter from 'match-sorter'
 import {
@@ -17,19 +17,36 @@ import "react-table/react-table.css";
 // Override some classes exported from npm modules
 //import "./css/override.css"
 
+import axios from 'axios';
+
+
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesTable } from './themes'
 
 
-const colNames = [
-  'Col 1',
-  'Col 2',
-  'Col 3',
-  'Col 4',
-];
+
 const useStylesTable = stylesTable
 
+const colNames = [
+  'name',
+  'isolated',
+  'state',
+  'seq_date',
+  'gen_size',
+  'gen_completeness',
+  'gen_contamination',
+  'gc_percentage',
+  'n_orfs',
+  'temp_associated',
+  'temp_min',
+  'temp_max',
+  'ph_associated',
+  'ph_min',
+  'ph_max',
+  'access_src',
+  'annotation'
+];
 
 /*
  * Sub components
@@ -40,38 +57,46 @@ function CustomFilterInput(props) {
 
   const classes = useStylesTable();
   const [state, setState] = useState({
-    valid: false
+    error: false
   });
   function handlerWarapper(val) {
     // Replace space and brackets
     val = val.replace(/\s/g, '')
     val = val.replace(/[\])}[{(]/g, '')
-    // Match operator + number or number + operator or expression semi colon expression 
-    var match = String(val).match(/(((>=|<=|>|<|=)\d+\.?\d*|\d+\.?\d*(>=|<=|>|<|=))(;(>=|<=|>|<|=)\d+\.?\d*|;\d+\.?\d*(>=|<=|>|<|=))?)|\d+\.?\d*/)
-    // If val dont match expression and is not empty
-    if ((match == null || match[0] !== String(val)) && String(val) !== '') {
-      console.log("bad")
-      console.log(match)
-      setState({ valid: true })
+
+    if (String(val) !== '') {
+      // Match operator + number or number + operator or expression semi colon expression 
+      var match = String(val).match(/(((>=|<=|>|<|=)\d+\.?\d*|\d+\.?\d*(>=|<=|>|<|=))(;(>=|<=|>|<|=)\d+\.?\d*|;\d+\.?\d*(>=|<=|>|<|=))?)|\d+\.?\d*/)
+      var matchRange = String(val).match(/(\d+\.?\d*-\d+\.?\d*)|(\*-\d+\.?\d*)|(\d+\.?\d*-\*)/)
+      // If val dont match expression and is not empty
+      if ((match == null || match[0] !== String(val)) && (matchRange == null || matchRange[0] !== String(val))) {
+        console.log("bad")
+        console.log(match)
+        setState({ error: true })
+      }
+
+      else {
+        console.log("good")
+        console.log(match)
+        props.handler(val)
+        setState({ error: false })
+      }
     }
-    else {
-      console.log("good")
-      console.log(match)
-      props.handler(val)
-      setState({ valid: false })
+    else{
+      setState({ error: false })
     }
   }
   const longText = `
                     You can filter using expresssions eg: filter every value greater than 10 and lower or equal than 15, [ >10;<=15 ] 
                     `;
-  var label = state.valid ? 'Wrong filter' : 'Filter'
+  var label = state.error ? 'Wrong filter' : 'Filter'
   return (
     <Grid container spacing={0} alignItems="flex-end" item>
       <Grid item xs={11}>
         <TextField
           label={label}
           onChange={event => handlerWarapper(event.target.value)}
-          error={state.valid}
+          error={state.error}
           className={classes.specialTextInput}
         />
       </Grid>
@@ -102,19 +127,41 @@ function FilterInput(props) {
 function TableComponent() {
 
   const classes = useStylesTable();
+  const maxColumns = 8
 
   const [state, setState] = useState({
-    data: makeData(),
-    filter: true
+    data: [],
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios(
+        'http://192.168.0.181:8000/api/organism/',
+      );
+
+      setState({ data: result.data });
+    };
+
+    fetchData();
+  }, []);
 
   const [chipState, setChipState] = useState({
-    name: [colNames[0], colNames[1], colNames[2]]
+    name: [colNames[0], colNames[2], colNames[3], colNames[4]]
   });
 
-  function handleChange(event) {
-    setChipState({ name: event.target.value })
+  function handleChangeChip(event) {
+    if (event.target.value.length <= maxColumns) {
+      setChipState({ name: event.target.value })
+    }
   }
+
+  function handleDeleteChip(value) {
+    var tmp_state = chipState.name
+    var index = tmp_state.indexOf(value);
+    if (index !== -1) tmp_state.splice(index, 1);
+    setChipState({ name: tmp_state })
+  }
+
 
 
   return (
@@ -125,11 +172,11 @@ function TableComponent() {
           <Select
             multiple
             value={chipState.name}
-            onChange={handleChange}
+            onChange={handleChangeChip}
             input={<Input id="select-multiple-chip" />}
             renderValue={selected => (
               <div >
-                {selected.map(value => <Chip key={value} label={value} />)}
+                {selected.map(value => <Chip key={value} label={value} onDelete={() => handleDeleteChip(value)} />)}
               </div>
             )}
             MenuProps={{
@@ -164,18 +211,22 @@ function TableComponent() {
             String(row[filter.id]) === filter.value}
           columns={[
             {
-              Header: "Name",
+              Header: "Info",
               columns: [
                 {
                   show: true ? chipState.name.includes(colNames[0]) : false,
                   Header: colNames[0],
-                  accessor: "firstName",
+                  accessor: colNames[0],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
                   Cell: ({ value }) =>
                     <div className={classes.verticalAlign}>
                       <Tooltip title="View organism detail" >
                         <Button
-                          component={Link} to={'/app/organism/'+value}
-                          onClick={()=>console.log(value)}
+                          component={Link} to={'/app/organism/' + value}
+                          onClick={() => console.log(value)}
                           style={{ marginRight: '5%' }}>
                           <ZoomIcon />
                         </Button>
@@ -183,7 +234,7 @@ function TableComponent() {
                       {value}
                     </div>,
                   filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ["firstName"] }),
+                    matchSorter(rows, filter.value, { keys: [colNames[0]] }),
                   filterAll: true,
                   Filter: ({ onChange }) =>
                     <FilterInput handler={onChange} />
@@ -191,27 +242,65 @@ function TableComponent() {
                 {
                   show: true ? chipState.name.includes(colNames[1]) : false,
                   Header: colNames[1],
-                  id: "lastName",
-                  accessor: d => d.lastName,
+                  accessor: colNames[1],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value.toString()}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    matchSorter(rows, filter.value, { keys: [colNames[1]] }),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[2]) : false,
+                  Header: colNames[2],
+                  accessor: colNames[2],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
                   Cell: ({ value }) =>
                     <div className={classes.verticalAlign}>
                       {value}
                     </div>,
                   filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ["lastName"] }),
+                    matchSorter(rows, filter.value, { keys: [colNames[2]] }),
                   filterAll: true,
                   Filter: ({ onChange }) =>
                     <FilterInput handler={onChange} />
-                }
-              ],
-            },
-            {
-              Header: "Info",
-              columns: [
+                },
                 {
-                  show: true ? chipState.name.includes(colNames[2]) : false,
-                  Header: colNames[2],
-                  accessor: "age",
+                  show: true ? chipState.name.includes(colNames[3]) : false,
+                  Header: colNames[3],
+                  accessor: colNames[3],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    matchSorter(rows, filter.value, { keys: [colNames[3]] }),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[4]) : false,
+                  Header: colNames[4],
+                  accessor: colNames[4],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
                   Cell: ({ value }) =>
                     <div className={classes.verticalAlign}>
                       {value}
@@ -223,34 +312,239 @@ function TableComponent() {
                     <CustomFilterInput handler={onChange} />
                 },
                 {
-                  show: true ? chipState.name.includes(colNames[3]) : false,
-                  Header: colNames[3],
-                  accessor: "age",
-                  id: "over",
+                  show: true ? chipState.name.includes(colNames[5]) : false,
+                  Header: colNames[5],
+                  accessor: colNames[5],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
                   Cell: ({ value }) =>
                     <div className={classes.verticalAlign}>
-                      {(value >= 21 ? "Yes" : "No")}
+                      {value}
                     </div>,
-                  filterMethod: (filter, row) => {
-                    if (filter.value === "all") {
-                      return true;
-                    }
-                    if (filter.value === "true") {
-                      return row[filter.id] >= 21;
-                    }
-                    return row[filter.id] < 21;
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[6]) : false,
+                  Header: colNames[6],
+                  accessor: colNames[6],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
                   },
-                  Filter: ({ filter, onChange }) =>
-                    <select
-                      onChange={event => onChange(event.target.value)}
-                      style={{ width: "100%" }}
-                      value={filter ? filter.value : "all"}
-                    >
-                      <option value="all">Show All</option>
-                      <option value="true">Can Drink</option>
-                      <option value="false">Can't Drink</option>
-                    </select>
-                }
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[7]) : false,
+                  Header: colNames[7],
+                  accessor: colNames[7],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[8]) : false,
+                  Header: colNames[8],
+                  accessor: colNames[8],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[9]) : false,
+                  Header: colNames[9],
+                  accessor: colNames[9],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[10]) : false,
+                  Header: colNames[10],
+                  accessor: colNames[10],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[11]) : false,
+                  Header: colNames[11],
+                  accessor: colNames[11],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[12]) : false,
+                  Header: colNames[12],
+                  accessor: colNames[12],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[13]) : false,
+                  Header: colNames[13],
+                  accessor: colNames[13],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[14]) : false,
+                  Header: colNames[14],
+                  accessor: colNames[14],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[15]) : false,
+                  Header: colNames[15],
+                  accessor: colNames[15],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <CustomFilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[16]) : false,
+                  Header: colNames[16],
+                  accessor: colNames[16],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
+                },
+                {
+                  show: true ? chipState.name.includes(colNames[17]) : false,
+                  Header: colNames[17],
+                  accessor: colNames[17],
+                  sortMethod: (a, b, ascending) => {
+                    if (!ascending) { return (b != null) - (a != null) || b - a; }
+                    else { return (a != null) - (b != null) || b - a; }
+                  },
+                  Cell: ({ value }) =>
+                    <div className={classes.verticalAlign}>
+                      {value}
+                    </div>,
+                  filterMethod: (filter, rows) =>
+                    verboseFilter(filter, rows),
+                  filterAll: true,
+                  Filter: ({ onChange }) =>
+                    <FilterInput handler={onChange} />
+                },
               ]
             }
           ]}
