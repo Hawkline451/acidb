@@ -111,11 +111,11 @@ export const stylesAppNav = makeStyles(theme => ({
 
 export const stylesTable = makeStyles({
   formControl: {
-      margin: 20,
-      minWidth: '10%',
-      wrap: 'nowrap'
-    },
-  errorInput:{
+    margin: 20,
+    minWidth: '10%',
+    wrap: 'nowrap'
+  },
+  errorInput: {
     background: '#ffdbdb'
   },
   customTooltip: {
@@ -124,9 +124,15 @@ export const stylesTable = makeStyles({
   specialTextInput: {
     width: '100%'
   },
-  verticalAlign:{
+  verticalAlign: {
     display: 'flex',
     alignItems: 'center',
-    height : '100%'
+    height: '100%',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word'
   },
-  });
+  multilineDiv: {
+    whiteSpace: 'normal',
+    wordWrap: 'break-word'
+  }
+});

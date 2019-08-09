@@ -61,6 +61,7 @@ class GrowthDetail(models.Model):
         Organism,
         on_delete=models.CASCADE,
         primary_key=True,
+        related_name='growth_detail'
     )
     ph_confidence = models.CharField(max_length=50, default=None, null=True, blank=True)
     temp_confidence = models.CharField(max_length=50, default=None, null=True, blank=True)

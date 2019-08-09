@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeData, Tips, verboseFilter } from "./utils";
+import { verboseFilter } from "./utils";
 import matchSorter from 'match-sorter'
 import {
   Link
@@ -19,12 +19,12 @@ import "react-table/react-table.css";
 
 import axios from 'axios';
 
+// Internationalization
+import { useTranslation } from 'react-i18next';
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesTable } from './themes'
-
-
 
 const useStylesTable = stylesTable
 
@@ -54,8 +54,9 @@ const colNames = [
 
 // Filter box component
 function CustomFilterInput(props) {
-
   const classes = useStylesTable();
+  const { t } = useTranslation();
+
   const [state, setState] = useState({
     error: false
   });
@@ -82,17 +83,15 @@ function CustomFilterInput(props) {
         setState({ error: false })
       }
     }
-    else{
+    else {
       setState({ error: false })
     }
   }
-  const longText = `
-                    You can filter using expresssions eg: filter every value greater than 10 and lower or equal than 15, [ >10;<=15 ] 
-                    `;
-  var label = state.error ? 'Wrong filter' : 'Filter'
+  const tooltip = t('table.filter_tooltip');
+  var label = state.error ? t('table.wrong_filter') : t('table.filter')
   return (
     <Grid container spacing={0} alignItems="flex-end" item>
-      <Grid item xs={11}>
+      <Grid item xs={10}>
         <TextField
           label={label}
           onChange={event => handlerWarapper(event.target.value)}
@@ -100,8 +99,8 @@ function CustomFilterInput(props) {
           className={classes.specialTextInput}
         />
       </Grid>
-      <Grid item xs={1}>
-        <Tooltip className={classes.customTooltip} disableFocusListener title={longText}>
+      <Grid item xs={2}>
+        <Tooltip className={classes.customTooltip} disableFocusListener title={tooltip}>
           <HelpIcon />
         </Tooltip>
       </Grid>
@@ -111,7 +110,8 @@ function CustomFilterInput(props) {
 
 // Basic input component
 function FilterInput(props) {
-  var label = 'Filter'
+  const { t } = useTranslation();
+  var label = t('table.filter')
   return (
     <Grid container>
       <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}></TextField>
@@ -127,6 +127,7 @@ function FilterInput(props) {
 function TableComponent() {
 
   const classes = useStylesTable();
+  const { t } = useTranslation();
   const maxColumns = 8
 
   const [state, setState] = useState({
@@ -168,7 +169,7 @@ function TableComponent() {
     <ThemeProvider theme={theme}>
       <div>
         <FormControl className={classes.formControl}>
-          <InputLabel label='Select Columns' htmlFor="select-multiple-chip" focused={true}>Select Columns</InputLabel>
+          <InputLabel label={t('table.select_col')} htmlFor="select-multiple-chip" focused={true}>Select Columns</InputLabel>
           <Select
             multiple
             value={chipState.name}
@@ -176,7 +177,7 @@ function TableComponent() {
             input={<Input id="select-multiple-chip" />}
             renderValue={selected => (
               <div >
-                {selected.map(value => <Chip key={value} label={value} onDelete={() => handleDeleteChip(value)} />)}
+                {selected.map(value => <Chip key={value} label={t('table.' + value)} onDelete={() => handleDeleteChip(value)} />)}
               </div>
             )}
             MenuProps={{
@@ -196,7 +197,7 @@ function TableComponent() {
                     chipState.name.indexOf(name) === -1
                 }}
               >
-                {name}
+                {t('table.' + name)} 
               </MenuItem>
             ))}
           </Select>
@@ -211,12 +212,13 @@ function TableComponent() {
             String(row[filter.id]) === filter.value}
           columns={[
             {
-              Header: "Info",
+              Header: t('table.info'),
               columns: [
                 {
                   show: true ? chipState.name.includes(colNames[0]) : false,
-                  Header: colNames[0],
+                  Header: t('table.' + colNames[0]),
                   accessor: colNames[0],
+                  minWidth: 120,
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
                     else { return (a != null) - (b != null) || b - a; }
@@ -241,7 +243,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[1]) : false,
-                  Header: colNames[1],
+                  Header: t('table.' + colNames[1]),
                   accessor: colNames[1],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -259,7 +261,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[2]) : false,
-                  Header: colNames[2],
+                  Header: t('table.' + colNames[2]),
                   accessor: colNames[2],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -277,7 +279,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[3]) : false,
-                  Header: colNames[3],
+                  Header: t('table.' + colNames[3]),
                   accessor: colNames[3],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -295,7 +297,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[4]) : false,
-                  Header: colNames[4],
+                  Header: t('table.' + colNames[4]),
                   accessor: colNames[4],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -313,7 +315,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[5]) : false,
-                  Header: colNames[5],
+                  Header: t('table.' + colNames[5]),
                   accessor: colNames[5],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -331,7 +333,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[6]) : false,
-                  Header: colNames[6],
+                  Header: t('table.' + colNames[6]),
                   accessor: colNames[6],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -349,7 +351,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[7]) : false,
-                  Header: colNames[7],
+                  Header: t('table.' + colNames[7]),
                   accessor: colNames[7],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -367,7 +369,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[8]) : false,
-                  Header: colNames[8],
+                  Header: t('table.' + colNames[8]),
                   accessor: colNames[8],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -385,7 +387,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[9]) : false,
-                  Header: colNames[9],
+                  Header: t('table.' + colNames[9]),
                   accessor: colNames[9],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -403,7 +405,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[10]) : false,
-                  Header: colNames[10],
+                  Header: t('table.' + colNames[10]),
                   accessor: colNames[10],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -421,7 +423,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[11]) : false,
-                  Header: colNames[11],
+                  Header: t('table.' + colNames[11]),
                   accessor: colNames[11],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -439,7 +441,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[12]) : false,
-                  Header: colNames[12],
+                  Header: t('table.' + colNames[12]),
                   accessor: colNames[12],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -457,7 +459,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[13]) : false,
-                  Header: colNames[13],
+                  Header: t('table.' + colNames[13]),
                   accessor: colNames[13],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -475,7 +477,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[14]) : false,
-                  Header: colNames[14],
+                  Header: t('table.' + colNames[14]),
                   accessor: colNames[14],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -493,7 +495,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[15]) : false,
-                  Header: colNames[15],
+                  Header: t('table.' + colNames[15]),
                   accessor: colNames[15],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -511,7 +513,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[16]) : false,
-                  Header: colNames[16],
+                  Header: t('table.' + colNames[16]),
                   accessor: colNames[16],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -529,7 +531,7 @@ function TableComponent() {
                 },
                 {
                   show: true ? chipState.name.includes(colNames[17]) : false,
-                  Header: colNames[17],
+                  Header: t('table.' + colNames[17]),
                   accessor: colNames[17],
                   sortMethod: (a, b, ascending) => {
                     if (!ascending) { return (b != null) - (a != null) || b - a; }
@@ -552,7 +554,8 @@ function TableComponent() {
           className="-striped -highlight"
         />
         <br />
-        <Tips />
+        <div style={{ textAlign: "center" }}>
+          <em> Tip: Hold shift when sorting to multi - sort! </em> </div>;
       </div>
     </ThemeProvider>
   );

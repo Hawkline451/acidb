@@ -1,5 +1,5 @@
 {
-  "navbar1": "Welcome to react using react-i18next",
+  "name": "le name",
   "description": {
     "part1": "To get started, edit <1>src/App.js</1> and save to reload1111.",
     "part2": "Switch language between english and german using buttons above."
@@ -13,6 +13,31 @@
   },
   "tree":{
     "title": "Taxonomic Tree"
+  },
+  "table":{
+    "name": "Name",
+    "isolated":"Isolated",
+    "state":"Assembly level",
+    "seq_date":"Sequence Date",
+    "gen_size":"Genome size [Kb]",
+    "gen_completeness":"Genome completeness",
+    "gen_contamination":"Genome contamination",
+    "gc_percentage":"GC %",
+    "n_orfs":"N Orfs",
+    "temp_associated":"Temp. associated [°C]",
+    "temp_min":"Temp. min [°C]",
+    "temp_max":"Temp. max [°C]",
+    "ph_associated":"pH associated",
+    "ph_min":"pH min",
+    "ph_max":"pH max",
+    "access_src":"Source",
+    "annotation":"Annotation",
+
+    "select_col": "Select Columns",
+    "filter": "Filter",
+    "wrong_filter": "Wrong filter",
+    "filter_tootltip": "Super tooltip"
+    "info": "Organism Info"
   }
   
 }

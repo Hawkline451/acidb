@@ -1,46 +1,3 @@
-import React from "react";
-
-
-// Table Component Utils
-const range = len => {
-  const arr = [];
-  for (let i = 0; i < len; i++) {
-    arr.push(i);
-  }
-  return arr;
-};
-
-const newPerson = () => {
-  const statusChance = Math.random();
-  var myArray = ['asd1', 'asd2', 'asd3']; 
-  return {
-    firstName: myArray[Math.floor(Math.random() * myArray.length)],
-    lastName: myArray[Math.floor(Math.random() * myArray.length)],
-    age: Math.floor(Math.random() * 30),
-    visits: Math.floor(Math.random() * 100),
-    progress: Math.floor(Math.random() * 100),
-    status: statusChance > 0.66 ?
-      "relationship" :
-      statusChance > 0.33 ? "complicated" : "single"
-  };
-};
-
-export function makeData(len = 5553) {
-  return range(len).map(d => {
-    return {
-      ...newPerson(),
-      children: range(10).map(newPerson)
-    };
-  });
-}
-
-export const Tips = () =>
-  <div style = {{textAlign: "center"}}>
-  <em> Tip: Hold shift when sorting to multi - sort! </em> </div>;
-
-
-
-
 // Filter table using a expression eg: <9;>3
 function tokenize(strExp) {
   var expression = strExp.split(/[,;]+/)
@@ -49,20 +6,21 @@ function tokenize(strExp) {
   // 4-7 it s a supported exp and represent 4<=x<=7
   if (strExp.includes("-")){
     var numbers = strExp.split("-")
-    numbers[0] = numbers[0] == '*' ? -1 : numbers[0] 
-    numbers[1] = numbers[1] == '*' ? Number.MAX_SAFE_INTEGER : numbers[1] 
+    numbers[0] = numbers[0] === '*' ? -1 : numbers[0] 
+    numbers[1] = numbers[1] === '*' ? Number.MAX_SAFE_INTEGER : numbers[1] 
     tokens.push([numbers[0],"<="])
     tokens.push(["<=",numbers[1]])
     return tokens
   }  
-
-  expression.forEach((element) => {
-    var exp = element.split(/(>=|<=|>|<|=)/).filter(Boolean)
-    tokens.push(exp)
-    // If there is not numbers is an invalid exp (>asd is invalid)
-    // If length is greter than 2 is invalid (>1>2 is invalid)
-    });
-  return tokens
+  else {
+    expression.forEach((element) => {
+      var exp = element.split(/(>=|<=|>|<|=)/).filter(Boolean)
+      tokens.push(exp)
+      // If there is not numbers is an invalid exp (>asd is invalid)
+      // If length is greter than 2 is invalid (>1>2 is invalid)
+      });
+    return tokens
+  }
 }
 
 function customEval(rows, filter, operation) {
