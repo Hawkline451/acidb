@@ -30,14 +30,25 @@
     "ph_associated":"pH associated",
     "ph_min":"pH min",
     "ph_max":"pH max",
-    "access_src":"Source",
+    "access_src":"Accession Source",
     "annotation":"Annotation",
+    "strains": "Strains",
+    "domain": "Domain",
+    "phylum": "Phylum",
 
     "select_col": "Select Columns",
+    "max_cols": "Max number of columns",
+    "filter_tooltip": "Super tooltip",
     "filter": "Filter",
     "wrong_filter": "Wrong filter",
-    "filter_tootltip": "Super tooltip"
-    "info": "Organism Info"
+    "filter_tootltip": "Super tooltip",
+
+    "identifiers": "Identifiers",
+    "strain": "Strain",
+    "tax_info": "Taxonomy info",
+    "gen_metadata": "Genome Metadata",
+    "growth_range": "Growth range",
+    "proteom_metadata": "Proteom metadata"
   }
   
 }

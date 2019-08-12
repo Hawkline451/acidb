@@ -2,6 +2,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
 from rest_framework import viewsets
+from rest_framework import mixins
 from rest_framework.response import Response
 
 from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer
@@ -13,7 +14,6 @@ class OrganismViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Organism.objects.filter(visibility=1).prefetch_related('strains')
     serializer_class = SummaryOrganismSerializer
-    http_method_names = ['get']
 
     # Return everything
     @method_decorator(cache_page(60*60))
@@ -28,16 +28,10 @@ class OrganismViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-class OrganismDetailViewSet(viewsets.ReadOnlyModelViewSet):
+class OrganismDetailViewSet(mixins.RetrieveModelMixin,
+                            viewsets.GenericViewSet):
     queryset = Organism.objects.filter(visibility=1).prefetch_related('strains').prefetch_related('taxonomy').prefetch_related('references').prefetch_related('growth_detail')
     serializer_class = DetailOrganismSerializer
-    http_method_names = ['get']
-
-    # Return everything
-    @method_decorator(cache_page(60*60))
-    def list(self, request):
-        serializer = DetailOrganismSerializer(self.queryset, many=True)
-        return Response(serializer.data)
 
     # Return only one instance
     @method_decorator(cache_page(60*5))

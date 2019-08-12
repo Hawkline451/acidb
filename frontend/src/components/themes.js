@@ -121,6 +121,9 @@ export const stylesTable = makeStyles({
   customTooltip: {
     maxWidth: '50%',
   },
+  customIcon: {
+    maxWidth: '150%',
+  },
   specialTextInput: {
     width: '100%'
   },
