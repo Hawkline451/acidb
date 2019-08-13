@@ -43,7 +43,7 @@ class SummaryOrganismSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id_organism', 'name', 'isolated', 'state', 'seq_date', 'gen_size',
                   'gen_completeness', 'gen_contamination', 'gc_percentage', 'n_orfs',
                   'temp_associated', 'temp_min', 'temp_max', 'ph_associated', 'ph_min',
-                  'ph_max', 'access_src', 'annotation', 'strains', 'taxonomy']
+                  'ph_max', 'access_src', 'annotation', 'strains', 'taxonomy', 'access_id', 'ftp_url']
 
 
 class ReferenceSerializer(serializers.HyperlinkedModelSerializer):

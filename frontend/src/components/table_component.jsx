@@ -14,13 +14,13 @@ import {
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-// Override some classes exported from npm modules
-//import "./css/override.css"
 
 import axios from 'axios';
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
+
+import {Loader} from './loader'
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
@@ -36,6 +36,7 @@ const colNames = [
   'phylum',
 
   'access_src',
+  'ftp_url',
   'isolated',
   'gen_size',
   'gc_percentage',
@@ -53,6 +54,7 @@ const colNames = [
   'ph_associated',
   'ph_min',
   'ph_max',
+
 ];
 
 
@@ -201,21 +203,25 @@ function TableComponent() {
   const [state, setState] = useState({
     data: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const result = await axios(
         'http://192.168.0.181:8000/api/organism/',
       );
 
       setState({ data: result.data });
+      setIsLoading(false);
     };
 
     fetchData();
+    // Empty array as second argument avoid fetching on component updates, only when mounting the component
   }, []);
 
   const [chipState, setChipState] = useState({
-    name: [colNames[0], colNames[2], colNames[3], colNames[4]]
+    name: ['name', 'strain', 'domain', 'gen_size']
   });
 
   function concatStrains(arrayDicts) {
@@ -227,11 +233,6 @@ function TableComponent() {
     return strains.join(' = ')
   }
 
-  function openModal(value) {
-    console.log(value)
-  }
-
-
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -239,414 +240,447 @@ function TableComponent() {
       </div>
 
       <div>
-        <ReactTable
-          data={state.data}
-          filterable
-          defaultFilterMethod={(filter, row) =>
-            String(row[filter.id]) === filter.value}
-          columns={[
-            {
-              Header: t('table.identifiers'),
-              columns: [
+        {isLoading ?
+          (<Loader/>) :
+          (
+            <ReactTable
+              data={state.data}
+              filterable
+              defaultFilterMethod={(filter, row) =>
+                String(row[filter.id]) === filter.value}
+              columns={[
                 {
-                  show: true ? chipState.name.includes("name") : false,
-                  Header: t('table.name'),
-                  accessor: 'name',
-                  minWidth: 120,
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      <Tooltip title="View organism detail" >
-                        <Button
-                          component={Link} to={'/app/organism/' + value}
-                          onClick={() => openModal(value)}
-                          style={{ marginRight: '5%' }}>
-                          <ZoomIcon />
-                        </Button>
-                      </Tooltip>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['name'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
+                  Header: t('table.identifiers'),
+                  columns: [
+                    {
+                      show: false,
+                      Header: 'id',
+                      accessor: 'id_organism',
+                    },
+                    {
+                      show: true ? chipState.name.includes("name") : false,
+                      Header: t('table.name'),
+                      accessor: 'name',
+                      minWidth: 120,
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ row, value }) =>
+                        <div className={classes.verticalAlign}>
+                          <Tooltip title="View organism detail" >
+                            <Button
+                              component={Link} to={'/app/organism/' + row.id_organism}
+                              //onClick={() => openModal(row)}
+                              style={{ marginRight: '5%' }}>
+                              <ZoomIcon />
+                            </Button>
+                          </Tooltip>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['name'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('strains') : false,
+                      Header: t('table.strain'),
+                      accessor: 'strains',
+                      sortMethod: (a, b, ascending) => {
+                        let strainA = a[0].strain_name;
+                        let strainB = b[0].strain_name;
+                        if (!ascending) { return (strainB != null) - (strainA != null) || (strainA > strainB ? 1 : -1); }
+                        else { return (strainA != null) - (strainB != null) || (strainA > strainB ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {concatStrains(value)}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['strains.0.strain_name'] }).concat(matchSorter(rows, filter.value, { keys: ['strains.1.strain_name'] })),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                  ],
                 },
                 {
-                  show: true ? chipState.name.includes('strains') : false,
-                  Header: t('table.strain'),
-                  accessor: 'strains',
-                  sortMethod: (a, b, ascending) => {
-                    let strainA = a[0].strain_name;
-                    let strainB = b[0].strain_name;
-                    if (!ascending) { return (strainB != null) - (strainA != null) || (strainA > strainB ? 1 : -1); }
-                    else {return (strainA != null) - (strainB != null) || (strainA > strainB ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {concatStrains(value)}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['strains.0.strain_name'] }).concat(matchSorter(rows, filter.value, { keys: ['strains.1.strain_name'] })),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
-              ],
-            },
-            {
-              Header: t('table.tax_info'),
-              columns: [
-                {
-                  show: true ? chipState.name.includes('domain') : false,
-                  Header: t('table.domain'),
-                  id: 'domain',
-                  accessor: d => d.taxonomy[0].domain,
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['domain'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('phylum') : false,
-                  Header: t('table.phylum'),
-                  id: 'phylum',
-                  accessor: d => d.taxonomy[0].phylum,
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['phylum'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
-              ],
-            },
-            {
-              Header: t('table.gen_metadata'),
-              columns: [
-                {
-                  show: true ? chipState.name.includes('access_src') : false,
-                  Header: t('table.access_src'),
-                  accessor: 'access_src',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['access_src'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
+                  Header: t('table.tax_info'),
+                  columns: [
+                    {
+                      show: true ? chipState.name.includes('domain') : false,
+                      Header: t('table.domain'),
+                      id: 'domain',
+                      accessor: d => d.taxonomy[0].domain,
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['domain'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('phylum') : false,
+                      Header: t('table.phylum'),
+                      id: 'phylum',
+                      accessor: d => d.taxonomy[0].phylum,
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['phylum'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                  ],
                 },
                 {
-                  show: true ? chipState.name.includes('isolated') : false,
-                  Header: t('table.isolated'),
-                  accessor: 'isolated',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value.toString()}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['isolated'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
+                  Header: t('table.gen_metadata'),
+                  columns: [
+                    {
+                      show: true ? chipState.name.includes('access_src') : false,
+                      Header: t('table.access_src'),
+                      accessor: 'access_src',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['access_src'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: false,
+                      Header: 'access_id',
+                      accessor: 'access_id',
+                    },
+                    {
+                      show: true ? chipState.name.includes('ftp_url') : false,
+                      Header: t('table.ftp_url'),
+                      accessor: 'ftp_url',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value, row }) =>
+                        <div className={classes.verticalAlign}>
+                          <a href={value}>{row.access_id}</a>
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['access_id'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('isolated') : false,
+                      Header: t('table.isolated'),
+                      accessor: 'isolated',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value.toString()}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['isolated'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('gen_size') : false,
+                      Header: t('table.gen_size'),
+                      accessor: 'gen_size',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('gc_percentage') : false,
+                      Header: t('table.gc_percentage'),
+                      accessor: 'gc_percentage',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('state') : false,
+                      Header: t('table.state'),
+                      accessor: 'state',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value.toString()}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['state'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('seq_date') : false,
+                      Header: t('table.seq_date'),
+                      accessor: 'seq_date',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value.toString()}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['seq_date'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('gen_completeness') : false,
+                      Header: t('table.gen_completeness'),
+                      accessor: 'gen_completeness',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('gen_contamination') : false,
+                      Header: t('table.gen_contamination'),
+                      accessor: 'gen_contamination',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                  ],
                 },
                 {
-                  show: true ? chipState.name.includes('gen_size') : false,
-                  Header: t('table.gen_size'),
-                  accessor: 'gen_size',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
+                  Header: t('table.growth_range'),
+                  columns: [
+                    {
+                      show: true ? chipState.name.includes('temp_associated') : false,
+                      Header: t('table.temp_associated'),
+                      accessor: 'temp_associated',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('temp_min') : false,
+                      Header: t('table.temp_min'),
+                      accessor: 'temp_min',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('temp_max') : false,
+                      Header: t('table.temp_max'),
+                      accessor: 'temp_max',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('ph_associated') : false,
+                      Header: t('table.ph_associated'),
+                      accessor: 'ph_associated',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('ph_min') : false,
+                      Header: t('table.ph_min'),
+                      accessor: 'ph_min',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('ph_max') : false,
+                      Header: t('table.ph_max'),
+                      accessor: 'ph_max',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                  ],
                 },
                 {
-                  show: true ? chipState.name.includes('gc_percentage') : false,
-                  Header: t('table.gc_percentage'),
-                  accessor: 'gc_percentage',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('state') : false,
-                  Header: t('table.state'),
-                  accessor: 'state',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value.toString()}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['state'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('seq_date') : false,
-                  Header: t('table.seq_date'),
-                  accessor: 'seq_date',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value.toString()}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['seq_date'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('gen_completeness') : false,
-                  Header: t('table.gen_completeness'),
-                  accessor: 'gen_completeness',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('gen_contamination') : false,
-                  Header: t('table.gen_contamination'),
-                  accessor: 'gen_contamination',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-              ],
-            },
-            {
-              Header: t('table.growth_range'),
-              columns: [
-                {
-                  show: true ? chipState.name.includes('temp_associated') : false,
-                  Header: t('table.temp_associated'),
-                  accessor: 'temp_associated',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('temp_min') : false,
-                  Header: t('table.temp_min'),
-                  accessor: 'temp_min',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('temp_max') : false,
-                  Header: t('table.temp_max'),
-                  accessor: 'temp_max',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('ph_associated') : false,
-                  Header: t('table.ph_associated'),
-                  accessor: 'ph_associated',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('ph_min') : false,
-                  Header: t('table.ph_min'),
-                  accessor: 'ph_min',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('ph_max') : false,
-                  Header: t('table.ph_max'),
-                  accessor: 'ph_max',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-              ],
-            },
-            {
-              Header: t('table.proteom_metadata'),
-              columns: [
-                {
-                  show: true ? chipState.name.includes('n_orfs') : false,
-                  Header: t('table.n_orfs'),
-                  accessor: 'n_orfs',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || b - a; }
-                    else { return (a != null) - (b != null) || b - a; }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    verboseFilter(filter, rows),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <CustomFilterInput handler={onChange} />
-                },
-                {
-                  show: true ? chipState.name.includes('annotation') : false,
-                  Header: t('table.annotation'),
-                  accessor: 'annotation',
-                  sortMethod: (a, b, ascending) => {
-                    if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
-                    else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
-                  },
-                  Cell: ({ value }) =>
-                    <div className={classes.verticalAlign}>
-                      {value}
-                    </div>,
-                  filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ['annotation'] }),
-                  filterAll: true,
-                  Filter: ({ onChange }) =>
-                    <FilterInput handler={onChange} />
-                },
+                  Header: t('table.proteome_metadata'),
+                  columns: [
+                    {
+                      show: true ? chipState.name.includes('n_orfs') : false,
+                      Header: t('table.n_orfs'),
+                      accessor: 'n_orfs',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || b - a; }
+                        else { return (a != null) - (b != null) || b - a; }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        verboseFilter(filter, rows),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <CustomFilterInput handler={onChange} />
+                    },
+                    {
+                      show: true ? chipState.name.includes('annotation') : false,
+                      Header: t('table.annotation'),
+                      accessor: 'annotation',
+                      sortMethod: (a, b, ascending) => {
+                        if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }
+                        else { return (a != null) - (b != null) || (a > b ? 1 : -1); }
+                      },
+                      Cell: ({ value }) =>
+                        <div className={classes.verticalAlign}>
+                          {value}
+                        </div>,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ['annotation'] }),
+                      filterAll: true,
+                      Filter: ({ onChange }) =>
+                        <FilterInput handler={onChange} />
+                    },
+                  ]
+                }
               ]
-            }
-          ]}
-          defaultPageSize={10}
-          className="-striped -highlight"
-        />
+              }
+              defaultPageSize={10}
+              className="-striped -highlight"
+            />
+          )}
         <br />
         <div style={{ textAlign: "center" }}>
           <em> Tip: Hold shift when sorting to multi - sort! </em> </div>;

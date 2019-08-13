@@ -35,6 +35,7 @@
     "strains": "Strains",
     "domain": "Domain",
     "phylum": "Phylum",
+    "ftp_url": "ftp url",
 
     "select_col": "Select Columns",
     "max_cols": "Max number of columns",
@@ -43,12 +44,13 @@
     "wrong_filter": "Wrong filter",
     "filter_tootltip": "Super tooltip",
 
+
     "identifiers": "Identifiers",
     "strain": "Strain",
     "tax_info": "Taxonomy info",
     "gen_metadata": "Genome Metadata",
     "growth_range": "Growth range",
-    "proteom_metadata": "Proteom metadata"
+    "proteome_metadata": "Proteome metadata"
   }
   
 }

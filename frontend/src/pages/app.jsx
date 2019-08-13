@@ -1,19 +1,16 @@
 import React, { Suspense } from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import logo from '../logo.svg';
 import NavBar from '../components/navbar'
 import TreeComponent from '../components/tree'
 import TableComponent from '../components/table_component'
 import OrganismComponent from '../components/organism'
+import {Loader} from '../components/loader'
 
-// loading component for suspense fallback
-const Loader = () => (
-  <div className="App">
-    <img src={logo} className="App-logo" alt="logo" />
-    <div>loading...</div>
-  </div>
-);
+
+import logo from '../logo.svg';
+
+
 
 function Todo() {
   return (

@@ -87,8 +87,8 @@ export const stylesTree = makeStyles({
 export const stylesAppNav = makeStyles(theme => ({
 
   tabRoot: {
-    fontSize: 18,
-    width: '20%'
+    fontSize: 20,
+    minWidth: 'auto'
   },
   tabMenu: {
     fontSize: 18,
@@ -138,4 +138,23 @@ export const stylesTable = makeStyles({
     whiteSpace: 'normal',
     wordWrap: 'break-word'
   }
+});
+
+
+export const stylesDetail = makeStyles({
+  multilineDiv: {
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+  },
+  fixedList:{
+    margin: 10,
+    position: 'fixed'
+  },
+  table:{
+    margin: 'auto',
+    marginBottom: 50,
+    width: '50%',
+  }
+
+
 });
