@@ -137,9 +137,11 @@ export const stylesTable = makeStyles({
   multilineDiv: {
     whiteSpace: 'normal',
     wordWrap: 'break-word'
+  },
+  buttonGrid:{
+    width: '1%',
   }
 });
-
 
 export const stylesDetail = makeStyles({
   multilineDiv: {
@@ -154,7 +156,5 @@ export const stylesDetail = makeStyles({
     margin: 'auto',
     marginBottom: 50,
     width: '50%',
-  }
-
-
+  },
 });

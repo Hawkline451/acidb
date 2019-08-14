@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import {
-  Divider, List, ListItem, ListItemText, Table, TableBody, TableCell, Grid, TableRow, Paper
+  Divider, List, ListItem, ListItemText, Table, TableBody, TableCell, Grid, TableRow, 
 } from '@material-ui/core';
 
 // Styles
-import { ThemeProvider, withStyles, makeStyles } from '@material-ui/styles';
+import { ThemeProvider} from '@material-ui/styles';
 import { theme, stylesDetail } from './themes'
 
 // Internationalization
@@ -14,9 +14,6 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 import { Loader } from './loader'
-import {
-  Link
-} from 'react-router-dom';
 
 const useStylesDetail = stylesDetail
 const identifiers = [

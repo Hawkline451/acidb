@@ -12,6 +12,7 @@
     "match-sorter": "^4.0.0",
     "material-ui-tree": "^2.0.1",
     "react": "^16.8.6",
+    "react-csv": "^1.1.1",
     "react-dom": "^16.8.6",
     "react-i18next": "^10.11.4",
     "react-responsive": "^7.0.0",

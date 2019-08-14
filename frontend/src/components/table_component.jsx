@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { verboseFilter } from "./utils";
 import matchSorter from 'match-sorter'
 import {
   Link
 } from 'react-router-dom';
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid, ButtonGroup
 } from '@material-ui/core';
 import {
-  HelpOutline as HelpIcon, ZoomIn as ZoomIcon
+  HelpOutline as HelpIcon, ZoomIn as ZoomIcon, ArrowDropDown as ArrowDropDownIcon
 } from '@material-ui/icons';
 
 // Import React Table
@@ -16,11 +16,12 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 import axios from 'axios';
+import { CSVLink } from "react-csv";
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
-import {Loader} from './loader'
+import { Loader } from './loader'
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
@@ -118,7 +119,7 @@ function CustomFilterInput(props) {
   )
 }
 
-// Basic input component
+// Basic filter component
 function FilterInput(props) {
   const { t } = useTranslation();
   var label = t('table.filter')
@@ -204,6 +205,12 @@ function TableComponent() {
     data: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [filteredData, setfilteredData] = useState({
+    data: [],
+  });
+
+  let reactTable = useRef(null);
+  let csvLink = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -213,6 +220,7 @@ function TableComponent() {
       );
 
       setState({ data: result.data });
+      setfilteredData({ data: result.data })
       setIsLoading(false);
     };
 
@@ -233,17 +241,45 @@ function TableComponent() {
     return strains.join(' = ')
   }
 
+  function getFilteredData() {
+    var data = reactTable.getResolvedState().sortedData
+    setfilteredData({ data: data })
+  }
+
   return (
     <ThemeProvider theme={theme}>
-      <div>
-        <SelectColumns chipState={chipState} setChipState={setChipState} />
-      </div>
+      <Grid container
+        spacing={0}
+        direction="row"
+        alignItems="center"
+        justify="center"
+      >
+        <Grid item xs={10}>
+          <SelectColumns chipState={chipState} setChipState={setChipState} />
+        </Grid>
+        <Grid item xs={2} >
+          
+          <CSVLink
+            headers={colNames}
+            data={filteredData.data}
+            separator={'\t'}
+            filename={'filtered_data.csv'}
+            onClick={() => {
+              getFilteredData(); // 👍🏻 Your click handling logic
+            }}
+          >
+            <Button variant="outlined" color="primary" >Download me</Button>
+
+</CSVLink>
+        </Grid>
+      </Grid>
 
       <div>
         {isLoading ?
-          (<Loader/>) :
+          (<Loader />) :
           (
             <ReactTable
+              ref={(r) => (reactTable = r)}
               data={state.data}
               filterable
               defaultFilterMethod={(filter, row) =>
