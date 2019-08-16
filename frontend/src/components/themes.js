@@ -14,10 +14,10 @@ import {
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#B35FA6'
+      main: '#8662BD',
     },
     secondary: {
-      main: '#703D80'
+      main: '#D6B3FE'
     },
     text: {
       primary: "#000000",
@@ -40,8 +40,11 @@ export const stylesHome = makeStyles(theme => ({
     paddingTop: 60,
   },
   footer: {
-    alignSelf: "end",
-    textAlign: "center"
+    display: 'flex',
+    alignSelf: "flex-end",
+    textAlign: "center",
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.secondary 
   },
 
 }));
@@ -144,17 +147,35 @@ export const stylesTable = makeStyles({
 });
 
 export const stylesDetail = makeStyles({
-  multilineDiv: {
+
+  fixedList:{
+    position: 'fixed',
+    overflow: 'hidden',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
-  },
-  fixedList:{
-    margin: 10,
-    position: 'fixed'
+    maxWidth: '20%',
   },
   table:{
-    margin: 'auto',
+    marginLeft: '15%',
     marginBottom: 50,
     width: '50%',
   },
+  tableTitle:{
+    marginTop: 20,
+    marginLeft: '15%',
+    width: '50%',
+  },
+  tableCell:{
+    width: '50%',
+    backgroundColor: theme.palette.primary.main,
+    color:  theme.palette.text.secondary,
+  },
+  listItem:{
+    backgroundColor: theme.palette.primary.main,    
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+      color:  theme.palette.text.primary, 
+    },
+    color:  theme.palette.text.secondary, 
+  }
 });

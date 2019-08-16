@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import {
-  Divider, List, ListItem, ListItemText, Table, TableBody, TableCell, Grid, TableRow, 
+  Divider, List, ListItem, ListItemText, Table, TableBody, TableCell, Grid, TableRow, Link,
 } from '@material-ui/core';
 
 // Styles
-import { ThemeProvider} from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesDetail } from './themes'
 
 // Internationalization
@@ -15,11 +15,11 @@ import axios from 'axios';
 
 import { Loader } from './loader'
 
+// import config
+import { config } from "../config";
+
 const useStylesDetail = stylesDetail
-const identifiers = [
-  'name',
-  'strains',
-];
+
 const taxInfo = [
   'tax_src',
   'tax_id',
@@ -33,6 +33,7 @@ const taxInfo = [
 ];
 const genMetadata = [
   'access_src',
+  'ftp_url',
   'isolated',
   'gen_size',
   'gc_percentage',
@@ -54,10 +55,10 @@ const growth = [
   'ph_max',
 ];
 const growthDetail = [
-  'ph_confidence',
+  'temp_src',
   'temp_confidence',
   'ph_src',
-  'temp_src'
+  'ph_confidence',
 ];
 
 //Organism component
@@ -68,7 +69,7 @@ export default function Organism(props) {
     data: [],
   });
   const [isLoading, setIsLoading] = useState(true);
-  const url = 'http://192.168.0.181:8000/api/organism_detail/' + props.match.params.id
+  const url = config.API_ORGANISM_DETAIL + props.match.params.id
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,9 +77,6 @@ export default function Organism(props) {
       const result = await axios({ url });
 
       setState({ data: result.data });
-      console.log("result")
-      console.log(result)
-      console.log(props)
       setIsLoading(false);
     };
     fetchData();
@@ -93,85 +91,92 @@ export default function Organism(props) {
     return strains
   }
 
+  function transformElement(key) {
+    switch (key) {
+      case ('ftp_url'):
+        return (<Link href={state.data[key]} color="primary">{state.data[key]}</Link>)
+      case ('isolated'):
+        return (state.data[key] === true ? 'Yes' : 'No')
+    }
+    return state.data[key]
+
+  }
+
   return (
     <div>
       {isLoading ?
         (<Loader />) :
         (<ThemeProvider theme={theme}>
           <Grid container>
-            <Grid item xs={2}>
 
+            <Grid item xs={3}>
               <div className={classes.fixedList}>
-                <div className={classes.multilineDiv}><h1>{state.data.name}</h1></div>
-
+                <div style={{ marginLeft: '5%' }}><h1>{state.data.name}</h1></div>
                 <List>
-                  <Divider />
-                  <ListItem button component="a" href={props.location.pathname + '#identifiers'}>
-                    <ListItemText primary="General Info" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#identifiers'}>
+                    <ListItemText primary={t('detail.info')} />
                   </ListItem>
                   <Divider />
-                  <ListItem button component="a" href={props.location.pathname + '#gen_metadata'}>
-                    <ListItemText primary="Genome Metadata" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#gen_metadata'}>
+                    <ListItemText primary={t('detail.gen_metadata')} />
                   </ListItem>
                   <Divider />
-                  <ListItem button component="a" href={props.location.pathname + '#prot_metadata'}>
-                    <ListItemText primary="Proteome Metadata" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#prot_metadata'}>
+                    <ListItemText primary={t('detail.prot_metadata')} />
                   </ListItem>
                   <Divider light />
-                  <ListItem button component="a" href={props.location.pathname + '#growth'}>
-                    <ListItemText primary="Growth range" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#growth'}>
+                    <ListItemText primary={t('detail.growth')} />
                   </ListItem>
                   <Divider />
-                  <ListItem button component="a" href={props.location.pathname + '#taxonomy'}>
-                    <ListItemText primary="Taxonomy" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#taxonomy'}>
+                    <ListItemText primary={t('detail.taxonomy')} />
                   </ListItem>
                   <Divider />
-                  <ListItem button component="a" href={props.location.pathname + '#references'}>
-                    <ListItemText primary="References" />
+                  <ListItem className={classes.listItem} button component="a" href={props.location.pathname + '#references'}>
+                    <ListItemText primary={t('detail.references')} />
                   </ListItem>
-                  <Divider />
                 </List>
               </div>
             </Grid>
 
-            <Grid item xs={10}>
+            <Grid item xs={9} >
 
               <span id="identifiers"></span>
+              <div className={classes.tableTitle}><h1>General info</h1></div>
               <Table className={classes.table}>
-                <div><h1>General info</h1></div>
                 <TableBody>
                   <TableRow>
-                    <TableCell>
-                      {'name'}
+                    <TableCell className={classes.tableCell}>
+                      {t('table.name')}
                     </TableCell>
                     <TableCell>
                       {state.data.name}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>
-                      {'strains'}
+                    <TableCell className={classes.tableCell}>
+                      {t('table.strains')}
                     </TableCell>
                     <TableCell>
                       {concatStrains()}
                     </TableCell>
-
                   </TableRow>
                 </TableBody>
               </Table>
 
               <span id="gen_metadata"></span>
+              <div className={classes.tableTitle}><h1>Genome metadata</h1></div>
               <Table className={classes.table}>
-                <div><h1>Genome metadata</h1></div>
                 <TableBody >
                   {
                     genMetadata.map(tmpKey => (
                       <TableRow key={tmpKey}>
-                        <TableCell component="th" scope="row">
-                          {tmpKey}
+                        <TableCell className={classes.tableCell} component="th" scope="row">
+                          {t('table.' + tmpKey)}
                         </TableCell>
                         <TableCell>
-                          {String(state.data[tmpKey])}
+                          {transformElement(tmpKey)}
                         </TableCell>
                       </TableRow>
                     ))
@@ -180,17 +185,17 @@ export default function Organism(props) {
               </Table>
 
               <span id="prot_metadata"></span>
+              <div className={classes.tableTitle}><h1>Proteome metadata</h1></div>
               <Table className={classes.table}>
-                <div><h1>Proteome metadata</h1></div>
                 <TableBody >
                   {
                     protMetadata.map(tmpKey => (
                       <TableRow key={tmpKey}>
-                        <TableCell component="th" scope="row">
-                          {tmpKey}
+                        <TableCell className={classes.tableCell} component="th" scope="row">
+                          {t('table.' + tmpKey)}
                         </TableCell>
                         <TableCell>
-                          {String(state.data[tmpKey])}
+                          {state.data[tmpKey]}
                         </TableCell>
                       </TableRow>
                     ))
@@ -199,17 +204,17 @@ export default function Organism(props) {
               </Table>
 
               <span id="growth"></span>
+              <div className={classes.tableTitle}><h1>Growth range</h1></div>
               <Table className={classes.table}>
-                <div><h1>Growth range</h1></div>
                 <TableBody >
                   {
                     growth.map(tmpKey => (
                       <TableRow key={tmpKey}>
-                        <TableCell component="th" scope="row">
-                          {tmpKey}
+                        <TableCell className={classes.tableCell} component="th" scope="row">
+                          {t('table.' + tmpKey)}
                         </TableCell>
                         <TableCell>
-                          {String(state.data[tmpKey])}
+                          {state.data[tmpKey]}
                         </TableCell>
                       </TableRow>
                     ))
@@ -219,11 +224,11 @@ export default function Organism(props) {
                   {
                     growthDetail.map(tmpKey => (
                       <TableRow key={tmpKey}>
-                        <TableCell component="th" scope="row">
-                          {tmpKey}
+                        <TableCell className={classes.tableCell} component="th" scope="row">
+                          {t('table.' + tmpKey)}
                         </TableCell>
                         <TableCell>
-                          {String(state.data.growth_detail[tmpKey])}
+                          {state.data.growth_detail[tmpKey]}
                         </TableCell>
                       </TableRow>
                     ))
@@ -232,17 +237,17 @@ export default function Organism(props) {
               </Table>
 
               <span id="taxonomy"></span>
+              <div className={classes.tableTitle}><h1>Taxonomy</h1></div>
               <Table className={classes.table}>
-                <div><h1>Taxonomy</h1></div>
                 <TableBody >
                   {
                     taxInfo.map(tmpKey => (
                       <TableRow key={tmpKey}>
-                        <TableCell component="th" scope="row">
-                          {tmpKey}
+                        <TableCell className={classes.tableCell} component="th" scope="row">
+                          {t('table.' + tmpKey)}
                         </TableCell>
                         <TableCell>
-                          {String(state.data.taxonomy[0][tmpKey])}
+                          {state.data.taxonomy[0][tmpKey]}
                         </TableCell>
                       </TableRow>
                     ))
@@ -252,8 +257,9 @@ export default function Organism(props) {
 
 
               <span id="references"></span>
+              <div className={classes.tableTitle}><h1>References</h1></div>
+
               <Table className={classes.table}>
-                <div><h1>References</h1></div>
                 <TableBody >
                   {
                     state.data.references.map(value => (

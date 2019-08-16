@@ -10,6 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 import MediaQuery from 'react-responsive'
 
+import Footer from '../components/footer'
+
 // Themes
 import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesHome, stylesAppNav } from '../components/themes'
@@ -27,7 +29,7 @@ function AboutSection() {
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#', height: '50vh' }}>
 
-      <Container fixed>
+      <Container>
         <p align='center'>About</p>
         <p>Cras facilisis urna ornare ex volutpat, et
         convallis erat elementum. Ut aliquam, ipsum vitae
@@ -57,7 +59,7 @@ function FeaturesSection() {
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#', height: '50vh' }}>
 
-      <Container fixed>
+      <Container>
         <p align='center'>features</p>
         <p>Cras facilisis urna ornare ex volutpat, et
         convallis erat elementum. Ut aliquam, ipsum vitae
@@ -78,16 +80,6 @@ function FeaturesSection() {
       </Container>
 
     </div>
-  );
-}
-function Footer() {
-  const classes = useStylesHome();
-  return (
-    <footer className={classes.footer}>
-      <Container>
-        <Typography variant="body1">My sticky footer can be found here.</Typography>
-      </Container>
-    </footer>
   );
 }
 
@@ -162,7 +154,9 @@ export default function Home() {
       <AboutSection />
       <span id="features"></span>
       <FeaturesSection />
-      <Footer />
+      <div>
+        <Footer />
+      </div>
 
     </ThemeProvider>
   );

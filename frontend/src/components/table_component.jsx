@@ -5,10 +5,10 @@ import {
   Link
 } from 'react-router-dom';
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid, ButtonGroup
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid, 
 } from '@material-ui/core';
 import {
-  HelpOutline as HelpIcon, ZoomIn as ZoomIcon, ArrowDropDown as ArrowDropDownIcon
+  HelpOutline as HelpIcon, ZoomIn as ZoomIcon, RestoreOutlined,
 } from '@material-ui/icons';
 
 // Import React Table
@@ -27,11 +27,43 @@ import { Loader } from './loader'
 import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesTable } from './themes'
 
+// import config
+import { config } from "../config";
+
 const useStylesTable = stylesTable
 
 const colNames = [
   'name',
   'strains',
+
+  'domain',
+  'phylum',
+
+  'access_src',
+  'ftp_url',
+  'isolated',
+  'gen_size',
+  'gc_percentage',
+  'state',
+  'seq_date',
+  'gen_completeness',
+  'gen_contamination',
+
+  'annotation',
+  'n_orfs',
+
+  'temp_associated',
+  'temp_min',
+  'temp_max',
+  'ph_associated',
+  'ph_min',
+  'ph_max',
+
+];
+
+const headersCSV = [
+  'name',
+  'strains_str',
 
   'domain',
   'phylum',
@@ -210,17 +242,16 @@ function TableComponent() {
   });
 
   let reactTable = useRef(null);
-  let csvLink = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       const result = await axios(
-        'http://192.168.0.181:8000/api/organism/',
+        config.API_ORGANISMS,
       );
 
-      setState({ data: result.data });
-      setfilteredData({ data: result.data })
+      setState({ data: result.data});
+      setfilteredData({ data: result.data})
       setIsLoading(false);
     };
 
@@ -246,6 +277,13 @@ function TableComponent() {
     setfilteredData({ data: data })
   }
 
+  function procesedData(data){
+    for (var index = 0; index < data.length; ++index) {
+      data[index].strains_str = concatStrains(data[index].strains)
+    }
+    return data
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container
@@ -260,17 +298,16 @@ function TableComponent() {
         <Grid item xs={2} >
           
           <CSVLink
-            headers={colNames}
-            data={filteredData.data}
+            headers={headersCSV}
+            data={procesedData(filteredData.data)}
             separator={'\t'}
             filename={'filtered_data.csv'}
             onClick={() => {
-              getFilteredData(); // 👍🏻 Your click handling logic
+              getFilteredData();
             }}
           >
             <Button variant="outlined" color="primary" >Download me</Button>
-
-</CSVLink>
+          </CSVLink>
         </Grid>
       </Grid>
 

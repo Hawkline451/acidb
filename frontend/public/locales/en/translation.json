@@ -30,12 +30,23 @@
     "ph_associated":"pH associated",
     "ph_min":"pH min",
     "ph_max":"pH max",
+    "temp_confidence": "Temperature confidence",
+    "ph_confidence": "pH confidence",
+    "temp_src": "Temperature source",
+    "ph_src": "pH Source",
     "access_src":"Accession Source",
+    "ftp_url": "ftp url",
     "annotation":"Annotation",
+
+    "tax_src": "Taxonomy source",
+    "tax_id": "Taxonomy id",
     "strains": "Strains",
     "domain": "Domain",
     "phylum": "Phylum",
-    "ftp_url": "ftp url",
+    "tax_class": "Class",
+    "family": "Family",
+    "genus": "Genus",
+    "species": "Species", 
 
     "select_col": "Select Columns",
     "max_cols": "Max number of columns",
@@ -51,6 +62,15 @@
     "gen_metadata": "Genome Metadata",
     "growth_range": "Growth range",
     "proteome_metadata": "Proteome metadata"
+  },
+
+  "detail":{
+    "info": "General info",
+    "gen_metadata": "Genome metadata",
+    "prot_metadata": "Proteome metadata",
+    "growth": "Growth",
+    "taxonomy": "Taxonomy",
+    "references": "References"
   }
   
 }

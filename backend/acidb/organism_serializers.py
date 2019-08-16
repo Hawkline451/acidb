@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 
 class OrganismSerializer(serializers.HyperlinkedModelSerializer):
-    #organism_id = serializers.Field(source='organism.id')
+    # organism_id = serializers.Field(source='organism.id')
     class Meta:
         model = Organism
         fields = ['id_organism', 'name', 'isolated', 'state', 'seq_date', 'gen_size',
@@ -19,7 +19,6 @@ class StrainSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Strain
         fields = ['strain_name']
-
 
 class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
