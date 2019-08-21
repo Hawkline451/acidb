@@ -3,83 +3,21 @@ import {
   Link
 } from 'react-router-dom';
 import {
-  AppBar, InputBase, Typography, Toolbar, Paper, Input, Button, Popper, MenuList,
-  Tab, Tabs, ClickAwayListener, IconButton, Divider, MenuItem, Select,
+  AppBar, Typography, Toolbar, Paper, Button, Popper, MenuList,
+  Tab, Tabs, ClickAwayListener, MenuItem,
 } from '@material-ui/core';
-import {
-  Search as SearchIcon
-} from '@material-ui/icons';
+
+// Components
+import CustomSearchInput from './custom_search'
 
 // Themes
 import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesAppNav, stylesInput } from './themes'
+import { theme, stylesAppNav } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
 const useStylesNav = stylesAppNav
-const useStylesInput = stylesInput
-
-//Search Component
-function CustomSearchInput() {
-  const classes = useStylesInput();
-  const { t } = useTranslation();
-
-  const [values, setValues] = React.useState({
-    searchType: 'default',
-    searchQuery: null,
-  });
-
-  function handleChange(event) {
-    const tmpValue = event.target.value
-    const tmpName = event.target.name
-    setValues(oldValues => ({
-      ...oldValues,
-      [tmpName]: tmpValue,
-    }));
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    console.log(values)
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Paper className={classes.root}>
-        <Select
-          className={classes.select}
-          value={values.searchType}
-          onChange={handleChange}
-          input={<Input name='searchType' />}
-          displayEmpty
-          MenuProps={{
-            getContentAnchorEl: null,
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "left",
-            }
-          }}
-        >
-          <MenuItem value={'default'}>Default</MenuItem>
-          <MenuItem value={'asd1'}>ASD1</MenuItem>
-          <MenuItem value={'asd2'}>ASD2</MenuItem>
-        </Select>
-
-        <Divider className={classes.divider} />
-        <InputBase
-          className={classes.input}
-          placeholder={t('navbar.search')}
-          name='searchQuery'
-          onChange={handleChange}
-        />
-        <IconButton className={classes.iconButton} aria-label='Search' label='Submit' type='submit'>
-          <SearchIcon />
-        </IconButton>
-      </Paper>
-    </form>
-  );
-}
 
 // Tab Menu component
 function TabMenu(props) {
@@ -146,7 +84,6 @@ export default function NavBar() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className={classes.root}>
 
         <AppBar position='static'>
           <Toolbar>
@@ -171,7 +108,6 @@ export default function NavBar() {
           </Toolbar>
         </AppBar>
 
-      </div>
     </ThemeProvider>
   );
 }

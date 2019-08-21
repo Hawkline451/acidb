@@ -6,7 +6,7 @@ import {
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesDetail } from './themes'
+import { theme, stylesDetail } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -97,6 +97,8 @@ export default function Organism(props) {
         return (<Link href={state.data[key]} color="primary">{state.data[key]}</Link>)
       case ('isolated'):
         return (state.data[key] === true ? 'Yes' : 'No')
+      default:
+          // do nothing
     }
     return state.data[key]
 

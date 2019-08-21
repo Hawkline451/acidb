@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { verboseFilter } from "./utils";
+import { verboseFilter } from "./utils/table";
 import matchSorter from 'match-sorter'
 import {
   Link
@@ -8,7 +8,7 @@ import {
   Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid, 
 } from '@material-ui/core';
 import {
-  HelpOutline as HelpIcon, ZoomIn as ZoomIcon, RestoreOutlined,
+  HelpOutline as HelpIcon, ZoomIn as ZoomIcon,
 } from '@material-ui/icons';
 
 // Import React Table
@@ -25,7 +25,7 @@ import { Loader } from './loader'
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesTable } from './themes'
+import { theme, stylesTable } from './css/themes'
 
 // import config
 import { config } from "../config";
@@ -260,7 +260,7 @@ function TableComponent() {
   }, []);
 
   const [chipState, setChipState] = useState({
-    name: ['name', 'strain', 'domain', 'gen_size']
+    name: ['name', 'strains', 'domain', 'gen_size']
   });
 
   function concatStrains(arrayDicts) {

@@ -39,7 +39,7 @@ class Reference(models.Model):
     ref_text = models.CharField(max_length=1000, default=None, null=True, blank=True)
 
 
-# It's possible to have more than one taxonomy but the database only have the NCBI classification 
+# It's possible to have more than one taxonomy but the database only have the NCBI classification
 class Taxonomy(models.Model):
     organism = models.ForeignKey(Organism, on_delete=models.CASCADE, related_name='taxonomy')
     tax_src = models.CharField(max_length=20, default=None, null=True, blank=True)

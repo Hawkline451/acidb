@@ -14,7 +14,7 @@ import Footer from '../components/footer'
 
 // Themes
 import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesHome, stylesAppNav } from '../components/themes'
+import { theme, stylesHome, stylesAppNav } from '../components/css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ function AboutSection() {
 
 
   return (
-    <div className={classes.fixedDiv} style={{ backgroundColor: '#', height: '50vh' }}>
+    <div className={classes.fixedDiv} style={{ backgroundColor: '#' }}>
 
       <Container>
         <p align='center'>About</p>
@@ -57,7 +57,7 @@ function FeaturesSection() {
   const classes = useStylesHome();
 
   return (
-    <div className={classes.fixedDiv} style={{ backgroundColor: '#', height: '50vh' }}>
+    <div className={classes.fixedDiv} style={{ backgroundColor: '#' }}>
 
       <Container>
         <p align='center'>features</p>
@@ -102,7 +102,7 @@ export default function Home() {
   return (
     <ThemeProvider theme={theme}>
       <div>
-        <AppBar position='fixed' >
+        <AppBar position='static' >
           <Toolbar>
 
             <MediaQuery maxWidth={800}>
@@ -139,9 +139,9 @@ export default function Home() {
               </Button>
               <Box>
                 <Tabs value={false}>
-                  <Tab label={'Home'} className={classes.tabRoot}  href="#about"/>
-                  <Tab label={'Features'} className={classes.tabRoot} href="#features"/>
-                  <Tab label={'App'}  className={classes.tabRoot} href="/app" />
+                  <Tab label={'Home'} className={classes.tabRoot} href="#about" />
+                  <Tab label={'Features'} className={classes.tabRoot} href="#features" />
+                  <Tab label={'App'} className={classes.tabRoot} href="/app" />
                 </Tabs>
               </Box>
             </MediaQuery>
@@ -150,13 +150,14 @@ export default function Home() {
         </AppBar>
       </div>
 
-      <span id="about"></span>
-      <AboutSection />
-      <span id="features"></span>
-      <FeaturesSection />
       <div>
-        <Footer />
+        <span id="about"></span>
+        <AboutSection />
+        <span id="features"></span>
+        <FeaturesSection />
       </div>
+      <Footer />
+
 
     </ThemeProvider>
   );

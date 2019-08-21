@@ -20,6 +20,7 @@ class StrainSerializer(serializers.HyperlinkedModelSerializer):
         model = Strain
         fields = ['strain_name']
 
+
 class TaxonomySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Taxonomy
@@ -70,3 +71,18 @@ class DetailOrganismSerializer(serializers.HyperlinkedModelSerializer):
                   'temp_associated', 'temp_min', 'temp_max', 'ph_associated', 'ph_min',
                   'ph_max', 'access_src', 'access_id', 'biosample', 'bioproject', 'ftp_url',
                   'annotation', 'strains', 'taxonomy', 'references', 'growth_detail']
+
+
+class SearchSerializer(serializers.HyperlinkedModelSerializer):
+
+    organism_name = serializers.SerializerMethodField(read_only=True)
+    id_organism = serializers.SerializerMethodField(read_only=True)
+
+    def get_id_organism(self, obj):
+        return obj.organism.id_organism
+    def get_organism_name(self, obj):
+        return obj.organism.name
+
+    class Meta:
+        model = Strain
+        fields = ['id_organism', 'strain_name', 'organism_name']

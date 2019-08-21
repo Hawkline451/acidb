@@ -17,11 +17,12 @@ from django.contrib import admin
 
 from django.urls import include, path
 from rest_framework import routers
-from acidb.views import OrganismViewSet, OrganismDetailViewSet
+from acidb.views import OrganismViewSet, OrganismDetailViewSet, SearchViewSet
 
 apiurl = routers.SimpleRouter()
 apiurl.register(r'organism', OrganismViewSet, base_name='organism')
 apiurl.register(r'organism_detail', OrganismDetailViewSet, base_name='organism_detail')
+apiurl.register(r'search_list', SearchViewSet, base_name='search_list')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

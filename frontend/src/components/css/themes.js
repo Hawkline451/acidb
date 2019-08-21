@@ -37,16 +37,8 @@ export const theme = createMuiTheme({
 // Component Styles
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
-    paddingTop: 60,
-  },
-  footer: {
-    display: 'flex',
-    alignSelf: "flex-end",
-    textAlign: "center",
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.text.secondary 
-  },
-
+    paddingTop: 0,
+  }
 }));
 
 export const stylesInput = makeStyles({
@@ -58,7 +50,6 @@ export const stylesInput = makeStyles({
   },
   input: {
     marginLeft: 8,
-    width: '70%',
   },
   select: {
     width: '30%',
@@ -112,6 +103,19 @@ export const stylesAppNav = makeStyles(theme => ({
 
 }));
 
+export const stylesFooter = makeStyles(theme => ({
+  footer: {
+    textAlign: "center",
+    bottom: 0,
+    width: "100%",
+    position: 'absolute',
+    padding: 2,
+    background: theme.palette.primary.main,
+    color: theme.palette.text.secondary
+  },
+
+}));
+
 export const stylesTable = makeStyles({
   formControl: {
     margin: 20,
@@ -141,41 +145,41 @@ export const stylesTable = makeStyles({
     whiteSpace: 'normal',
     wordWrap: 'break-word'
   },
-  buttonGrid:{
+  buttonGrid: {
     width: '1%',
   }
 });
 
 export const stylesDetail = makeStyles({
 
-  fixedList:{
+  fixedList: {
     position: 'fixed',
     overflow: 'hidden',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
     maxWidth: '20%',
   },
-  table:{
+  table: {
     marginLeft: '15%',
     marginBottom: 50,
     width: '50%',
   },
-  tableTitle:{
+  tableTitle: {
     marginTop: 20,
     marginLeft: '15%',
     width: '50%',
   },
-  tableCell:{
+  tableCell: {
     width: '50%',
     backgroundColor: theme.palette.primary.main,
-    color:  theme.palette.text.secondary,
+    color: theme.palette.text.secondary,
   },
-  listItem:{
-    backgroundColor: theme.palette.primary.main,    
+  listItem: {
+    backgroundColor: theme.palette.primary.main,
     '&:hover': {
       backgroundColor: theme.palette.secondary.main,
-      color:  theme.palette.text.primary, 
+      color: theme.palette.text.primary,
     },
-    color:  theme.palette.text.secondary, 
+    color: theme.palette.text.secondary,
   }
 });

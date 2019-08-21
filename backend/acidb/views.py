@@ -5,8 +5,8 @@ from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
 
-from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer
-from acidb.models import Organism
+from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer, SearchSerializer
+from acidb.models import Organism, Strain
 
 
 
@@ -38,6 +38,17 @@ class OrganismDetailViewSet(mixins.RetrieveModelMixin,
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+class SearchViewSet(mixins.ListModelMixin,
+                            viewsets.GenericViewSet):
+    queryset = Strain.objects.select_related('organism').filter(organism__visibility=1)
+    serializer_class = SearchSerializer
+
+    # Return everything
+    @method_decorator(cache_page(60*60))
+    def list(self, request):
+        serializer = SearchSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
 # Check action decorator
