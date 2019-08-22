@@ -41,30 +41,28 @@ export const stylesHome = makeStyles(theme => ({
   }
 }));
 
+// Navbar search input
 export const stylesInput = makeStyles({
   root: {
-    padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    //borderRadius: 2,
+    borderRadius: 2,
+    padding: 2,
+    fontSize: 18
   },
   input: {
-    marginLeft: 8,
+    padding: 0,
+    height: 'auto'   
   },
   select: {
     width: '30%',
-    textAlign: 'center',
   },
-  iconButton: {
-    padding: 10,
-  },
-  divider: {
-    width: 1,
-    height: 28,
-    margin: 4,
+  selectSearch:{
+    width: '70%',
   },
 });
 
+// Tree
 export const stylesTree = makeStyles({
   container: {
     margin: 20
@@ -183,3 +181,13 @@ export const stylesDetail = makeStyles({
     color: theme.palette.text.secondary,
   }
 });
+
+
+// Styles select-react
+export const customSelectStyles = {
+  control: () => ({
+    borderStyle: 'none',
+    display: 'flex',
+
+  }),
+}
