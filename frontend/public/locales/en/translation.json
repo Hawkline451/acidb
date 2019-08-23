@@ -4,9 +4,12 @@
     "part1": "To get started, edit <1>src/App.js</1> and save to reload1111.",
     "part2": "Switch language between english and german using buttons above."
   },
+  "download_csv": "Download CSV",
+  "placeholder":{
+    "search": "Search ..."
+  },
   "navbar":{
     "title": "AciDB",
-    "search": "Search ...",
     "home" : "Home",
     "tools" : "Tools",
     "tree" : "Tree"
@@ -44,6 +47,7 @@
     "domain": "Domain",
     "phylum": "Phylum",
     "tax_class": "Class",
+    "order": "order",
     "family": "Family",
     "genus": "Genus",
     "species": "Species", 

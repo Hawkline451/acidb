@@ -117,7 +117,6 @@ export const stylesFooter = makeStyles(theme => ({
 export const stylesTable = makeStyles({
   formControl: {
     margin: 20,
-    minWidth: '10%',
     wrap: 'nowrap'
   },
   errorInput: {

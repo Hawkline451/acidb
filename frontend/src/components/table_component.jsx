@@ -5,22 +5,23 @@ import {
   Link
 } from 'react-router-dom';
 import {
-  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid, 
+  Chip, Select, FormControl, Input, InputLabel, MenuItem, TextField, Tooltip, Button, Grid,
 } from '@material-ui/core';
 import {
   HelpOutline as HelpIcon, ZoomIn as ZoomIcon,
 } from '@material-ui/icons';
 
+// npm
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-
 import axios from 'axios';
 import { CSVLink } from "react-csv";
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
+// Import components
 import { Loader } from './loader'
 
 // Styles
@@ -90,6 +91,13 @@ const headersCSV = [
 
 ];
 
+const headerIndex = {
+  0: "identifiers",
+  3: "tax_info",
+  5: "gen_metadata",
+  15: "growth_range",
+  13: "proteome_metadata"
+}
 
 /*
  * Sub components
@@ -114,18 +122,17 @@ function CustomFilterInput(props) {
       var matchRange = String(val).match(/(\d+\.?\d*-\d+\.?\d*)|(\*-\d+\.?\d*)|(\d+\.?\d*-\*)/)
       // If val dont match expression and is not empty
       if ((match == null || match[0] !== String(val)) && (matchRange == null || matchRange[0] !== String(val))) {
-        console.log("bad")
-        console.log(match)
+        //console.log("bad")
         setState({ error: true })
       }
 
       else {
-        console.log("good")
-        console.log(match)
+        //console.log("good")
         props.handler(val)
         setState({ error: false })
       }
     }
+    // If empty string dont show error
     else {
       setState({ error: false })
     }
@@ -203,21 +210,26 @@ function SelectColumns(props) {
         )}
         MenuProps={{
           getContentAnchorEl: null,
-          anchorOrigin: {
-            vertical: "bottom",
-            horizontal: "left",
-          }
+          anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
         }}
       >
         {
-          colNames.map(name => (
+          colNames.map((name, index) => (
             <MenuItem
               key={name}
               value={name}
             >
-              {t('table.' + name)}
-            </MenuItem>
+              <Grid
+                container
+                direction="column"
+              >
+                <Grid align="right" item style={{ fontSize: 14, color: '#808080'}}>
+                  {headerIndex[index] ? t('table.' + headerIndex[index]) : null}
+                </Grid>
+                <Grid item >{t('table.' + name)}</Grid>
+              </Grid>
 
+            </MenuItem>
           ))}
       </Select>
     </FormControl>
@@ -227,7 +239,6 @@ function SelectColumns(props) {
 /**
  * Main Component
  */
-
 function TableComponent() {
 
   const classes = useStylesTable();
@@ -250,8 +261,8 @@ function TableComponent() {
         config.API_ORGANISMS,
       );
 
-      setState({ data: result.data});
-      setfilteredData({ data: result.data})
+      setState({ data: result.data });
+      setfilteredData({ data: result.data })
       setIsLoading(false);
     };
 
@@ -277,7 +288,7 @@ function TableComponent() {
     setfilteredData({ data: data })
   }
 
-  function procesedData(data){
+  function procesedData(data) {
     for (var index = 0; index < data.length; ++index) {
       data[index].strains_str = concatStrains(data[index].strains)
     }
@@ -295,8 +306,8 @@ function TableComponent() {
         <Grid item xs={10}>
           <SelectColumns chipState={chipState} setChipState={setChipState} />
         </Grid>
-        <Grid item xs={2} >
-          
+        <Grid item xs={2} align='right'>
+
           <CSVLink
             headers={headersCSV}
             data={procesedData(filteredData.data)}
@@ -306,7 +317,7 @@ function TableComponent() {
               getFilteredData();
             }}
           >
-            <Button variant="outlined" color="primary" >Download me</Button>
+            <Button className={classes.formControl} variant="outlined" color="primary" >{t('download_csv')}</Button>
           </CSVLink>
         </Grid>
       </Grid>
@@ -458,7 +469,7 @@ function TableComponent() {
                       },
                       Cell: ({ value, row }) =>
                         <div className={classes.verticalAlign}>
-                          <a href={value}>{row.access_id}</a>
+                          <a target="_blank" rel="noopener noreferrer" href={value}>{row.access_id}</a>
                         </div>,
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['access_id'] }),

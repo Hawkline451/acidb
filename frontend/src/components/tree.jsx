@@ -1,15 +1,14 @@
 import React, { useState, useCallback } from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Switch from "@material-ui/core/Switch";
+
 import { createMuiTheme } from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
 import pink from "@material-ui/core/colors/pink";
 
 
 
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
+import {
+  DialogTitle, Button, Grid, Dialog, CssBaseline
+} from '@material-ui/core';
 
 
 
@@ -29,6 +28,8 @@ import Tree from "material-ui-tree";
 import getNodeDataByPath from "material-ui-tree/lib/util";
 import { Typography } from "@material-ui/core";
 
+import "./css/override.css";
+
 
 //
 //  Delete super
@@ -42,20 +43,25 @@ const theme = createMuiTheme({
       dark: "#c60055",
       contrastText: "#fff"
     }
+  },
+  root:{
+    MuiButtonBase: {height: 300}
   }
+
 });
 
 const useStyles = makeStyles({
   container: {
-    margin: 20
+    margin: 20,
+    minWidth: '50%'
   },
   icon: {
     fontSize: 20
   },
   node: {
     display: "flex",
-    alignContent: "center"
-  }
+    alignContent: "center",
+  },
 });
 
 // Little hack, dont show fold/unfold icon
@@ -65,11 +71,9 @@ function EmptyComponent() {
   )
 }
 
-
 export default function TestComponent() {
   const classes = useStyles();
   const [state, setState] = useState({
-    alignRight: true,
     data: {
       path: "material-ui-tree",
       type: "tree",
@@ -113,13 +117,13 @@ export default function TestComponent() {
           iconComp = <InsertDriveFileIcon />;
         }
       }
-      return (
+      return (        
         iconComp && (
           <Typography variant={variant} className={classes.node}>
             {React.cloneElement(iconComp, { className: classes.icon })}
             {path}
           </Typography>
-        )
+        )        
       );
     },
     [classes]
@@ -176,63 +180,64 @@ export default function TestComponent() {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Switch
-        checked={state.alignRight}
-        onChange={() => setState({ ...state, alignRight: !state.alignRight })}
-      />
-      Tree Action Buttons Align Right
-      <Tree
-        className={classes.container}
-        title="Material UI Tree"
-        data={state.data}
-        labelKey="path"
-        valueKey="sha"
-        childrenKey="tree"
-        foldIcon={<EmptyComponent />}
-        unfoldIcon={<EmptyComponent />}
-        loadMoreIcon={<MoreHorizIcon />}
-        renderLabel={renderLabel}
-        renderLoadMoreText={(page, pageSize, total) =>
-          `Loaded: ${(page + 1) *
-          pageSize} / Total: ${total}. Click here to load more...`
-        }
-        pageSize={10}
-        actionsAlignRight={state.alignRight}
-        getActionsData={getActionsData}
-        requestChildrenData={requestChildrenData}
-      />
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
 
-      <SimpleDialog value={modalState.value} open={modalState.open} onClose={handleClose} />
+        <Tree
+          className={classes.container}
+          title="Material UI Tree"
+          data={state.data}
+          labelKey="path"
+          valueKey="sha"
+          childrenKey="tree"
+          foldIcon={<EmptyComponent />}
+          unfoldIcon={<EmptyComponent />}
+          loadMoreIcon={<MoreHorizIcon />}
+          renderLabel={renderLabel}
+          renderLoadMoreText={(page, pageSize, total) =>
+            `Loaded: ${(page + 1) *
+            pageSize} / Total: ${total}. Click here to load more...`
+          }
+          pageSize={10}
+          actionsAlignRight={true}
+          getActionsData={getActionsData}
+          requestChildrenData={requestChildrenData}
+        />
+        <SimpleDialog value={modalState.value} open={modalState.open} onClose={handleClose} />
+      </Grid>
     </ThemeProvider>
-  );
-};
-
-
-
+      );
+    };
+    
+    
+    
 function SimpleDialog(props) {
-  const { value, open, onClose } = props;
-
-  return (
+  const {value, open, onClose } = props;
+    
+      return (
     <Dialog onClose={onClose} open={open}>
-      <DialogTitle >Detail Modal {value}</DialogTitle>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+        <DialogTitle >Detail Modal {value}</DialogTitle>
+        <Typography gutterBottom>
+          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+          in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
           </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
+        <Typography gutterBottom>
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+          lacus vel augue laoreet rutrum faucibus dolor auctor.
           </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
+        <Typography gutterBottom>
+          Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
+          scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
+          auctor fringilla.
           </Typography>
 
-          <Button onClick={onClose} color="primary">
-            Close
+        <Button onClick={onClose} color="primary">
+          Close
           </Button>
-    </Dialog>
-  );
+      </Dialog>
+      );
 }

@@ -1,11 +1,13 @@
 import React from 'react';
 import {
-  Link
-} from 'react-router-dom';
-import {
   AppBar, Typography, Toolbar, Paper, Button, Popper, MenuList,
   Tab, Tabs, ClickAwayListener, MenuItem,
 } from '@material-ui/core';
+
+// npm
+import {
+  Link
+} from 'react-router-dom';
 
 // Components
 import CustomSearchInput from './custom_search'
@@ -31,8 +33,8 @@ function TabMenu(props) {
   function handleClick(event) {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   }
-  
-  function handleItemClick(event, newVal) {
+
+  function handleItemClick(event) {
     setAnchorEl(null)
     props.onChange(event, props.value)
     console.log(props)
@@ -53,7 +55,7 @@ function TabMenu(props) {
             <MenuItem onClick={handleItemClick} component={Link} to='/app/tools'>
               Tool 1
             </MenuItem>
-            <MenuItem onClick={handleItemClick}  component={Link} to='/app/tools_table'>
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_table'>
               Tool 2
             </MenuItem>
           </MenuList>
@@ -76,7 +78,7 @@ export default function NavBar() {
       underline: newVal
     });
   }
-  function cleanState(event) {
+  function cleanState() {
     setTabState({
       underline: false,
     });
@@ -85,28 +87,28 @@ export default function NavBar() {
   return (
     <ThemeProvider theme={theme}>
 
-        <AppBar position='static'>
-          <Toolbar>
-            <Button
-              className={classes.homeButton}
-              onClick={cleanState}
-              component={Link} to='/app'>
-              <Typography variant='h5' color='textSecondary' noWrap>
-                {t('navbar.title')}
-              </Typography>
-            </Button>
+      <AppBar position='static'>
+        <Toolbar>
+          <Button
+            className={classes.homeButton}
+            onClick={cleanState}
+            component={Link} to='/app'>
+            <Typography variant='h5' color='textSecondary' noWrap>
+              {t('navbar.title')}
+            </Typography>
+          </Button>
 
-            <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
-              <Tab label={t('navbar.tree')} component={Link} to='/app/tree' className={classes.tabRoot} />
-              <Tab label={t('navbar.tools')} component={Link} to='/app/tools' className={classes.tabRoot} />
-              <TabMenu />
-            </Tabs>
+          <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
+            <Tab label={t('navbar.tree')} component={Link} to='/app/tree' className={classes.tabRoot} />
+            <Tab label={t('navbar.tools')} component={Link} to='/app/tools' className={classes.tabRoot} />
+            <TabMenu />
+          </Tabs>
 
-            <div className={classes.search}>
-              <CustomSearchInput />
-            </div>
-          </Toolbar>
-        </AppBar>
+          <div className={classes.search}>
+            <CustomSearchInput cleanTabs={cleanState}/>
+          </div>
+        </Toolbar>
+      </AppBar>
 
     </ThemeProvider>
   );

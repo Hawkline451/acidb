@@ -1,8 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import {makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
@@ -60,28 +58,6 @@ const useStyles = makeStyles(theme => ({
 
 function inputComponent({ inputRef, ...props }) {
   return <div {...props} />;
-}
-
-function Control(props) {
-  const {
-    children,
-    innerProps,
-    selectProps: { classes },
-  } = props;
-
-  return (
-    <TextField
-      fullWidth
-      InputProps={{
-        inputComponent,
-        inputProps: {
-          className: classes.input,
-          children,
-          ...innerProps,
-        },
-      }}
-    />
-  );
 }
 
 

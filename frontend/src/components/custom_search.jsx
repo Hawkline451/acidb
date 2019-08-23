@@ -1,22 +1,20 @@
 import React, { useState, useEffect, Fragment } from "react";
-
-import Select, { createFilter } from "react-select";
-
-
-
 import {
-  InputBase, Paper, Input,
-  IconButton, Grid, MenuItem, TextField,
+  Paper, IconButton, Grid, MenuItem, TextField,
 } from '@material-ui/core';
 import {
   Search as SearchIcon
 } from '@material-ui/icons';
 
+// npm
+import {
+  Link
+} from 'react-router-dom';
+import Select from "react-select";
 import axios from 'axios';
 
 // import config
 import { config } from "../config";
-import IntegrationReactSelect from "./test"
 
 // Styles
 import { stylesInput, customSelectStyles } from './css/themes'
@@ -24,63 +22,14 @@ import { stylesInput, customSelectStyles } from './css/themes'
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
-// Import utils functions
-import { getSuggestionValue, renderSugggestion } from "./utils/search";
-import { functionTypeAnnotation } from "@babel/types";
-
-
 const useStylesInput = stylesInput
-
-
-const suggestions = [
-  { label: 'Afghanistan' },
-  { label: 'Aland Islands' },
-  { label: 'Albania' },
-  { label: 'Algeria' },
-  { label: 'American Samoa' },
-  { label: 'Andorra' },
-  { label: 'Angola' },
-  { label: 'Anguilla' },
-  { label: 'Antarctica' },
-  { label: 'Antigua and Barbuda' },
-  { label: 'Argentina' },
-  { label: 'Armenia' },
-  { label: 'Aruba' },
-  { label: 'Australia' },
-  { label: 'Austria' },
-  { label: 'Azerbaijan' },
-  { label: 'Bahamas' },
-  { label: 'Bahrain' },
-  { label: 'Bangladesh' },
-  { label: 'Barbados' },
-  { label: 'Belarus' },
-  { label: 'Belgium' },
-  { label: 'Belize' },
-  { label: 'Benin' },
-  { label: 'Bermuda' },
-  { label: 'Bhutan' },
-  { label: 'Bolivia, Plurinational State of' },
-  { label: 'Bonaire, Sint Eustatius and SabaBABABABA' },
-  { label: 'Bosnia and Herzegovina' },
-  { label: 'Botswana' },
-  { label: 'Bouvet Island' },
-  { label: 'Brazil' },
-  { label: 'British Indian Ocean Territory' },
-  { label: 'Brunei Darussalam' },
-].map(suggestion => ({
-  value: suggestion.label + ' v',
-  label2: suggestion.label + ' l',
-}));
-
 const searchTypes = [
   { value: 'name', label: 'Name' },
   { value: 'strain', label: 'Strain' },
 ]
 
-
-
 //Search Component
-export default function CustomSearchInput() {
+export default function CustomSearchInput(navProps) {
   const classes = useStylesInput();
   const { t } = useTranslation();
 
@@ -122,12 +71,9 @@ export default function CustomSearchInput() {
   }
 
   function handleSubmit(event) {
-    event.preventDefault()
-    console.log(searchValue)
-
-
+    //event.preventDefault()
+    navProps.cleanTabs()
   }
-
 
   function Option(props) {
     return (
@@ -172,7 +118,7 @@ export default function CustomSearchInput() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Paper className={classes.root}>
         <Select
           className={classes.select}
@@ -192,7 +138,7 @@ export default function CustomSearchInput() {
           className={classes.selectSearch}
           styles={customSelectStyles}
           components={components}
-          placeholder="Search..."
+          placeholder={t('placeholder.search')}
           input={<TextField name='searchQuery' />}
           onChange={handleChangeQuery}
           getOptionLabel={searchValue.searchType === 'name' ? (options => options.organism_name) : (options => options.strain_name)}
@@ -200,7 +146,7 @@ export default function CustomSearchInput() {
           options={searchValue.searchData}
         />
 
-        <IconButton aria-label='Search' label='Submit' type='submit'>
+        <IconButton aria-label='Search' label='Submit' type='submit' onClick={handleSubmit} component={Link} to={'/app/organism/' + searchValue.searchQuery}>
           <SearchIcon />
         </IconButton>
       </Paper>

@@ -11,12 +11,15 @@ import { theme, stylesDetail } from './css/themes'
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
+// npm
 import axios from 'axios';
-
 import { Loader } from './loader'
 
 // import config
 import { config } from "../config";
+
+// components
+import NotFoundPage from '../pages/404';
 
 const useStylesDetail = stylesDetail
 
@@ -69,15 +72,24 @@ export default function Organism(props) {
     data: [],
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   const url = config.API_ORGANISM_DETAIL + props.match.params.id
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const result = await axios({ url });
+      try {
+        const result = await axios({ url });
+        setState({ data: result.data });
+        setIsLoading(false);
 
-      setState({ data: result.data });
-      setIsLoading(false);
+      }
+      catch (err) {
+        setError(true)
+        setIsLoading(false);
+      }
+
     };
     fetchData();
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
@@ -98,7 +110,7 @@ export default function Organism(props) {
       case ('isolated'):
         return (state.data[key] === true ? 'Yes' : 'No')
       default:
-          // do nothing
+      // do nothing
     }
     return state.data[key]
 
@@ -106,11 +118,11 @@ export default function Organism(props) {
 
   return (
     <div>
-      {isLoading ?
-        (<Loader />) :
+      {isLoading && !error ? (<Loader />) :        
+        error ? (<NotFoundPage />) :
+
         (<ThemeProvider theme={theme}>
           <Grid container>
-
             <Grid item xs={3}>
               <div className={classes.fixedList}>
                 <div style={{ marginLeft: '5%' }}><h1>{state.data.name}</h1></div>
@@ -265,7 +277,7 @@ export default function Organism(props) {
                 <TableBody >
                   {
                     state.data.references.map(value => (
-                      <TableRow key={'ref_' + value.index}>
+                      <TableRow key={'ref_' + value.ref_text.slice(0,5)}>
                         <TableCell component="th" scope="row">
                           {value.ref_text}
                         </TableCell>
