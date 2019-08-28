@@ -86,3 +86,39 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Strain
         fields = ['id_organism', 'strain_name', 'organism_name']
+
+class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
+    category = serializers.SerializerMethodField(read_only=True)
+    type = serializers.SerializerMethodField(read_only=True)
+    node = serializers.SerializerMethodField(read_only=True)
+    current = serializers.SerializerMethodField(read_only=True)
+    url = serializers.SerializerMethodField(read_only=True)
+
+    def get_category(self, obj):
+        taxonomy = ['domain', 'phylum', 'tax_class',
+            'order', 'family', 'genus', 'species']
+        print("asdasdasdasdasd")
+        print(self.context)
+        idx = len(self.context['view'].kwargs)
+        result = taxonomy[idx] if idx < len(taxonomy) else None
+        return result
+
+    def get_type(self, obj):
+        idx = len(self.context['view'].kwargs)
+        result = 'tree' if idx < 7 else 'leaf'
+        return result
+
+    def get_node(self, obj):
+        return obj[0]
+
+    def get_current(self, obj):
+        return self.context['request'].path
+
+    def get_url(self, obj):
+        idx = len(self.context['view'].kwargs)
+        result = self.context['request'].path + str(obj[0]) if idx < 7 else None
+        return result
+
+    class Meta:
+        model = Taxonomy
+        fields = ['category', 'type', 'node', 'current', 'url']
