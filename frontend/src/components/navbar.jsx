@@ -37,7 +37,6 @@ function TabMenu(props) {
   function handleItemClick(event) {
     setAnchorEl(null)
     props.onChange(event, props.value)
-    console.log(props)
   }
   // Hide menu when clicking outside te menu items
   function handleClickAway() {

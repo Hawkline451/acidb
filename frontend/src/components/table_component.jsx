@@ -15,6 +15,7 @@ import {
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
+import "./css/override.css"
 import axios from 'axios';
 import { CSVLink } from "react-csv";
 
@@ -41,7 +42,7 @@ const colNames = [
   'phylum',
 
   'access_src',
-  'ftp_url',
+  'access_id',
   'isolated',
   'gen_size',
   'gc_percentage',
@@ -70,6 +71,7 @@ const headersCSV = [
   'phylum',
 
   'access_src',
+  'access_id',
   'ftp_url',
   'isolated',
   'gen_size',
@@ -93,8 +95,8 @@ const headersCSV = [
 
 const headerIndex = {
   0: "identifiers",
-  3: "tax_info",
-  5: "gen_metadata",
+  2: "tax_info",
+  4: "gen_metadata",
   15: "growth_range",
   13: "proteome_metadata"
 }
@@ -147,6 +149,11 @@ function CustomFilterInput(props) {
           onChange={event => handlerWarapper(event.target.value)}
           error={state.error}
           className={classes.specialTextInput}
+          InputLabelProps={{
+            style: {
+              color: '#808080'
+            }
+          }}
         />
       </Grid>
       <Grid item xs={1}>
@@ -164,9 +171,13 @@ function FilterInput(props) {
   var label = t('table.filter')
   return (
     <Grid container>
-      <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}></TextField>
+      <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}
+        InputLabelProps={{
+          style: {
+            color: '#808080'
+          }
+        }}></TextField>
     </Grid>
-
   )
 }
 
@@ -223,7 +234,7 @@ function SelectColumns(props) {
                 container
                 direction="column"
               >
-                <Grid align="right" item style={{ fontSize: 14, color: '#808080'}}>
+                <Grid align="right" item style={{ fontSize: 14, color: '#808080' }}>
                   {headerIndex[index] ? t('table.' + headerIndex[index]) : null}
                 </Grid>
                 <Grid item >{t('table.' + name)}</Grid>
@@ -271,7 +282,7 @@ function TableComponent() {
   }, []);
 
   const [chipState, setChipState] = useState({
-    name: ['name', 'strains', 'domain', 'gen_size']
+    name: ['name', 'strains', 'ph_associated', 'temp_associated']
   });
 
   function concatStrains(arrayDicts) {
@@ -309,6 +320,7 @@ function TableComponent() {
         <Grid item xs={2} align='right'>
 
           <CSVLink
+            className={classes.noDecoratorLink}
             headers={headersCSV}
             data={procesedData(filteredData.data)}
             separator={'\t'}
@@ -317,7 +329,7 @@ function TableComponent() {
               getFilteredData();
             }}
           >
-            <Button className={classes.formControl} variant="outlined" color="primary" >{t('download_csv')}</Button>
+            <Button className={classes.formControl} variant="outlined" color="primary">{t('download_csv')}</Button>
           </CSVLink>
         </Grid>
       </Grid>
@@ -356,11 +368,13 @@ function TableComponent() {
                             <Button
                               component={Link} to={'/app/organism/' + row.id_organism}
                               //onClick={() => openModal(row)}
-                              style={{ marginRight: '5%' }}>
+                              style={{ marginRight: '5%', textTransform: 'none' }}>
                               <ZoomIcon />
                             </Button>
                           </Tooltip>
-                          {value}
+                          <Link to={'/app/organism/' + row.id_organism} className={classes.noDecoratorLink}>
+                            {value}
+                          </Link>
                         </div>,
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['name'] }),
@@ -460,8 +474,8 @@ function TableComponent() {
                       accessor: 'access_id',
                     },
                     {
-                      show: true ? chipState.name.includes('ftp_url') : false,
-                      Header: t('table.ftp_url'),
+                      show: true ? chipState.name.includes('access_id') : false,
+                      Header: t('table.access_id'),
                       accessor: 'ftp_url',
                       sortMethod: (a, b, ascending) => {
                         if (!ascending) { return (b != null) - (a != null) || (a > b ? 1 : -1); }

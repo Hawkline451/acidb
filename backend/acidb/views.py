@@ -1,5 +1,6 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.db.models import Count
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -71,8 +72,8 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         data = Taxonomy.objects.filter(organism__visibility=1)
         last_category = None
         for category in self.kwargs:
-            if self.kwargs[category] == 'None':
-                continue
+            if self.kwargs[category] == 'unclassified':
+                self.kwargs[category] = None
             data = data.filter(**{category: self.kwargs[category]})
             last_category = category
 
@@ -80,13 +81,13 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             last_category) + 1
 
         if len(self.kwargs) < len(taxonomy):
-            return data.values_list(taxonomy[next_category_idx]).distinct()
+            return data.values_list(taxonomy[next_category_idx]).annotate(total=Count('id'))
         else:
-            return data.values_list('id').distinct()
+            return data.values_list('organism_id').distinct()
 
     # Return everything
-    @method_decorator(cache_page(60*60))
-    def retrieve(self, request, *args, **kwargs):
+    # @method_decorator(cache_page(60*60))
+    def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
         page = self.paginate_queryset(queryset)
@@ -95,7 +96,8 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        result = {'tree':serializer.data}
+        return Response(result)
 
 
 # Check action decorator

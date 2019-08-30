@@ -52,12 +52,12 @@ export const stylesInput = makeStyles({
   },
   input: {
     padding: 0,
-    height: 'auto'   
+    height: 'auto'
   },
-  select: {
+  selectTypeSearch: {
     width: '30%',
   },
-  selectSearch:{
+  selectOrganismSearch: {
     width: '70%',
   },
 });
@@ -144,6 +144,9 @@ export const stylesTable = makeStyles({
   },
   buttonGrid: {
     width: '1%',
+  },
+  noDecoratorLink: {
+    textDecoration: 'none',
   }
 });
 

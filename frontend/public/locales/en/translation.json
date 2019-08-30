@@ -37,7 +37,8 @@
     "ph_confidence": "pH confidence",
     "temp_src": "Temperature source",
     "ph_src": "pH Source",
-    "access_src":"Accession Source",
+    "access_src": "Accession Source",
+    "access_id": "Accession id",
     "ftp_url": "ftp url",
     "annotation":"Annotation",
 

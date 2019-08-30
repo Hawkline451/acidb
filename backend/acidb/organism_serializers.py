@@ -89,6 +89,7 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
 
 class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
     category = serializers.SerializerMethodField(read_only=True)
+    total = serializers.SerializerMethodField(read_only=True)
     type = serializers.SerializerMethodField(read_only=True)
     node = serializers.SerializerMethodField(read_only=True)
     current = serializers.SerializerMethodField(read_only=True)
@@ -97,10 +98,15 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
     def get_category(self, obj):
         taxonomy = ['domain', 'phylum', 'tax_class',
             'order', 'family', 'genus', 'species']
-        print("asdasdasdasdasd")
-        print(self.context)
         idx = len(self.context['view'].kwargs)
         result = taxonomy[idx] if idx < len(taxonomy) else None
+        return result
+    
+    def get_total(self, obj):
+        try:
+            result = obj[1]
+        except:
+            result = None
         return result
 
     def get_type(self, obj):
@@ -116,9 +122,10 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_url(self, obj):
         idx = len(self.context['view'].kwargs)
-        result = self.context['request'].path + str(obj[0]) if idx < 7 else None
+        url = str(obj[0]) if obj[0] is not None else 'unclassified'
+        result = self.context['request'].path + url if idx < 7 else None
         return result
 
     class Meta:
         model = Taxonomy
-        fields = ['category', 'type', 'node', 'current', 'url']
+        fields = ['category', 'total', 'type', 'node', 'current', 'url']

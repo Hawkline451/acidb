@@ -121,21 +121,20 @@ export default function CustomSearchInput(navProps) {
     <form>
       <Paper className={classes.root}>
         <Select
-          className={classes.select}
+          className={classes.selectTypeSearch}
           styles={customSelectStyles}
           input={<TextField name='searchType' />}
           onChange={handleChangeType}
           value={searchTypes.filter(({ value }) => value === searchValue.searchType)}
           options={searchTypes}
         />
-
         <Select
           filterOption={({ label }, query) => customFilter(label, query)}
           
           onInputChange={() => { i = 0 }}
           ignoreAccents={false}
           ignoreCase={true}
-          className={classes.selectSearch}
+          className={classes.selectOrganismSearch}
           styles={customSelectStyles}
           components={components}
           placeholder={t('placeholder.search')}

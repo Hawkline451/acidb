@@ -7,29 +7,23 @@ import pink from "@material-ui/core/colors/pink";
 
 
 import {
-  DialogTitle, Button, Grid, Dialog, CssBaseline
+  DialogTitle, Button, Grid, Dialog, Typography, Fab
 } from '@material-ui/core';
 
+import {
+  MoreHoriz as MoreHorizIcon, FolderOpen as FolderOpenIcon, Folder as FolderIcon,
+  Description as DescriptionIcon, ZoomIn as ExpandIcon
+} from '@material-ui/icons';
 
 
-
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import FolderOpenIcon from "@material-ui/icons/FolderOpen";
-import FolderIcon from "@material-ui/icons/Folder";
-import SettingsIcon from "@material-ui/icons/Settings";
-import DescriptionIcon from "@material-ui/icons/Description";
-import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
-import ExpandIcon from "@material-ui/icons/ZoomIn";
 
 import { makeStyles, ThemeProvider } from "@material-ui/styles";
 
-import superagent from "superagent";
+// Internationalization
+import { useTranslation } from 'react-i18next';import axios from 'axios';
+
 import Tree from "material-ui-tree";
 import getNodeDataByPath from "material-ui-tree/lib/util";
-import { Typography } from "@material-ui/core";
-
-import "./css/override.css";
-
 
 //
 //  Delete super
@@ -44,10 +38,14 @@ const theme = createMuiTheme({
       contrastText: "#fff"
     }
   },
-  root:{
-    MuiButtonBase: {height: 300}
-  }
+  overrides: {
+    MuiListItem: {
+      button: {
+        height: 'auto !important'
+      },
 
+    },
+  }
 });
 
 const useStyles = makeStyles({
@@ -56,13 +54,27 @@ const useStyles = makeStyles({
     minWidth: '50%'
   },
   icon: {
-    fontSize: 20
+    fontSize: 26,
+    paddingRight: 10
+
   },
   node: {
     display: "flex",
     alignContent: "center",
+    fontSize: 20
   },
 });
+
+
+const taxInfoColors = {
+  'domain': '',
+  'phylum': '#B8E8A0',
+  'tax_class': '#FFEBBD',
+  'order': '#EBB4B2',
+  'family': '#EBB4B2',
+  'genus': '#B0F6FF',
+  'species': '#E1E2E8',
+};
 
 // Little hack, dont show fold/unfold icon
 function EmptyComponent() {
@@ -72,14 +84,16 @@ function EmptyComponent() {
 }
 
 export default function TestComponent() {
+  const { t } = useTranslation();
+
   const classes = useStyles();
   const [state, setState] = useState({
     data: {
-      path: "material-ui-tree",
+      node: "Taxonomy",
       type: "tree",
-      sha: "b3d36479a033ed6296c34fdf689d5cdbcf7a0136",
+      total: null,
       url:
-        "https://api.github.com/repos/shallinta/material-ui-tree/git/trees/next"
+        "/api/taxonomy/"
     }
   });
 
@@ -100,40 +114,56 @@ export default function TestComponent() {
 
   const renderLabel = useCallback(
     (data, unfoldStatus) => {
-      const { path, type } = data;
-      //console.log(data);
+      const { node, type, total } = data;
       let variant = "body1";
       let iconComp = null;
       if (type === "tree") {
         iconComp = unfoldStatus ? <FolderOpenIcon /> : <FolderIcon />;
       }
-      if (type === "blob") {
+      else {
         variant = "body2";
-        if (path.startsWith(".") || path.includes("config")) {
-          iconComp = <SettingsIcon />;
-        } else if (path.endsWith(".js")) {
-          iconComp = <DescriptionIcon />;
-        } else {
-          iconComp = <InsertDriveFileIcon />;
-        }
+        iconComp = <DescriptionIcon />;
+
       }
-      return (        
+      let nodeName = node != null ? String(node) : 'unclassified'
+      return (
         iconComp && (
-          <Typography variant={variant} className={classes.node}>
-            {React.cloneElement(iconComp, { className: classes.icon })}
-            {path}
-          </Typography>
-        )        
+          <Grid container
+            spacing={0}
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <Grid item xs={8}>
+              <Typography variant={variant} className={classes.node}>
+                {React.cloneElement(iconComp, { className: classes.icon })}
+                {total != null ? nodeName.concat(" [", String(total), "]") : nodeName}
+              </Typography>
+            </Grid>
+            <Grid item xs={4} align='right'>
+              {data.category ?
+                (<Fab variant="extended" size='small' disableFocusRipple={true} disableRipple={true} 
+                  style = {{textTransform: 'none', boxShadow:'none', backgroundColor:taxInfoColors[String(data.category)]}} aria-label="tax_category">
+                  {t('table.'+data.category)}
+                  
+                </Fab>)
+                :
+                <div></div>
+              }
+            </Grid>
+
+          </Grid>
+        )
       );
     },
-    [classes]
+    [classes, t]
   );
 
   const getActionsData = useCallback(
     (data) => {
       const { type } = data;
       if (type === "tree") {
-        return null;
+        return null
       }
       else {
         return [
@@ -141,8 +171,7 @@ export default function TestComponent() {
             icon: <ExpandIcon color="secondary" className={classes.icon} />,
             hint: "View organism detail",
             onClick: () => {
-              console.log(data.path);
-              setModal(data.path)
+              setModal(data.node)
             }
           }
         ];
@@ -151,31 +180,78 @@ export default function TestComponent() {
     [classes]
   );
 
-  const requestChildrenData = useCallback(
-    (data, path, toggleFoldStatus) => {
-      const { url, type } = data;
-      console.log("Children");
-      console.log(url);
-      if (type === "tree") {
-        superagent.get(url).then(({ body: res }) => {
-          if (res && res.tree) {
-            const treeData = Object.assign({}, state.data);
-            getNodeDataByPath(treeData, path, "tree").tree = res.tree;
-            console.log(res.tree);
-            setState({
-              ...state,
-              data: treeData
-            });
-            toggleFoldStatus();
-          } else {
-            toggleFoldStatus();
+
+  function axiosFetch(data) {
+    return axios.get("http://127.0.0.1:8000" + data.url).then(response => {
+      // returning the data here allows the caller to get it through another .then(...)
+      return response
+    })
+  }
+
+
+  // Recursive fetch unclassified nodes, we only want the leaves of this kind of nodes
+  const fetchData = useCallback( async (node, data) => {
+
+    const res = await axiosFetch(data);
+
+    if (res.data && res.data.tree) {
+      const treeData = state.data
+      let childTree = res.data.tree
+
+      // Truncate nodes if taxnomy it s unclasified
+      while (data.node == null) {
+        let tmpChildTree = []
+        for (var i = 0; i < childTree.length; i++) {
+          if (childTree[i].node === null) {
+            let child = await axiosFetch(childTree[i]);
+            tmpChildTree = tmpChildTree.concat(child.data.tree)
           }
-        });
-      } else {
-        toggleFoldStatus();
+          else {
+            tmpChildTree = tmpChildTree.concat(childTree[i])
+          }
+        }
+        childTree = tmpChildTree
+        data = tmpChildTree[0]
       }
+
+      // if category is genux check if species are unclassified
+      /*
+      if (data.category === 'genus') {
+        let tmpChildTree = []
+
+        for (var j = 0; j < childTree.length; j++) {
+          if (childTree[j].node === null) {
+            let child = await axiosFetch(childTree[j]);
+            tmpChildTree = tmpChildTree.concat(child.data.tree)
+          }
+          else {
+            tmpChildTree = tmpChildTree.concat(childTree[j])
+          }
+        }
+        childTree = tmpChildTree
+      }
+      */
+
+      getNodeDataByPath(treeData, node, "tree").tree = childTree;
+      setState({
+        ...state,
+        data: treeData
+      });
+    }
+  },
+  [state, setState]
+  );
+
+  const requestChildrenData = useCallback(
+    (data, node, toggleFoldStatus) => {
+      const { type } = data;
+
+      if (type === "tree") {
+        fetchData(node, data)
+      }
+      toggleFoldStatus();
     },
-    [state, setState]
+    [fetchData]
   );
 
   return (
@@ -189,10 +265,10 @@ export default function TestComponent() {
 
         <Tree
           className={classes.container}
-          title="Material UI Tree"
+          title="Navigation"
           data={state.data}
-          labelKey="path"
-          valueKey="sha"
+          labelKey="node"
+          valueKey="node"
           childrenKey="tree"
           foldIcon={<EmptyComponent />}
           unfoldIcon={<EmptyComponent />}
@@ -210,34 +286,34 @@ export default function TestComponent() {
         <SimpleDialog value={modalState.value} open={modalState.open} onClose={handleClose} />
       </Grid>
     </ThemeProvider>
-      );
-    };
-    
-    
-    
+  );
+};
+
+
+
 function SimpleDialog(props) {
-  const {value, open, onClose } = props;
-    
-      return (
+  const { value, open, onClose } = props;
+
+  return (
     <Dialog onClose={onClose} open={open}>
-        <DialogTitle >Detail Modal {value}</DialogTitle>
-        <Typography gutterBottom>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-          in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+      <DialogTitle >Detail Modal {value}</DialogTitle>
+      <Typography gutterBottom>
+        Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+        in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
           </Typography>
-        <Typography gutterBottom>
-          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-          lacus vel augue laoreet rutrum faucibus dolor auctor.
+      <Typography gutterBottom>
+        Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+        lacus vel augue laoreet rutrum faucibus dolor auctor.
           </Typography>
-        <Typography gutterBottom>
-          Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-          scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-          auctor fringilla.
+      <Typography gutterBottom>
+        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
+        scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
+        auctor fringilla.
           </Typography>
 
-        <Button onClick={onClose} color="primary">
-          Close
+      <Button onClick={onClose} color="primary">
+        Close
           </Button>
-      </Dialog>
-      );
+    </Dialog>
+  );
 }

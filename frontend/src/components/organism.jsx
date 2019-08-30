@@ -36,6 +36,7 @@ const taxInfo = [
 ];
 const genMetadata = [
   'access_src',
+  'access_id',
   'ftp_url',
   'isolated',
   'gen_size',
