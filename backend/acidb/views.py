@@ -54,6 +54,9 @@ class SearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = SearchSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
+from django.db.models import F
+from django.contrib.postgres.aggregates import ArrayAgg
+
 
 class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
@@ -81,9 +84,9 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             last_category) + 1
 
         if len(self.kwargs) < len(taxonomy):
-            return data.values_list(taxonomy[next_category_idx]).annotate(total=Count('id'))
+            return data.values(name=F(taxonomy[next_category_idx])).annotate(total=Count('id'))
         else:
-            return data.values_list('organism_id').distinct()
+            return data.select_related('organism')
 
     # Return everything
     # @method_decorator(cache_page(60*60))
