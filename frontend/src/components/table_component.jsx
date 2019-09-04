@@ -41,6 +41,13 @@ const colNames = [
   'domain',
   'phylum',
 
+  'ph_associated',
+  'ph_min',
+  'ph_max',
+  'temp_associated',
+  'temp_min',
+  'temp_max',
+
   'access_src',
   'access_id',
   'isolated',
@@ -53,14 +60,6 @@ const colNames = [
 
   'annotation',
   'n_orfs',
-
-  'temp_associated',
-  'temp_min',
-  'temp_max',
-  'ph_associated',
-  'ph_min',
-  'ph_max',
-
 ];
 
 const headersCSV = [
@@ -69,6 +68,13 @@ const headersCSV = [
 
   'domain',
   'phylum',
+
+  'ph_associated',
+  'ph_min',
+  'ph_max',
+  'temp_associated',
+  'temp_min',
+  'temp_max',
 
   'access_src',
   'access_id',
@@ -83,23 +89,16 @@ const headersCSV = [
 
   'annotation',
   'n_orfs',
-
-  'temp_associated',
-  'temp_min',
-  'temp_max',
-  'ph_associated',
-  'ph_min',
-  'ph_max',
-
 ];
 
 const headerIndex = {
-  0: "identifiers",
-  2: "tax_info",
-  4: "gen_metadata",
-  15: "growth_range",
-  13: "proteome_metadata"
+  0: 'identifiers',
+  2: 'tax_info',  
+  4: 'growth_range',
+  10: 'gen_metadata',
+  19: 'proteome_metadata'
 }
+
 
 /*
  * Sub components
@@ -127,7 +126,6 @@ function CustomFilterInput(props) {
         //console.log("bad")
         setState({ error: true })
       }
-
       else {
         //console.log("good")
         props.handler(val)
@@ -136,6 +134,7 @@ function CustomFilterInput(props) {
     }
     // If empty string dont show error
     else {
+      props.handler(val)
       setState({ error: false })
     }
   }

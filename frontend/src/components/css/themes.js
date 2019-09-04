@@ -17,7 +17,10 @@ export const theme = createMuiTheme({
       main: '#8662BD',
     },
     secondary: {
-      main: '#D6B3FE'
+      main: '#D6B3FE',
+      //light: "#ff79b0",
+      //dark: "#c60055",
+      //contrastText: "#fff"
     },
     text: {
       primary: "#000000",
@@ -32,9 +35,19 @@ export const theme = createMuiTheme({
     // E.g., shift from Red 500 to Red 300 or Red 700.
     tonalOffset: 0.2,
   },
+  overrides: {
+    MuiListItem: {
+      button: {
+        height: 'auto !important'
+      },
+
+    },
+  }
 });
 
-// Component Styles
+/*
+Component Styles
+*/
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
     paddingTop: 0,
@@ -60,20 +73,6 @@ export const stylesInput = makeStyles({
   selectOrganismSearch: {
     width: '70%',
   },
-});
-
-// Tree
-export const stylesTree = makeStyles({
-  container: {
-    margin: 20
-  },
-  icon: {
-    fontSize: 20
-  },
-  node: {
-    display: "flex",
-    alignContent: "center"
-  }
 });
 
 export const stylesAppNav = makeStyles(theme => ({
@@ -114,6 +113,7 @@ export const stylesFooter = makeStyles(theme => ({
 
 }));
 
+// table
 export const stylesTable = makeStyles({
   formControl: {
     margin: 20,
@@ -150,6 +150,7 @@ export const stylesTable = makeStyles({
   }
 });
 
+// Organism Detail
 export const stylesDetail = makeStyles({
 
   fixedList: {
@@ -193,3 +194,22 @@ export const customSelectStyles = {
 
   }),
 }
+
+
+// Tree
+export const stylesTree = makeStyles({
+  container: {
+    margin: 20,
+    minWidth: '50%'
+  },
+  icon: {
+    fontSize: 26,
+    paddingRight: 10
+
+  },
+  node: {
+    display: "flex",
+    alignContent: "center",
+    fontSize: 20
+  }
+});

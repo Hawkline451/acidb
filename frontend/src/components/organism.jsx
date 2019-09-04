@@ -96,11 +96,8 @@ export default function Organism(props) {
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
   }, [url]);
 
-  function concatStrains() {
-    var strains = state.data.strains[0]['strain_name']
-    for (var index = 1; index < state.data.strains.length; ++index) {
-      strains = strains + ' = ' + state.data.strains[index]['strain_name']
-    }
+  function concatStrains(state) {
+    var strains = state.data.strains.map(a => a.strain_name).join(' = ')
     return strains
   }
 
@@ -174,7 +171,7 @@ export default function Organism(props) {
                       {t('table.strains')}
                     </TableCell>
                     <TableCell>
-                      {concatStrains()}
+                      {concatStrains(state)}
                     </TableCell>
                   </TableRow>
                 </TableBody>

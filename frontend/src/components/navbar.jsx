@@ -98,8 +98,8 @@ export default function NavBar() {
           </Button>
 
           <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
-            <Tab label={t('navbar.tree')} component={Link} to='/app/tree' className={classes.tabRoot} />
-            <Tab label={t('navbar.tools')} component={Link} to='/app/tools' className={classes.tabRoot} />
+            <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
+            <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
             <TabMenu />
           </Tabs>
 

@@ -12,7 +12,8 @@
     "title": "AciDB",
     "home" : "Home",
     "tools" : "Tools",
-    "tree" : "Tree"
+    "tree" : "Tree",
+    "table" : "Table"
   },
   "tree":{
     "title": "Taxonomic Tree"
@@ -76,6 +77,11 @@
     "growth": "Growth",
     "taxonomy": "Taxonomy",
     "references": "References"
+  },
+
+  "button":{
+    "open_detail": "Open Detail",
+    "close": "Close"
   }
   
 }

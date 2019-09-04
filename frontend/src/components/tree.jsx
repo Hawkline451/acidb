@@ -1,73 +1,38 @@
-import React, { useState, useCallback, useEffect } from "react";
-
-import { createMuiTheme } from "@material-ui/core/styles";
-import blue from "@material-ui/core/colors/blue";
-import pink from "@material-ui/core/colors/pink";
-
-
+import React, { useState, useCallback } from "react";
+import {
+  Link
+} from 'react-router-dom';
 
 import {
-  DialogTitle, Button, Grid, Dialog, Typography, Fab, DialogActions, DialogContent, DialogContentText
+  DialogTitle, Button, Grid, Dialog, Typography, Fab, DialogActions, DialogContent, DialogContentText,
+  Table, TableBody, TableCell, TableRow
 } from '@material-ui/core';
 
 import {
   MoreHoriz as MoreHorizIcon, FolderOpen as FolderOpenIcon, Folder as FolderIcon,
-  Description as DescriptionIcon
+  //Description as DescriptionIcon
+  BugReport as DescriptionIcon
 } from '@material-ui/icons';
 
-
-
-import { makeStyles, ThemeProvider } from "@material-ui/styles";
-
-// Internationalization
-import { useTranslation } from 'react-i18next'; import axios from 'axios';
+// Styles
+import {ThemeProvider } from "@material-ui/styles";
+import { theme, stylesTree } from './css/themes'
 
 // import config
 import { config } from "../config";
 
+// NPM 
+
+// Internationalization
+import { useTranslation } from 'react-i18next'; 
+
+// mui tree
 import Tree from "material-ui-tree";
 import getNodeDataByPath from "material-ui-tree/lib/util";
 
-//
-//  Delete super
-//
-const theme = createMuiTheme({
-  palette: {
-    primary: blue,
-    secondary: {
-      light: "#ff79b0",
-      main: pink.A200,
-      dark: "#c60055",
-      contrastText: "#fff"
-    }
-  },
-  overrides: {
-    MuiListItem: {
-      button: {
-        height: 'auto !important'
-      },
+import axios from 'axios';
 
-    },
-  }
-});
-
-const useStyles = makeStyles({
-  container: {
-    margin: 20,
-    minWidth: '50%'
-  },
-  icon: {
-    fontSize: 26,
-    paddingRight: 10
-
-  },
-  node: {
-    display: "flex",
-    alignContent: "center",
-    fontSize: 20
-  },
-});
-
+const useStylesTree = stylesTree
 
 const taxInfoColors = {
   'domain': '',
@@ -89,7 +54,7 @@ function EmptyComponent() {
 export default function TestComponent() {
   const { t } = useTranslation();
 
-  const classes = useStyles();
+  const classes = useStylesTree();
   const [state, setState] = useState({
     data: {
       category: null,
@@ -98,12 +63,12 @@ export default function TestComponent() {
       total: null,
       url:
         "/api/taxonomy/"
-    }
+    },
   });
 
   const [modalState, setModalState] = useState({
     open: false,
-    value: ''
+    data: null
   });
 
   function handleClose() {
@@ -111,9 +76,6 @@ export default function TestComponent() {
       ...oldValues,
       open: false,
     }));
-  };
-  function setModal(organism) {
-    setModalState({ open: true, value: organism });
   };
 
   const renderLabel = useCallback(
@@ -126,8 +88,7 @@ export default function TestComponent() {
       }
       else {
         variant = "body2";
-        iconComp = <DescriptionIcon />;
-
+        iconComp = <DescriptionIcon style={{color:'#F0008C'}} />;
       }
       let nodeName
       // if leaf, 
@@ -135,7 +96,7 @@ export default function TestComponent() {
         nodeName = node.name != null ? String(node.name) : 'unclassified'
       }
       else {
-        nodeName = 'Strain: ' + String(node.name)
+        nodeName = 'Strain: ' + node.name.join(' = ')
       }
 
       //const tmpNode = await axiosFetch('api/organism_detail/1/')
@@ -173,7 +134,7 @@ export default function TestComponent() {
   );
 
   function axiosFetch(url) {
-    return axios.get("http://127.0.0.1:8000" + url).then(response => {
+    return axios.get(config.BASE_URL + url).then(response => {
       // returning the data here allows the caller to get it through another .then(...)
       return response
     })
@@ -232,6 +193,13 @@ export default function TestComponent() {
     [state, setState]
   );
 
+  const getModal = useCallback(async (node) => {
+    const res = await axiosFetch(node.url);
+    setModalState({ open: true, data: res.data })
+  },
+    []
+  );
+
   const requestChildrenData = useCallback(
     (data, node, toggleFoldStatus) => {
       const { type } = data;
@@ -241,11 +209,10 @@ export default function TestComponent() {
         toggleFoldStatus();
       }
       else {
-        console.log("leaf")
-        setModal(data.node)
+        getModal(data)
       }
     },
-    [fetchData]
+    [fetchData, getModal]
   );
 
   return (
@@ -256,10 +223,13 @@ export default function TestComponent() {
         justify="center"
         alignItems="center"
       >
-
+        <div style={{ marginTop: 20 }} >
+          <Typography variant="h4">
+            Navigation Tree
+          </Typography>
+        </div>
         <Tree
           className={classes.container}
-          title="Navigation"
           data={state.data}
           valueKey="url"
           childrenKey="tree"
@@ -283,42 +253,55 @@ export default function TestComponent() {
   );
 };
 
+const taxInfo = [
+  'tax_src',
+  'tax_id',
+  'domain',
+  'phylum',
+  'tax_class',
+  'order',
+  'family',
+  'genus',
+  'species',
+];
+
 function SimpleDialog(props) {
+  const { t } = useTranslation();
+
   const { state, onClose } = props;
-
-  const [detail, setDetail] = useState({
-    data: [],
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios(
-        config.API_ORGANISM_DETAIL + state.value.id_organism,
-      );
-      setDetail({ data: result.data });
-    };
-    if (state.open) {
-      fetchData();
-    }
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, [state]);
   return (
     <Dialog onClose={onClose} open={state.open}>
       {state.open ?
         (<div>
-          <DialogTitle>Taxonomy summary</DialogTitle>
+          <DialogTitle style={{paddingBottom:5}}>{state.data.name}</DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {detail.data.id_organism}
+            <DialogContentText style={{color:'#808080', paddingTop:0}}>
+            {t('table.strain') + ': ' + state.data.strains.map(a => a.strain_name).join(' = ')}
             </DialogContentText>
-            <DialogContentText >
-              {String(detail.data.taxonomy)}
-            </DialogContentText>
+            <Table>
+              <TableBody >
+                {
+                  taxInfo.map(tmpKey => (
+                    <TableRow key={tmpKey}>
+                      <TableCell component="th" scope="row">
+                        {t('table.' + tmpKey)}
+                      </TableCell>
+                      <TableCell>
+                        {state.data.taxonomy[0][tmpKey]}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                }
+              </TableBody >
+            </Table>
           </DialogContent>
 
           <DialogActions>
+          <Button component={Link} to={'/app/organism/' + state.data.id_organism} color="primary">
+              {t('button.open_detail')}
+            </Button>
             <Button onClick={onClose} color="primary">
-              Close
+            {t('button.close')}
             </Button>
           </DialogActions>
         </div>)

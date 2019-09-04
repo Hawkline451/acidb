@@ -6,7 +6,7 @@ import {
   Search as SearchIcon
 } from '@material-ui/icons';
 
-// npm
+// NPM
 import {
   Link
 } from 'react-router-dom';
@@ -129,8 +129,7 @@ export default function CustomSearchInput(navProps) {
           options={searchTypes}
         />
         <Select
-          filterOption={({ label }, query) => customFilter(label, query)}
-          
+          filterOption={({ label }, query) => {return customFilter(label, query)}}          
           onInputChange={() => { i = 0 }}
           ignoreAccents={false}
           ignoreCase={true}

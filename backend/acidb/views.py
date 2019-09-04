@@ -1,6 +1,8 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.db.models import Count
+from django.db.models import F
+
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -54,10 +56,6 @@ class SearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = SearchSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-from django.db.models import F
-from django.contrib.postgres.aggregates import ArrayAgg
-
-
 class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     serializer_class = TaxonomyNodeSerializer
@@ -84,7 +82,7 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             last_category) + 1
 
         if len(self.kwargs) < len(taxonomy):
-            return data.values(name=F(taxonomy[next_category_idx])).annotate(total=Count('id'))
+            return data.values(name=F(taxonomy[next_category_idx])).order_by('name').annotate(total=Count('id'))
         else:
             return data.select_related('organism')
 
