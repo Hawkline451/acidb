@@ -11,8 +11,12 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 
 import {
-  Grid,
+  Grid, IconButton
 } from '@material-ui/core';
+
+import {
+  Search as SearchIcon
+} from '@material-ui/icons';
 
 import axios from 'axios';
 
@@ -24,12 +28,12 @@ import { config } from "../config";
 
 function renderInput(inputProps) {
   const { InputProps, classes, ref, ...other } = inputProps;
-  return (
+  console.log(inputProps)
+    return (
     <TextField
       InputProps={{
         inputRef: ref,
         classes: {
-          root: classes.inputRoot,
           input: classes.inputInput
         },
         ...InputProps
@@ -43,8 +47,6 @@ function renderSuggestion(suggestionProps) {
   const { suggestion, itemProps } = suggestionProps;
   return (
     <MenuItem {...itemProps} key={suggestion.id_organism} component="div">
-
-
       <Grid
         container
         direction="column"
@@ -62,7 +64,6 @@ function renderSuggestion(suggestionProps) {
 
 function renderLoadMore(suggestionProps) {
   const count = suggestionProps.suggestion.count;
-  console.log(suggestionProps)
 
   return (
     (count > suggestionProps.numSuggestions) ?
@@ -91,41 +92,21 @@ function getSuggestions(value, searchState, numSuggestions, setNumSuggestions, i
     setNumSuggestions(5)
     return [];
   } else {
-    let res = searchState.searchData.filter(suggestion => {
+    let filteredData = searchState.searchData.filter(suggestion => {
       let keep =
         suggestion.organism_name.slice(0, inputLength).toLowerCase() === inputValue;
       return keep;
     });
 
-    let total = res.length;
-    let res_2 = res.slice(0, numSuggestions);
+    let total = filteredData.length;
+    let res_2 = filteredData.slice(0, numSuggestions);
     res_2.push({ count: total });
-    console.log(res_2)
-
 
     return res_2;
   }
 }
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    height: 250
-  },
-  container: {
-    flexGrow: 1,
-    position: "relative"
-  },
-  paper: {
-    position: "absolute",
-    zIndex: 1,
-    marginTop: theme.spacing(1),
-    left: 0,
-    right: 0
-  },
-  inputRoot: {
-    flexWrap: "wrap"
-  },
   inputInput: {
     width: "auto",
     flexGrow: 1,
@@ -161,35 +142,39 @@ export default function TestComponent() {
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
   }, []);
 
+  function handleInputChange(value) {
+    setSearchState(oldValues => ({
+      ...oldValues,
+      searchQuery: value.id_organism,
+    }));
+  }
+
   return (
     <div className={classes.root}>
-      <Downshift id="downshift-popper" onChange={(item) => console.log(item.id_organism)}>
+      <Downshift id="downshift-popper" 
+      onChange={(item) => handleInputChange(item)}
+      itemToString={item => (item ? `${item.organism_name}  [${item.strain_name}]` : '')}>
         {({
           getInputProps,
           getItemProps,
-          getLabelProps,
           getMenuProps,
           inputValue,
           isOpen,
-
         }) => {
-          const { onBlur, onFocus, ...inputProps } = getInputProps({
+          const {...inputProps } = getInputProps({
             placeholder: "With Popper"
           });
 
           return (
-            <div className={classes.container}>
+            <div>
               {renderInput({
                 fullWidth: true,
                 classes,
-                InputProps: { onBlur, onFocus },
-                InputLabelProps: getLabelProps({ shrink: true }),
                 inputProps,
                 ref: node => {
                   popperNode = node;
-                }
+                }, 
               })}
-
               <Popper open={isOpen} anchorEl={popperNode} style={{ height: '50%' }}>
                 <div
                   {...(isOpen
@@ -225,6 +210,9 @@ export default function TestComponent() {
           );
         }}
       </Downshift>
+      <IconButton aria-label='Search' label='Submit' type='submit' onClick={() => console.log(searchState.searchQuery)} >
+          <SearchIcon />
+        </IconButton>
     </div>
   );
 }

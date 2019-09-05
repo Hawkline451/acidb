@@ -4,6 +4,9 @@
     "part1": "To get started, edit <1>src/App.js</1> and save to reload1111.",
     "part2": "Switch language between english and german using buttons above."
   },
+  "footer":{
+    "desc": "Im a cool footer"
+  },
   "download_csv": "Download CSV",
   "placeholder":{
     "search": "Search ..."

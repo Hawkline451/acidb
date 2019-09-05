@@ -19,7 +19,7 @@ import { Loader } from './loader'
 import { config } from "../config";
 
 // components
-import NotFoundPage from '../pages/404';
+import OrganismNotFound from './organismNotFound';
 
 const useStylesDetail = stylesDetail
 
@@ -84,6 +84,8 @@ export default function Organism(props) {
         const result = await axios({ url });
         setState({ data: result.data });
         setIsLoading(false);
+        setError(false)
+
 
       }
       catch (err) {
@@ -117,7 +119,7 @@ export default function Organism(props) {
   return (
     <div>
       {isLoading && !error ? (<Loader />) :        
-        error ? (<NotFoundPage />) :
+        error ? (<OrganismNotFound />) :
 
         (<ThemeProvider theme={theme}>
           <Grid container>

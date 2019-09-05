@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from 'react';
 import {
-  Paper, IconButton, Grid, MenuItem, TextField,
+  Paper, IconButton, Grid, MenuItem, TextField, ButtonBase, Typography, Popper
 } from '@material-ui/core';
 import {
   Search as SearchIcon
@@ -10,30 +10,112 @@ import {
 import {
   Link
 } from 'react-router-dom';
-import Select from "react-select";
 import axios from 'axios';
+import deburr from 'lodash/deburr';
+import Downshift from 'downshift';
 
 // import config
-import { config } from "../config";
+import { config } from '../config';
 
 // Styles
-import { stylesInput, customSelectStyles } from './css/themes'
+import { stylesInput } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
 const useStylesInput = stylesInput
-const searchTypes = [
-  { value: 'name', label: 'Name' },
-  { value: 'strain', label: 'Strain' },
-]
+
 
 //Search Component
-export default function CustomSearchInput(navProps) {
-  const classes = useStylesInput();
-  const { t } = useTranslation();
 
-  const [searchValue, setSearchValue] = useState({
+function renderInput(inputProps) {
+  const { InputProps, classes, ref, ...other } = inputProps;
+  return (
+    <TextField
+    
+      className={classes.input}
+      InputProps={{
+        classes: {
+          input: classes.innerInput
+        },
+        inputRef: ref,
+        ...InputProps
+      }}
+      {...other}
+    />
+  );
+}
+
+function renderSuggestion(suggestionProps) {
+  const { suggestion, itemProps } = suggestionProps;
+  return (
+    <MenuItem {...itemProps} key={suggestion.id_organism} component='div'>
+      <Grid
+        container
+        direction='column'
+        justify='flex-start'
+        alignItems='stretch'
+      >
+        <Fragment>
+          <Grid item style={{ fontSize: 12, color: '#808080' }}>{suggestion.strain_name}</Grid>
+          <Grid item >{suggestion.organism_name}</Grid>
+        </Fragment>
+      </Grid>
+    </MenuItem>
+  );
+}
+
+function renderLoadMore(suggestionProps) {
+  const count = suggestionProps.suggestion.count;
+
+  return (
+    (count > suggestionProps.numSuggestions) ?
+      (
+        <ButtonBase key={'load_more'} onClick={() => suggestionProps.setNumSuggestions(suggestionProps.numSuggestions + 5)} style={{ width: '100%' }}>
+          <div style={{ padding: 15 }}>
+            <Typography style={{ color: '#808080' }}>
+              {'Loaded: ' + suggestionProps.numSuggestions + ' / Total: ' + count + ' [Load more]'}
+            </Typography>
+          </div>
+        </ButtonBase>
+      )
+      :
+      (<div key={'empty'}></div>)
+  );
+}
+
+function getSuggestions(value, searchState, numSuggestions, setNumSuggestions, isOpen, { showEmpty = false } = {}) {
+  const inputValue = deburr(value.trim()).toLowerCase();
+  const inputLength = inputValue.length;
+  if (!isOpen) {
+    setNumSuggestions(5)
+  }
+
+  if (inputLength === 0 && !showEmpty) {
+    setNumSuggestions(5)
+    return [];
+  } else {
+    let filteredData = searchState.searchData.filter(suggestion => {
+      let keep =
+        suggestion.organism_name.slice(0, inputLength).toLowerCase() === inputValue;
+      return keep;
+    });
+
+    let total = filteredData.length;
+    let res = filteredData.slice(0, numSuggestions);
+    res.push({ count: total });
+
+    return res;
+  }
+}
+
+let popperNode;
+export default function CustomSearchInput(navProps) {
+  const { t } = useTranslation();
+  const classes = useStylesInput();
+
+  const [numSuggestions, setNumSuggestions] = useState();
+  const [searchState, setSearchState] = useState({
     searchType: 'name',
     searchQuery: null,
     searchData: [],
@@ -45,7 +127,7 @@ export default function CustomSearchInput(navProps) {
         config.API_SEARCH_VALUES,
       );
 
-      setSearchValue(oldValues => ({
+      setSearchState(oldValues => ({
         ...oldValues,
         searchData: result.data,
       }));
@@ -55,16 +137,8 @@ export default function CustomSearchInput(navProps) {
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
   }, []);
 
-  // Search input handler
-  function handleChangeType(value) {
-    setSearchValue(oldValues => ({
-      ...oldValues,
-      searchType: value.value,
-    }));
-  }
-
-  function handleChangeQuery(value) {
-    setSearchValue(oldValues => ({
+  function handleInputChange(value) {
+    setSearchState(oldValues => ({
       ...oldValues,
       searchQuery: value.id_organism,
     }));
@@ -75,76 +149,72 @@ export default function CustomSearchInput(navProps) {
     navProps.cleanTabs()
   }
 
-  function Option(props) {
-    return (
-      <MenuItem {...props.innerProps}>
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="stretch"
-        >
-          {searchValue.searchType === 'name' ?
-            (
-              <Fragment>
-                <Grid item style={{ fontSize: 12, color: '#808080' }}>{props.data.strain_name}</Grid>
-                <Grid item >{props.data.organism_name}</Grid>
-              </Fragment>
-            )
-            :
-            (
-              <Fragment>
-                <Grid item style={{ fontSize: 12, color: '#808080' }}>{props.data.organism_name}</Grid>
-                <Grid item >{props.data.strain_name}</Grid>
-              </Fragment>
-            )
-          }
-        </Grid>
-      </MenuItem>
-    );
-  }
-
-  const components = {
-    Option,
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null
-  };
-
-  const resultLimit = 10
-  let i = 0
-
-  function customFilter(label, query){
-    return (label.toLowerCase().indexOf(query.toLowerCase()) >= 0 && i++ < resultLimit)
-  }
-
   return (
     <form>
       <Paper className={classes.root}>
-        <Select
-          className={classes.selectTypeSearch}
-          styles={customSelectStyles}
-          input={<TextField name='searchType' />}
-          onChange={handleChangeType}
-          value={searchTypes.filter(({ value }) => value === searchValue.searchType)}
-          options={searchTypes}
-        />
-        <Select
-          filterOption={({ label }, query) => {return customFilter(label, query)}}          
-          onInputChange={() => { i = 0 }}
-          ignoreAccents={false}
-          ignoreCase={true}
-          className={classes.selectOrganismSearch}
-          styles={customSelectStyles}
-          components={components}
-          placeholder={t('placeholder.search')}
-          input={<TextField name='searchQuery' />}
-          onChange={handleChangeQuery}
-          getOptionLabel={searchValue.searchType === 'name' ? (options => options.organism_name) : (options => options.strain_name)}
-          getOptionValue={options => options.id_organism}
-          options={searchValue.searchData}
-        />
+        <Downshift id='downshift-popper'
+          onChange={(item) => handleInputChange(item)}
+          itemToString={item => (item ? `${item.organism_name}  [ ${item.strain_name} ]` : '')}>
+          {({
+            getInputProps,
+            getItemProps,
+            getMenuProps,
+            inputValue,
+            isOpen,
+          }) => {
+            const { ...inputProps } = getInputProps({
+              placeholder: t('placeholder.search')
+            });
 
-        <IconButton aria-label='Search' label='Submit' type='submit' onClick={handleSubmit} component={Link} to={'/app/organism/' + searchValue.searchQuery}>
+            return (
+              <div style={{ width: '100%' }}>
+                {renderInput({
+                  fullWidth: true,
+                  classes,
+                  inputProps,
+                  ref: node => {
+                    popperNode = node;
+                  },
+                })}
+                <Popper open={isOpen} anchorEl={popperNode} >
+                  <div
+                    {...(isOpen
+                      ? getMenuProps({}, { suppressRefError: true })
+                      : {})}
+                  >
+                    <Paper
+                      square
+                      style={{
+                        overflow: 'auto',
+                        marginTop: 0,
+                        width: popperNode ? popperNode.clientWidth : undefined,
+                        maxHeight: 720
+                      }}
+                    >
+                      {getSuggestions(inputValue, searchState, numSuggestions, setNumSuggestions, isOpen).map((suggestion, index) => {
+                        if (isNaN(suggestion.count)) {
+                          return renderSuggestion({
+                            suggestion,
+                            index,
+                            itemProps: getItemProps({ item: suggestion }),
+                          });
+                        } else {
+                          return renderLoadMore({
+                            suggestion,
+                            numSuggestions,
+                            setNumSuggestions
+                          });
+                        }
+                      })}
+                    </Paper>
+                  </div>
+                </Popper>
+              </div>
+            );
+          }}
+        </Downshift>
+
+        <IconButton aria-label='Search' label='Submit' type='submit' onClick={handleSubmit} component={Link} to={'/app/organism/' + searchState.searchQuery}>
           <SearchIcon />
         </IconButton>
       </Paper>
@@ -152,3 +222,9 @@ export default function CustomSearchInput(navProps) {
   );
 }
 
+function areEqual(prevProps, nextProps) {
+  // only update if a card was added or removed
+  return false
+}
+
+//export default React.memo(CustomSearchInput, areEqual);

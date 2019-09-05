@@ -64,15 +64,13 @@ export const stylesInput = makeStyles({
     fontSize: 18
   },
   input: {
-    padding: 0,
-    height: 'auto'
+    flexGrow: 1,
+    marginLeft: 5,
   },
-  selectTypeSearch: {
-    width: '30%',
+  innerInput: {
+    fontSize: 18
   },
-  selectOrganismSearch: {
-    width: '70%',
-  },
+  
 });
 
 export const stylesAppNav = makeStyles(theme => ({
@@ -95,7 +93,7 @@ export const stylesAppNav = makeStyles(theme => ({
   search: {
     marginLeft: 'auto',
     marginRight: -10,
-    width: '25%'
+    minWidth: '20%',
   },
 
 }));
@@ -184,17 +182,6 @@ export const stylesDetail = makeStyles({
     color: theme.palette.text.secondary,
   }
 });
-
-
-// Styles select-react
-export const customSelectStyles = {
-  control: () => ({
-    borderStyle: 'none',
-    display: 'flex',
-
-  }),
-}
-
 
 // Tree
 export const stylesTree = makeStyles({
