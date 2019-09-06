@@ -222,9 +222,9 @@ export default function CustomSearchInput(navProps) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
+//function areEqual(prevProps, nextProps) {
   // only update if a card was added or removed
-  return false
-}
+  //return false
+//}
 
 //export default React.memo(CustomSearchInput, areEqual);
