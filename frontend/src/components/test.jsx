@@ -1,218 +1,123 @@
-import React, { Fragment, useState, useEffect } from "react";
-import deburr from "lodash/deburr";
-import Downshift from "downshift";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import Popper from "@material-ui/core/Popper";
-import Paper from "@material-ui/core/Paper";
-import ButtonBase from "@material-ui/core/ButtonBase";
-import MenuItem from "@material-ui/core/MenuItem";
-
+import React from 'react';
 
 import {
-  Grid, IconButton
-} from '@material-ui/core';
+  XYPlot,
+  XAxis,
+  YAxis,
+  VerticalGridLines,
+  HorizontalGridLines,
+  MarkSeries,
+  Highlight,
+  Hint
+} from 'react-vis';
 
-import {
-  Search as SearchIcon
-} from '@material-ui/icons';
+import 'react-vis/dist/style.css';
 
-import axios from 'axios';
-
-// import config
-import { config } from "../config";
-
-
-
-
-function renderInput(inputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
-  console.log(inputProps)
-    return (
-    <TextField
-      InputProps={{
-        inputRef: ref,
-        classes: {
-          input: classes.inputInput
-        },
-        ...InputProps
-      }}
-      {...other}
-    />
-  );
+function getRandomData() {
+  return new Array(100).fill(0).map(row => ({
+    x: Math.random() * 10,
+    y: Math.random() * 20,
+    color: Math.random() * 10,
+    opacity: Math.random() * 0.5 + 0.5
+  }));
 }
+const colorRanges = {
+  typeA: ['#59E4EC', '#0D676C'],
+};
 
-function renderSuggestion(suggestionProps) {
-  const { suggestion, itemProps } = suggestionProps;
-  return (
-    <MenuItem {...itemProps} key={suggestion.id_organism} component="div">
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Fragment>
-          <Grid item style={{ fontSize: 12, color: '#808080' }}>{suggestion.strain_name}</Grid>
-          <Grid item >{suggestion.organism_name}</Grid>
-        </Fragment>
-      </Grid>
-    </MenuItem>
-  );
-}
+const randomData = getRandomData();
 
-function renderLoadMore(suggestionProps) {
-  const count = suggestionProps.suggestion.count;
+export default class TestComponent extends React.Component {
+  state = {
+    drawMode: 0,
+    data: randomData,
+    value: false,
 
-  return (
-    (count > suggestionProps.numSuggestions) ?
-      (
-        <ButtonBase key={'load_more'} onClick={() => suggestionProps.setNumSuggestions(suggestionProps.numSuggestions + 5)} style={{ width: '100%' }}>
-          <div style={{ padding: 15 }}>
-            <Typography style={{ color: "#808080" }}>
-              {"Loaded: " + suggestionProps.numSuggestions + " / Total: " + count + " ...Load more ..."}
-            </Typography>
-          </div>
-        </ButtonBase>
-      )
-      :
-      (<div key={'empty'}></div>)
-  );
-}
+    filterArea: null,
+    highlightedPoints: [],
+  
+    hovered: null,
+    highlighting: false
+  };
 
-function getSuggestions(value, searchState, numSuggestions, setNumSuggestions, isOpen, { showEmpty = false } = {}) {
-  const inputValue = deburr(value.trim()).toLowerCase();
-  const inputLength = inputValue.length;
-  if (!isOpen) {
-    setNumSuggestions(5)
-  }
+  render() {
+    const { data, filterArea, hovered, highlighting } = this.state;
 
-  if (inputLength === 0 && !showEmpty) {
-    setNumSuggestions(5)
-    return [];
-  } else {
-    let filteredData = searchState.searchData.filter(suggestion => {
-      let keep =
-        suggestion.organism_name.slice(0, inputLength).toLowerCase() === inputValue;
-      return keep;
-    });
-
-    let total = filteredData.length;
-    let res_2 = filteredData.slice(0, numSuggestions);
-    res_2.push({ count: total });
-
-    return res_2;
-  }
-}
-
-const useStyles = makeStyles(theme => ({
-  inputInput: {
-    width: "auto",
-    flexGrow: 1,
-    marginLeft: 5
-  },
-}));
-
-let popperNode;
-
-export default function TestComponent() {
-  const classes = useStyles();
-  const [numSuggestions, setNumSuggestions] = useState();
-
-  const [searchState, setSearchState] = useState({
-    searchType: 'name',
-    searchQuery: null,
-    searchData: [],
-  })
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios(
-        config.API_SEARCH_VALUES,
-      );
-
-      setSearchState(oldValues => ({
-        ...oldValues,
-        searchData: result.data,
-      }));
+    const highlightPoint = dataPoint => {
+      if (!filterArea) {
+        return false;
+      }
+      const leftRight = dataPoint.x <= filterArea.right && dataPoint.x >= filterArea.left;
+      const upDown = dataPoint.y <= filterArea.top+0.8 && dataPoint.y >= filterArea.bottom+0.8;
+      return leftRight && upDown;
     };
 
-    fetchData();
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, []);
+    const selectedPoints = data.filter(highlightPoint);
 
-  function handleInputChange(value) {
-    setSearchState(oldValues => ({
-      ...oldValues,
-      searchQuery: value.id_organism,
-    }));
+    const checkInArray = (point) => {
+      console.log(this.state.highlightedPoints)
+      var found = this.state.highlightedPoints.some(value => value.x === point.x);
+      return found
+    };
+
+    return (
+      <div className="canvas-wrapper">
+
+        <XYPlot
+          onMouseLeave={() => this.setState({ value: false })}
+          width={1000}
+          height={500}
+        >
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis />
+          <YAxis />
+
+          <Highlight
+            drag
+            onBrushStart={() => this.setState({ highlighting: true })}
+            onBrush={area => {this.setState({ filterArea: area });this.setState({ highlightedPoints: selectedPoints })} }
+            onBrushEnd={area =>
+              this.setState({ highlighting: false, filterArea: area })
+            }
+            onDragStart={area => this.setState({ highlighting: true })}
+            onDrag={area => {this.setState({ filterArea: area });this.setState({ highlightedPoints: selectedPoints })} }
+            onDragEnd={area =>
+              this.setState({ highlighting: false, filterArea: area })
+            } 
+
+            onValueClick={(info)=>{console.log("highlight out");console.log(info)}}
+          />
+          <MarkSeries
+            className="mark-series-example"
+            strokeWidth={2}
+            opacity="0.8"
+            style={{ pointerEvents: highlighting ? 'none' : '' }}
+            colorType="literal"
+            getColor={dataPoint => (this.state.highlightedPoints.length ? (this.state.highlightedPoints.some(point => point.x === dataPoint.x)? '#EF5D28' : '#12939A'):'#12939A')}
+            onValueMouseOver={dataPoint => this.setState({ hovered: dataPoint })}
+            onValueMouseOut={dataPoint => this.setState({ hovered: false })}
+            onValueClick={(datapoint, event)=>{
+              
+              if(event.event.ctrlKey){
+                if (!checkInArray(datapoint)) this.state.highlightedPoints.push(datapoint);this.setState({ highlightedPoints: this.state.highlightedPoints}) 
+              }
+              else{
+                this.setState({ highlightedPoints: [datapoint]}) 
+
+              }
+              // does something on click
+
+            }}
+            data={data}
+          />
+          {this.state.value ? <Hint value={this.state.value} /> : null}
+
+          {hovered && <Hint value={hovered} />}
+        </XYPlot>
+        <p>{`There are ${this.state.highlightedPoints.length} selected points`}</p>
+        {this.state.highlightedPoints.map(value => <div key={value.x}>{`X:${value.x} Y:${value.y}`}</div>)}
+      </div>
+    );
   }
-
-  return (
-    <div className={classes.root}>
-      <Downshift id="downshift-popper" 
-      onChange={(item) => handleInputChange(item)}
-      itemToString={item => (item ? `${item.organism_name}  [${item.strain_name}]` : '')}>
-        {({
-          getInputProps,
-          getItemProps,
-          getMenuProps,
-          inputValue,
-          isOpen,
-        }) => {
-          const {...inputProps } = getInputProps({
-            placeholder: "With Popper"
-          });
-
-          return (
-            <div>
-              {renderInput({
-                fullWidth: true,
-                classes,
-                inputProps,
-                ref: node => {
-                  popperNode = node;
-                }, 
-              })}
-              <Popper open={isOpen} anchorEl={popperNode} style={{ height: '50%' }}>
-                <div
-                  {...(isOpen
-                    ? getMenuProps({}, { suppressRefError: true })
-                    : {})}
-                >
-                  <Paper
-                    square
-                    style={{
-                      marginTop: 8,
-                      width: popperNode ? popperNode.clientWidth : undefined,
-                    }}
-                  >
-                    {getSuggestions(inputValue, searchState, numSuggestions, setNumSuggestions, isOpen).map((suggestion, index) => {
-                      if (isNaN(suggestion.count)) {
-                        return renderSuggestion({
-                          suggestion,
-                          index,
-                          itemProps: getItemProps({ item: suggestion }),
-                        });
-                      } else {
-                        return renderLoadMore({
-                          suggestion,
-                          numSuggestions,
-                          setNumSuggestions
-                        });
-                      }
-                    })}
-                  </Paper>
-                </div>
-              </Popper>
-            </div>
-          );
-        }}
-      </Downshift>
-      <IconButton aria-label='Search' label='Submit' type='submit' onClick={() => console.log(searchState.searchQuery)} >
-          <SearchIcon />
-        </IconButton>
-    </div>
-  );
 }
