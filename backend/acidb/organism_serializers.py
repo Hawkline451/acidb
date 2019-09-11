@@ -80,12 +80,14 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_id_organism(self, obj):
         return obj.organism.id_organism
+
     def get_organism_name(self, obj):
         return obj.organism.name
 
     class Meta:
         model = Strain
         fields = ['id_organism', 'strain_name', 'organism_name']
+
 
 class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
     category = serializers.SerializerMethodField(read_only=True)
@@ -97,11 +99,11 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_category(self, obj):
         taxonomy = ['domain', 'phylum', 'tax_class',
-            'order', 'family', 'genus', 'species']
+                    'order', 'family', 'genus', 'species']
         idx = len(self.context['view'].kwargs)
         result = taxonomy[idx] if idx < len(taxonomy) else None
         return result
-    
+
     def get_total(self, obj):
         try:
             result = obj['total']
@@ -116,18 +118,19 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_node(self, obj):
         idx = len(self.context['view'].kwargs)
-        if idx < 7 :
+        if idx < 7:
             return {'id_organism': obj['name'], 'name': obj['name']}
         else:
-            strain_name = [name.strain_name for name in obj.organism.strains.all()]
-            return {'id_organism': obj.organism_id, 'name':strain_name}
+            strain_name = [
+                name.strain_name for name in obj.organism.strains.all()]
+            return {'id_organism': obj.organism_id, 'name': strain_name}
 
     def get_current_url(self, obj):
         return self.context['request'].path
 
     def get_url(self, obj):
         idx = len(self.context['view'].kwargs)
-        if idx < 7 :
+        if idx < 7:
             url = obj['name'] if obj['name'] is not None else 'unclassified'
             result = self.context['request'].path + url
         else:
@@ -137,3 +140,17 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Taxonomy
         fields = ['category', 'current_url', 'total', 'type', 'node', 'url']
+
+
+class SimplePlotSerializer(serializers.HyperlinkedModelSerializer):
+    #strains = StrainSerializer(many=True)
+    domain = serializers.SerializerMethodField(read_only=True)
+
+    def get_domain(self, obj):
+        return obj.taxonomy.all()[0].domain
+
+    class Meta:
+        model = Organism
+        fields = ['id_organism', 'name', 'domain', 'isolated', 'state', 'seq_date', 'gen_size',
+                  'gc_percentage', 'n_orfs', 'temp_associated', 'temp_min', 'temp_max',
+                  'ph_associated', 'ph_min', 'ph_max', ]

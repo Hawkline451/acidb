@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
 
-from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer, SearchSerializer, TaxonomyNodeSerializer
+from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer, SearchSerializer, TaxonomyNodeSerializer, SimplePlotSerializer
 from acidb.models import Organism, Strain, Taxonomy
 
 
@@ -100,5 +100,14 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         result = {'tree':serializer.data}
         return Response(result)
 
+class SimplePlotDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Organism.objects.filter(visibility=1).prefetch_related('strains').prefetch_related('taxonomy')
+    serializer_class = SimplePlotSerializer
+
+    # Return everything
+    #@method_decorator(cache_page(60*60))
+    def list(self, request):
+        serializer = SimplePlotSerializer(self.queryset, many=True)
+        return Response(serializer.data)
 
 # Check action decorator
