@@ -121,7 +121,7 @@ export default function Home() {
                   <Button
                     className={classes.homeButton}
                     component={Link} to='/'>
-                    <Typography variant='h5' color='textSecondary' noWrap>
+                    <Typography variant='h5' color='#FFFFFF' noWrap>
                       {t('navbar.title')}
                     </Typography>
                   </Button>

@@ -24,7 +24,7 @@ export const theme = createMuiTheme({
     },
     text: {
       primary: "#000000",
-      secondary: "#ffffff"
+      secondary: "#A9A9A9",
     },
     error: red,
     // Used by `getContrastText()` to maximize the contrast between the background and
@@ -106,7 +106,7 @@ export const stylesFooter = makeStyles(theme => ({
     position: 'absolute',
     padding: 2,
     background: theme.palette.primary.main,
-    color: theme.palette.text.secondary
+    color: '#ffffff'
   },
 
 }));

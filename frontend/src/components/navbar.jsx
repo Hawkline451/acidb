@@ -92,7 +92,7 @@ export default function NavBar() {
             className={classes.homeButton}
             onClick={cleanState}
             component={Link} to='/app'>
-            <Typography variant='h5' color='textSecondary' noWrap>
+            <Typography variant='h5' color='textContrast' noWrap>
               {t('navbar.title')}
             </Typography>
           </Button>

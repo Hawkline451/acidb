@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Button, Input, FormControl, MenuItem, TextField, Typography, Grid, FormControlLabel, Checkbox, FormGroup
+  Button, Input, FormControl, MenuItem, TextField, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, Table, TableBody, TableCell, TableRow
 } from '@material-ui/core';
 
 // NPM
 import {
   DiscreteColorLegend,
   XYPlot,
+  ChartLabel,
   XAxis,
   YAxis,
   VerticalGridLines,
@@ -27,15 +28,15 @@ import { useTranslation } from 'react-i18next';
 import { Loader } from './loader'
 
 // Styles
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from '@material-ui/styles';
 import { theme } from './css/themes'
 
 // import config
-import { config } from "../config";
+import { config } from '../config';
 
 const domain = {
-  "Archaea": "Archaea",
-  "Bacteria": 'Bacteria',
+  'Archaea': 'Archaea',
+  'Bacteria': 'Bacteria',
   'Eukarya': 'Eukarya'
 }
 
@@ -43,26 +44,26 @@ const axis = {
   'Genome Size': 'gen_size',
   'GC Percentage': 'gc_percentage',
   'N Orfs': 'n_orfs',
-  "Temp associated": 'temp_associated',
-  "Temp min": 'temp_min',
-  "Temp max": 'temp_max',
-  "pH associated": 'ph_associated',
-  "pH min": 'ph_min',
-  "pH max": 'ph_max'
+  'Temp associated': 'temp_associated',
+  'Temp min': 'temp_min',
+  'Temp max': 'temp_max',
+  'pH associated': 'ph_associated',
+  'pH min': 'ph_min',
+  'pH max': 'ph_max'
 
 }
 
 const legend = [
-  { title: 'Archaea', color: '#C92FBE', strokeWidth: 20 },
+  { title: 'Archaea', color: '#893FE8', strokeWidth: 20 },
   { title: 'Bacteria', color: '#12939A', strokeWidth: 20 },
-  { title: 'Eukarya', color: '#2FC97C', strokeWidth: 20 },
+  { title: 'Eukarya', color: '#FFCA26', strokeWidth: 20 },
 ]
 
 const colors = {
-  'Archaea': '#C92FBE',
+  'Archaea': '#893FE8',
   'Bacteria': '#12939A',
-  'Eukarya': '#2FC97C',
-  'highlighted': 'EF5D28'
+  'Eukarya': '#FFCA26',
+  'highlighted': '#C21201'
 }
 
 export default function TestComponent() {
@@ -140,7 +141,7 @@ export default function TestComponent() {
       return false;
     }
     const leftRight = datapoint[plotState.xAccessor] <= state.filterArea.right && datapoint[plotState.xAccessor] >= state.filterArea.left;
-    const upDown = datapoint[plotState.yAccessor] <= state.filterArea.top && datapoint[plotState.yAccessor] >= state.filterArea.bottom;
+    const upDown = datapoint[plotState.yAccessor] <= state.filterArea.top + 2 && datapoint[plotState.yAccessor] >= state.filterArea.bottom + 2;
 
     return leftRight && upDown;
   };
@@ -186,13 +187,13 @@ export default function TestComponent() {
       ]
     }
 
-    else{
+    else {
       hint = [
-      {
-        title: 'Hint',
-        value: `There are ${nearPoints.length} organism in this coordinates`
-      },
-    ]
+        {
+          title: 'Hint',
+          value: `There are ${nearPoints.length} organism in this coordinates`
+        },
+      ]
 
     }
 
@@ -201,12 +202,8 @@ export default function TestComponent() {
 
   const getColor = (datapoint) => {
     // if highlighted points, check if current point in highligted point then return color
-    if (state.highlightedPoints.length) {
-      return (checkInHighlightedPoints(datapoint) ? colors['highlighted'] : colors[datapoint.domain])
-    }
-    else {
-      return colors[datapoint.domain]
-    }
+    return (state.highlightedPoints.some(point => point.id_organism === datapoint.id_organism) ? colors['highlighted'] : colors[datapoint.domain])
+
   }
   const getSize = (datapoint) => {
     let nearPoints = selectedPointsIn(datapoint)
@@ -221,96 +218,129 @@ export default function TestComponent() {
         (
           <Grid container
             spacing={0}
-            direction="row"
-            alignItems="center"
-            justify="center"
+            direction='row'
+            alignItems='center'
+            justify='center'
           >
-            <XYPlot
-              onMouseLeave={() => setStateValue('value', false)}
-              width={plotState.width}
-              height={plotState.height}
-              getX={d => d[plotState.xAccessor]}
-              getY={d => d[plotState.yAccessor]}
+            <Grid item  xs={8}
             >
-              <VerticalGridLines />
-              <HorizontalGridLines />
-              <XAxis />
-              <YAxis />
+              <XYPlot
+                onMouseLeave={() => setStateValue('value', false)}
+                width={plotState.width}
+                height={plotState.height}
+                margin={{ left: 50, bottom: 50 }}
+                getX={d => d[plotState.xAccessor]}
+                getY={d => d[plotState.yAccessor]}
+              >
+                <VerticalGridLines />
+                <HorizontalGridLines />
+                <XAxis style={{
+                  text: { fontSize: 14 }
+                }} />
+                <YAxis style={{
+                  text: { fontSize: 14 }
+                }} />
 
-              <Highlight
-                drag
-                onBrushStart={() => setStateValue('highlighting', true)}
-                onBrush={area => {
-                  setStateValue('filterArea', area);
-                  setStateValue('highlightedPoints', selectedPointsInArea)
-                }}
-                onBrushEnd={area => {
-                  setStateValue('highlighting', false);
-                  setStateValue('filterArea', area);
-                }}
+                <ChartLabel
+                  text={plotState.xAccessor}
+                  className="alt-x-label"
+                  includeMargin={true}
+                  xPercent={0.5}
+                  yPercent={0.89}
+                />
+                <ChartLabel
+                  text={plotState.yAccessor}
+                  className="alt-y-label"
+                  includeMargin={true}
+                  xPercent={0.01}
+                  yPercent={0.5}
+                  style={{
+                    transform: 'rotate(-90)',
+                  }}
+                />
 
-                onDragStart={area => setStateValue('highlighting', true)}
-                onDrag={area => {
-                  setStateValue('filterArea', area);
-                  setStateValue('highlightedPoints', selectedPointsInArea)
-                }}
-                onDragEnd={area => {
-                  setStateValue('highlighting', false);
-                  setStateValue('filterArea', area);
-                }}
 
-              />
-              <MarkSeries
-                className="mark-series-example"
-                strokeWidth={2}
-                opacity="0.5"
-                style={{ pointerEvents: state.highlighting ? 'none' : '' }}
-                colorType="literal"
-                getColor={datapoint => getColor(datapoint)}
+                <Highlight
+                  drag
+                  onBrushStart={() => setStateValue('highlighting', true)}
+                  onBrush={area => {
+                    setStateValue('filterArea', area);
+                    setStateValue('highlightedPoints', selectedPointsInArea)
+                  }}
+                  onBrushEnd={area => {
+                    setStateValue('highlighting', false);
+                    setStateValue('filterArea', area);
+                  }}
 
-                onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
-                onValueMouseOut={() => setStateValue('hovered', false)}
-                onValueClick={(datapoint, event) => {
-                  let nearPoints = selectedPointsIn(datapoint)
-                  //let nearPoints = [datapoint]                  
-                  // for each point in the same coordinates
-                  if (event.event.ctrlKey) {
-                    // Call setState to re render the component after updating some values
-                    for (var i = 0; i < nearPoints.length; i++) {
-                      let tmpDatapoint = nearPoints[i]
-                      // check if point (and points with the same coordinates)already highlighted
-                      if (!checkInHighlightedPoints(tmpDatapoint)) {
-                        state.highlightedPoints.push(tmpDatapoint);
+                  onDragStart={area => setStateValue('highlighting', true)}
+                  onDrag={area => {
+                    setStateValue('filterArea', area);
+                    setStateValue('highlightedPoints', selectedPointsInArea)
+                  }}
+                  onDragEnd={area => {
+                    setStateValue('highlighting', false);
+                    setStateValue('filterArea', area);
+                  }}
+
+                />
+                <MarkSeries
+                  className='mark-series-example'
+                  strokeWidth={2}
+                  opacity='0.7'
+                  style={{ pointerEvents: state.highlighting ? 'none' : '' }}
+                  colorType='literal'
+                  getColor={datapoint => getColor(datapoint)}
+                  sizeType='literal'
+                  getSize={datapoint => getSize(datapoint)}
+
+
+                  onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
+                  onValueMouseOut={() => setStateValue('hovered', false)}
+                  onValueClick={(datapoint, event) => {
+                    let nearPoints = selectedPointsIn(datapoint)
+                    //let nearPoints = [datapoint]                  
+                    // for each point in the same coordinates
+                    if (event.event.ctrlKey || event.event.metaKey) {
+                      // Call setState to re render the component after updating some values
+                      for (var i = 0; i < nearPoints.length; i++) {
+                        let tmpDatapoint = nearPoints[i]
+                        // check if point (and points with the same coordinates)already highlighted
+                        if (!checkInHighlightedPoints(tmpDatapoint)) {
+                          state.highlightedPoints.push(tmpDatapoint);
+                        }
+                        // if highlighted the remove
+                        else {
+                          var index = state.highlightedPoints.findIndex(item => item.id_organism === tmpDatapoint.id_organism);
+                          state.highlightedPoints.splice(index, 1);;
+                        }
                       }
-                      // if highlighted the remove
-                      else {
-                        var index = state.highlightedPoints.findIndex(item => item.id_organism === tmpDatapoint.id_organism);
-                        state.highlightedPoints.splice(index, 1);;
-                      }
+                      setStateValue('highlightedPoints', state.highlightedPoints)
                     }
-                    setStateValue('highlightedPoints', state.highlightedPoints)
+                    else {
+                      setStateValue('highlightedPoints', nearPoints)
+                    }
                   }
-                  else {
-                    setStateValue('highlightedPoints', nearPoints)
                   }
-                }
-                }
-                data={state.filteredData}
-              />
-              {state.hovered && <Hint value={state.hovered} format={() => getHint()} />}
-            </XYPlot>
+                  data={state.filteredData}
+                />
+                {state.hovered && <Hint value={state.hovered} format={() => getHint()} />}
+              </XYPlot>
+            </Grid>
 
-            <DiscreteColorLegend height={200} width={300} items={legend} />
+            <Grid item  xs={1}>
+              <DiscreteColorLegend  items={legend} />
+            </Grid>
+
+            <Grid item  xs={3}>
+              <SelectForm setState={setPlotState} state={plotState} />
+              <RadialForm setState={setFormState} state={formState} />
+            </Grid>
           </Grid>
-
         )
       }
       <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
       {state.highlightedPoints.map(value => <div key={value.id_organism}>{`id:${value.name} ${plotState.xAccessor}:${value[plotState.xAccessor]} ${plotState.yAccessor}:${value[plotState.yAccessor]}`}</div>)}
 
-
-      <SelectForm setState={setPlotState} state={plotState} />
-      <RadialForm setState={setFormState} state={formState} />
     </ThemeProvider>
   );
 }
@@ -325,30 +355,88 @@ function SelectForm(props) {
   }
 
   return (
-    <form autoComplete="off">
+    <form autoComplete='off'>
       <FormControl error={false}>
-        <Typography variant={'h5'}>Select Axis</Typography>
-        <TextField
-          label='x Axis'
-          name="xAccessor"
-          select
-          value={props.state.xAccessor}
-          onChange={event => handleChange(event.target)}
-          input={<Input id="xAccessor" />}
-        >
-          {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
-        </TextField>
+        <Paper style={{ padding: 20 }}>
+          <Typography align='center' variant={'h5'}>Select Axis</Typography>
 
-        <TextField
-          label='y Axis'
-          name="yAccessor"
-          select
-          value={props.state.yAccessor}
-          onChange={event => handleChange(event.target)}
-          input={<Input id="yAccessor" />}
-        >
-          {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
-        </TextField>
+          <Table >
+            <TableBody >
+              <TableRow key={'x-axis'}>
+                <TableCell style={{ borderStyle: 'none' }}>
+                  {'X Axis'}
+                </TableCell>
+                <TableCell style={{ borderStyle: 'none' }}>
+                  <TextField
+                    style={{ minWidth: '100%' }}
+                    name='xAccessor'
+                    select
+                    value={props.state.xAccessor}
+                    onChange={event => handleChange(event.target)}
+                    input={<Input id='xAccessor' />}
+                  >
+                    {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
+                  </TextField>
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell style={{ borderStyle: 'none' }}>
+                  {'Y Axis'}
+                </TableCell>
+                <TableCell style={{ borderStyle: 'none' }}>
+                  <TextField
+                    style={{ minWidth: '100%' }}
+                    name='yAccessor'
+                    select
+                    value={props.state.yAccessor}
+                    onChange={event => handleChange(event.target)}
+                    input={<Input id='yAccessor' />}
+                  >
+                    {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
+                  </TextField>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+
+          <Typography align='center' variant={'h5'}>Plot Size</Typography>
+          <Table>
+          <TableBody >
+            <TableRow>
+              <TableCell>
+                <TextField
+                  style={{ maxWidth: '20%' }}
+                  label='Width'
+                  name='width'
+                  //select
+                  value={props.state.width}
+                  //onChange={event => handleChange(event.target)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                >
+                </TextField>
+              </TableCell>
+              <TableCell>
+                <TextField
+                  style={{ maxWidth: '20%' }}
+                  label='Height'
+                  name='height'
+                  //select
+                  value={props.state.height}
+                  //onChange={event => handleChange(event.target)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                >
+                </TextField>
+              </TableCell>
+            </TableRow>
+            </TableBody>
+          </Table>
+
+        </Paper>
       </FormControl>
     </form>
   );
@@ -365,17 +453,20 @@ function RadialForm(props) {
   }
 
   return (
-    <form autoComplete="off">
-      <FormControl component="fieldset">
-        <Typography variant={'h5'}>Organism Domain</Typography>
-        <FormGroup>
-          {Object.keys(domain).map(key =>
-            <FormControlLabel
-              key={key}
-              control={<Checkbox checked={props.state[key]} onChange={() => handleChange(key)} value={key} />}
-              label={key}>{key}
-            </FormControlLabel>)}
-        </FormGroup>
+    <form autoComplete='off'>
+      <FormControl style={{ minWidth: '100%' }} component='fieldset'>
+        <Paper style={{ padding: 20 }}>
+          <Typography align='center' variant={'h5'}>Organism Domain</Typography>
+          <FormGroup >
+            {Object.keys(domain).map(key =>
+              <FormControlLabel
+                style={{ alignSelf: 'center' }}
+                key={key}
+                control={<Checkbox checked={props.state[key]} onChange={() => handleChange(key)} value={key} />}
+                label={key}>{key}
+              </FormControlLabel>)}
+          </FormGroup>
+        </Paper>
       </FormControl>
 
     </form>
