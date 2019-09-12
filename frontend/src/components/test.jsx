@@ -33,18 +33,6 @@ import { theme } from './css/themes'
 // import config
 import { config } from "../config";
 
-function getRandomData() {
-  return new Array(100).fill(0).map(row => ({
-    id_organism: Math.random() * 10,
-    ph_associated: Math.random() * 10,
-    temp_associated: Math.random() * 20,
-    temp_max: Math.random() * 10,
-    ph_max: Math.random() * 0.5 + 0.5
-  }));
-}
-
-const randomData = getRandomData();
-
 const domain = {
   "Archaea": "Archaea",
   "Bacteria": 'Bacteria',
@@ -64,14 +52,11 @@ const axis = {
 
 }
 
-
 const legend = [
   { title: 'Archaea', color: '#C92FBE', strokeWidth: 20 },
   { title: 'Bacteria', color: '#12939A', strokeWidth: 20 },
   { title: 'Eukarya', color: '#2FC97C', strokeWidth: 20 },
 ]
-
-
 
 const colors = {
   'Archaea': '#C92FBE',
@@ -82,6 +67,7 @@ const colors = {
 
 export default function TestComponent() {
 
+  // Data state
   const [state, setState] = useState({
     data: [],
     filteredData: [],
@@ -94,6 +80,7 @@ export default function TestComponent() {
     highlighting: false
   });
 
+  // Plot state
   const [plotState, setPlotState] = useState({
     width: 1000,
     height: 500,
@@ -102,9 +89,17 @@ export default function TestComponent() {
     colors: ''
   });
 
+  // Radial buttons state
+  const [formState, setFormState] = React.useState({
+    Archaea: true,
+    Bacteria: true,
+    Eukarya: true,
+  });
+
   useEffect(() => {
     let filteredData
     const fetchData = async () => {
+      // if load for 1st time
       if (state.data.length === 0) {
         //setIsLoading(true);
         const result = await axios(
@@ -117,14 +112,21 @@ export default function TestComponent() {
         //setIsLoading(false);
       }
       else {
+        // Update axis
         filteredData = state.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
+
+        // Update categorical values (Domain)
+        let currentDomain = Object.keys(formState).filter(item => formState[item] === true)
+        // if item.domain in filtered domain
+        filteredData = filteredData.filter(item => (currentDomain.indexOf(item.domain) != -1))
+
         setStateValue('filteredData', filteredData)
       }
     };
 
     fetchData();
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, [state.data, plotState.xAccessor, plotState.yAccessor]);
+  }, [state.data, plotState.xAccessor, plotState.yAccessor, formState]);
 
   function setStateValue(keyName, newValue) {
     setState(oldValues => ({
@@ -133,7 +135,7 @@ export default function TestComponent() {
     }));
   }
 
-  const highlightPoint = datapoint => {
+  const highlightPointInArea = datapoint => {
     if (!state.filterArea) {
       return false;
     }
@@ -143,13 +145,59 @@ export default function TestComponent() {
     return leftRight && upDown;
   };
 
-  const selectedPoints = state.filteredData.filter(highlightPoint);
+
+
+  const selectedPointsInArea = state.filteredData.filter(highlightPointInArea);
+  const selectedPointsIn = datapoint => {
+    let points = state.filteredData.filter(point => {
+      return (point[plotState.xAccessor] === datapoint[plotState.xAccessor]) && (point[plotState.yAccessor] === datapoint[plotState.yAccessor])
+    });
+    return points
+  }
+
+
 
   const checkInHighlightedPoints = (point) => {
     var found = state.highlightedPoints.some(value => value['id_organism'] === point['id_organism']);
     return found
   };
 
+  const getHint = () => {
+    let hint
+    let nearPoints = selectedPointsIn(state.hovered)
+    if (nearPoints.length === 1) {
+      hint = [
+        {
+          title: 'Name',
+          value: state.hovered.name
+        },
+        {
+          title: 'Strain',
+          value: state.hovered.strains.map(a => a.strain_name).join(' = ')
+        },
+        {
+          title: plotState.xAccessor,
+          value: state.hovered[plotState.xAccessor]
+        },
+        {
+          title: plotState.yAccessor,
+          value: state.hovered[plotState.yAccessor]
+        },
+      ]
+    }
+
+    else{
+      hint = [
+      {
+        title: 'Hint',
+        value: `There are ${nearPoints.length} organism in this coordinates`
+      },
+    ]
+
+    }
+
+    return hint
+  }
 
   const getColor = (datapoint) => {
     // if highlighted points, check if current point in highligted point then return color
@@ -160,6 +208,11 @@ export default function TestComponent() {
       return colors[datapoint.domain]
     }
   }
+  const getSize = (datapoint) => {
+    let nearPoints = selectedPointsIn(datapoint)
+    return 4 + nearPoints.length * 0.2
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -172,92 +225,98 @@ export default function TestComponent() {
             alignItems="center"
             justify="center"
           >
-              <XYPlot
-                onMouseLeave={() => setStateValue('value', false)}
-                width={plotState.width}
-                height={plotState.height}
-                getX={d => d[plotState.xAccessor]}
-                getY={d => d[plotState.yAccessor]}
-              >
-                <VerticalGridLines />
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
+            <XYPlot
+              onMouseLeave={() => setStateValue('value', false)}
+              width={plotState.width}
+              height={plotState.height}
+              getX={d => d[plotState.xAccessor]}
+              getY={d => d[plotState.yAccessor]}
+            >
+              <VerticalGridLines />
+              <HorizontalGridLines />
+              <XAxis />
+              <YAxis />
 
-                <Highlight
-                  drag
-                  onBrushStart={() => setStateValue('highlighting', true)}
-                  onBrush={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPoints)
-                  }}
-                  onBrushEnd={area => {
-                    setStateValue('highlighting', false);
-                    setStateValue('filterArea', area);
-                  }}
+              <Highlight
+                drag
+                onBrushStart={() => setStateValue('highlighting', true)}
+                onBrush={area => {
+                  setStateValue('filterArea', area);
+                  setStateValue('highlightedPoints', selectedPointsInArea)
+                }}
+                onBrushEnd={area => {
+                  setStateValue('highlighting', false);
+                  setStateValue('filterArea', area);
+                }}
 
-                  onDragStart={area => setStateValue('highlighting', true)}
-                  onDrag={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPoints)
-                  }}
-                  onDragEnd={area => {
-                    setStateValue('highlighting', false);
-                    setStateValue('filterArea', area);
-                  }}
+                onDragStart={area => setStateValue('highlighting', true)}
+                onDrag={area => {
+                  setStateValue('filterArea', area);
+                  setStateValue('highlightedPoints', selectedPointsInArea)
+                }}
+                onDragEnd={area => {
+                  setStateValue('highlighting', false);
+                  setStateValue('filterArea', area);
+                }}
 
-                />
-                <MarkSeries
-                  className="mark-series-example"
-                  strokeWidth={2}
-                  opacity="0.8"
-                  style={{ pointerEvents: state.highlighting ? 'none' : '' }}
-                  colorType="literal"
-                  getColor={datapoint => getColor(datapoint)}
-                  onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
-                  onValueMouseOut={() => setStateValue('hovered', false)}
-                  onValueClick={(datapoint, event) => {
-                    if (event.event.ctrlKey) {
-                      // Call setState to re render the component after updating some values
-                      if (!checkInHighlightedPoints(datapoint)) {
-                        state.highlightedPoints.push(datapoint);
-                        setStateValue('highlightedPoints', state.highlightedPoints)
+              />
+              <MarkSeries
+                className="mark-series-example"
+                strokeWidth={2}
+                opacity="0.5"
+                style={{ pointerEvents: state.highlighting ? 'none' : '' }}
+                colorType="literal"
+                getColor={datapoint => getColor(datapoint)}
+
+                onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
+                onValueMouseOut={() => setStateValue('hovered', false)}
+                onValueClick={(datapoint, event) => {
+                  let nearPoints = selectedPointsIn(datapoint)
+                  //let nearPoints = [datapoint]                  
+                  // for each point in the same coordinates
+                  if (event.event.ctrlKey) {
+                    // Call setState to re render the component after updating some values
+                    for (var i = 0; i < nearPoints.length; i++) {
+                      let tmpDatapoint = nearPoints[i]
+                      // check if point (and points with the same coordinates)already highlighted
+                      if (!checkInHighlightedPoints(tmpDatapoint)) {
+                        state.highlightedPoints.push(tmpDatapoint);
                       }
+                      // if highlighted the remove
                       else {
-                        var index = state.highlightedPoints.findIndex(item => item.id_organism === datapoint.id_organism);
+                        var index = state.highlightedPoints.findIndex(item => item.id_organism === tmpDatapoint.id_organism);
                         state.highlightedPoints.splice(index, 1);;
-                        setStateValue('highlightedPoints', state.highlightedPoints)
                       }
                     }
-                    else {
-                      setStateValue('highlightedPoints', [datapoint])
-                    }
-                  }}
-                  data={state.filteredData}
-                />
-                {state.hovered && <Hint value={state.hovered} />}
-              </XYPlot>
+                    setStateValue('highlightedPoints', state.highlightedPoints)
+                  }
+                  else {
+                    setStateValue('highlightedPoints', nearPoints)
+                  }
+                }
+                }
+                data={state.filteredData}
+              />
+              {state.hovered && <Hint value={state.hovered} format={() => getHint()} />}
+            </XYPlot>
 
-              <DiscreteColorLegend height={200} width={300} items={legend} />
-            </Grid>
+            <DiscreteColorLegend height={200} width={300} items={legend} />
+          </Grid>
 
         )
       }
       <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
-      {state.highlightedPoints.map(value => <div key={value.id_organism}>{`${plotState.xAccessor}:${value[plotState.xAccessor]} ${plotState.yAccessor}:${value[plotState.yAccessor]}`}</div>)}
+      {state.highlightedPoints.map(value => <div key={value.id_organism}>{`id:${value.name} ${plotState.xAccessor}:${value[plotState.xAccessor]} ${plotState.yAccessor}:${value[plotState.yAccessor]}`}</div>)}
 
 
       <SelectForm setState={setPlotState} state={plotState} />
-      <RadialForm/>
+      <RadialForm setState={setFormState} state={formState} />
     </ThemeProvider>
   );
 }
 
 function SelectForm(props) {
 
-  function handleClick() {
-    return
-  }
   function handleChange(target) {
     props.setState(oldValues => ({
       ...oldValues,
@@ -291,46 +350,31 @@ function SelectForm(props) {
           {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
         </TextField>
       </FormControl>
-
-      <Button variant="outlined" onClick={() => handleClick()}>Update</Button>
     </form>
   );
 }
 
-function RadialForm() {
+function RadialForm(props) {
 
-  const [state, setState] = React.useState({
-    Archaea: true,
-    Bacteria: true,
-    Eukarya: true,
-  });
   function handleChange(name) {
-    setState(oldValues => ({
+    // Set radio button state (parent state)
+    props.setState(oldValues => ({
       ...oldValues,
-      [name]: !state[name],
+      [name]: !props.state[name],
     }));
-    console.log("something change!!")
   }
 
   return (
     <form autoComplete="off">
       <FormControl component="fieldset">
-      <Typography variant={'h5'}>Organism Domain</Typography>
-      <FormGroup>
-          <FormControlLabel
-            control={<Checkbox checked={state.Archaea} onChange={() => handleChange("Archaea")} value="Archaea" />}
-            label="Archaea"
-          />
-          <FormControlLabel
-            control={<Checkbox checked={state.Bacteria} onChange={() => handleChange("Bacteria")} value="Bacteria" />}
-            label="Bacteria"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox checked={state.Eukarya} onChange={() => handleChange("Eukarya")} value="Eukarya" />
-            }
-            label="Eukarya"
-          />
+        <Typography variant={'h5'}>Organism Domain</Typography>
+        <FormGroup>
+          {Object.keys(domain).map(key =>
+            <FormControlLabel
+              key={key}
+              control={<Checkbox checked={props.state[key]} onChange={() => handleChange(key)} value={key} />}
+              label={key}>{key}
+            </FormControlLabel>)}
         </FormGroup>
       </FormControl>
 
