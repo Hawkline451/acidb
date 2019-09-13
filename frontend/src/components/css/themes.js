@@ -171,7 +171,7 @@ export const stylesDetail = makeStyles({
   tableCell: {
     width: '50%',
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.text.secondary,
+    color: '#ffffff',
   },
   listItem: {
     backgroundColor: theme.palette.primary.main,
@@ -179,7 +179,7 @@ export const stylesDetail = makeStyles({
       backgroundColor: theme.palette.secondary.main,
       color: theme.palette.text.primary,
     },
-    color: theme.palette.text.secondary,
+    color: '#ffffff',
   }
 });
 

@@ -108,7 +108,7 @@ export default function Organism(props) {
       case ('ftp_url'):
         return (<Link href={state.data[key]} color="primary">{state.data[key]}</Link>)
       case ('isolated'):
-        return (state.data[key] === true ? 'Yes' : 'No')
+        return (state.data[key])
       default:
       // do nothing
     }

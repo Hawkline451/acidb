@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 
 import {
-  Button, Input, FormControl, MenuItem, TextField, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, Table, TableBody, TableCell, TableRow
+  Button, Input, FormControl, MenuItem, TextField, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper,
+  Table, TableBody, TableCell, TableRow, Select, InputLabel
 } from '@material-ui/core';
 
 // NPM
@@ -34,24 +35,34 @@ import { theme } from './css/themes'
 // import config
 import { config } from '../config';
 
-const domain = {
-  'Archaea': 'Archaea',
-  'Bacteria': 'Bacteria',
-  'Eukarya': 'Eukarya'
-}
+const domain = [
+  'Archaea',
+  'Bacteria',
+  'Eukarya'
+]
 
-const axis = {
-  'Genome Size': 'gen_size',
-  'GC Percentage': 'gc_percentage',
-  'N Orfs': 'n_orfs',
-  'Temp associated': 'temp_associated',
-  'Temp min': 'temp_min',
-  'Temp max': 'temp_max',
-  'pH associated': 'ph_associated',
-  'pH min': 'ph_min',
-  'pH max': 'ph_max'
-
+const genState = {
+  isolated:
+    ['isolated',
+      'non_isolated',],
+  gen_state:
+    ['completed',
+      'draft',]
 }
+const plotSize = [250, 500, 750, 1000, 1250]
+
+const axis = [
+  'gen_size',
+  'gc_percentage',
+  'n_orfs',
+  'temp_associated',
+  'temp_min',
+  'temp_max',
+  'ph_associated',
+  'ph_min',
+  'ph_max'
+
+]
 
 const legend = [
   { title: 'Archaea', color: '#893FE8', strokeWidth: 20 },
@@ -70,7 +81,7 @@ export default function TestComponent() {
 
   // Data state
   const [state, setState] = useState({
-    data: [],
+    data: null,
     filteredData: [],
     value: false,
 
@@ -95,13 +106,18 @@ export default function TestComponent() {
     Archaea: true,
     Bacteria: true,
     Eukarya: true,
+
+    isolated: true,
+    non_isolated: true,
+    completed: true,
+    draft: true
   });
 
   useEffect(() => {
     let filteredData
     const fetchData = async () => {
       // if load for 1st time
-      if (state.data.length === 0) {
+      if (state.data === null) {
         //setIsLoading(true);
         const result = await axios(
           config.API_SIMPLE_PLOT,
@@ -116,10 +132,26 @@ export default function TestComponent() {
         // Update axis
         filteredData = state.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
 
-        // Update categorical values (Domain)
-        let currentDomain = Object.keys(formState).filter(item => formState[item] === true)
+        // Update categorical values 
+        let currentFormState = Object.keys(formState).filter(item => formState[item] === true)
+        // currentFormState contains an array with the names of the true properties eg [Archaea,Bacteria, isolated,draft,complete]
+
         // if item.domain in filtered domain
-        filteredData = filteredData.filter(item => (currentDomain.indexOf(item.domain) != -1))
+        filteredData = filteredData.filter(item => (currentFormState.indexOf(item.domain) != -1))
+
+        // filter state (isolated, gen_state)
+
+        // isolated = 'yes' non_isolated='no'
+        let isolatedValues = []
+        if (currentFormState.indexOf('isolated') !== -1) {
+          isolatedValues.push('yes')
+        }
+        if (currentFormState.indexOf('non_isolated') !== -1) {
+          isolatedValues.push('no')
+        }
+
+        filteredData = filteredData.filter(item => (isolatedValues.indexOf(item.isolated) != -1))
+        filteredData = filteredData.filter(item => (currentFormState.indexOf(item.state) != -1))
 
         setStateValue('filteredData', filteredData)
       }
@@ -217,12 +249,12 @@ export default function TestComponent() {
         (<Loader />) :
         (
           <Grid container
-            spacing={0}
+            spacing={5}
             direction='row'
             alignItems='center'
             justify='center'
           >
-            <Grid item  xs={8}
+            <Grid item
             >
               <XYPlot
                 onMouseLeave={() => setStateValue('value', false)}
@@ -234,12 +266,17 @@ export default function TestComponent() {
               >
                 <VerticalGridLines />
                 <HorizontalGridLines />
-                <XAxis style={{
-                  text: { fontSize: 14 }
-                }} />
-                <YAxis style={{
-                  text: { fontSize: 14 }
-                }} />
+                <XAxis
+                  title={plotState.xAccessor}
+                  style={{
+                    text: { fontSize: 14 }
+                  }} />
+                <YAxis
+                  title={plotState.yAccessor}
+                  style={{
+                    text: { fontSize: 14 }
+                  }} />
+
 
                 <ChartLabel
                   text={plotState.xAccessor}
@@ -258,7 +295,6 @@ export default function TestComponent() {
                     transform: 'rotate(-90)',
                   }}
                 />
-
 
                 <Highlight
                   drag
@@ -327,20 +363,26 @@ export default function TestComponent() {
               </XYPlot>
             </Grid>
 
-            <Grid item  xs={1}>
-              <DiscreteColorLegend  items={legend} />
+            <Grid item >
+              <DiscreteColorLegend items={legend} />
             </Grid>
 
-            <Grid item  xs={3}>
+            <Grid item >
               <SelectForm setState={setPlotState} state={plotState} />
               <RadialForm setState={setFormState} state={formState} />
             </Grid>
           </Grid>
         )
       }
-      <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
-      {state.highlightedPoints.map(value => <div key={value.id_organism}>{`id:${value.name} ${plotState.xAccessor}:${value[plotState.xAccessor]} ${plotState.yAccessor}:${value[plotState.yAccessor]}`}</div>)}
-
+      <Grid container
+        direction='column'
+        alignItems='center'
+      >
+        <Grid item>
+          <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
+          {state.highlightedPoints.map(value => <div key={value.id_organism}>{`id:${value.name} ${plotState.xAccessor}:${value[plotState.xAccessor]} ${plotState.yAccessor}:${value[plotState.yAccessor]}`}</div>)}
+        </Grid>
+      </Grid>
     </ThemeProvider>
   );
 }
@@ -355,90 +397,109 @@ function SelectForm(props) {
   }
 
   return (
-    <form autoComplete='off'>
-      <FormControl error={false}>
-        <Paper style={{ padding: 20 }}>
-          <Typography align='center' variant={'h5'}>Select Axis</Typography>
+    <Fragment>
+      <Paper style={{ padding: 20 }}>
+        <Typography align='center' variant={'h5'}>Select Axis</Typography>
 
-          <Table >
-            <TableBody >
-              <TableRow key={'x-axis'}>
-                <TableCell style={{ borderStyle: 'none' }}>
-                  {'X Axis'}
-                </TableCell>
-                <TableCell style={{ borderStyle: 'none' }}>
-                  <TextField
-                    style={{ minWidth: '100%' }}
-                    name='xAccessor'
-                    select
-                    value={props.state.xAccessor}
-                    onChange={event => handleChange(event.target)}
-                    input={<Input id='xAccessor' />}
-                  >
-                    {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
-                  </TextField>
-                </TableCell>
-              </TableRow>
+        <Table >
+          <TableBody >
+            <TableRow key={'x-axis'}>
+              <TableCell style={{ borderStyle: 'none' }}>
+                {'X Axis'}
+              </TableCell>
+              <TableCell style={{ borderStyle: 'none' }}>
+                <Select
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }
+                  }}
+                  style={{ minWidth: '100%' }}
+                  name='xAccessor'
+                  value={props.state.xAccessor}
+                  onChange={event => handleChange(event.target)}
+                >
+                  {axis.map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                </Select>
+              </TableCell>
+            </TableRow>
 
-              <TableRow>
-                <TableCell style={{ borderStyle: 'none' }}>
-                  {'Y Axis'}
-                </TableCell>
-                <TableCell style={{ borderStyle: 'none' }}>
-                  <TextField
-                    style={{ minWidth: '100%' }}
-                    name='yAccessor'
-                    select
-                    value={props.state.yAccessor}
-                    onChange={event => handleChange(event.target)}
-                    input={<Input id='yAccessor' />}
-                  >
-                    {Object.keys(axis).map(key => <MenuItem key={key} value={axis[key]}>{key}</MenuItem>)}
-                  </TextField>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+            <TableRow>
+              <TableCell style={{ borderStyle: 'none' }}>
+                {'Y Axis'}
+              </TableCell>
+              <TableCell style={{ borderStyle: 'none' }}>
+                <Select
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }
+                  }}
+                  style={{ minWidth: '100%' }}
+                  name='yAccessor'
+                  value={props.state.yAccessor}
+                  onChange={event => handleChange(event.target)}
+                >
+                  {axis.map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                </Select>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Paper>
+      <Paper style={{ padding: 20 }}>
+        <Typography align='center' variant={'h5'}>Plot Size</Typography>
+        <Table style={{ tableLayout: 'auto' }}>
 
-          <Typography align='center' variant={'h5'}>Plot Size</Typography>
-          <Table>
           <TableBody >
             <TableRow>
               <TableCell>
-                <TextField
-                  style={{ maxWidth: '20%' }}
-                  label='Width'
-                  name='width'
-                  //select
-                  value={props.state.width}
-                  //onChange={event => handleChange(event.target)}
-                  InputLabelProps={{
-                    shrink: true,
+                <InputLabel>Height</InputLabel>
+                <Select
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }
                   }}
-                >
-                </TextField>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  style={{ maxWidth: '20%' }}
-                  label='Height'
+                  style={{ minWidth: '100%' }}
                   name='height'
-                  //select
                   value={props.state.height}
-                  //onChange={event => handleChange(event.target)}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  onChange={event => handleChange(event.target)}
                 >
-                </TextField>
+                  {plotSize.map(val => <MenuItem key={val} value={val}>{`${val} px`}</MenuItem>)}
+                </Select>
+              </TableCell>
+
+              <TableCell>
+                <InputLabel>Width</InputLabel>
+                <Select
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }
+                  }}
+                  style={{ minWidth: '100%' }}
+                  name='width'
+                  value={props.state.width}
+                  onChange={event => handleChange(event.target)}
+                >
+                  {plotSize.map(val => <MenuItem key={val} value={val}>{`${val} px`}</MenuItem>)}
+                </Select>
               </TableCell>
             </TableRow>
-            </TableBody>
-          </Table>
+          </TableBody>
+        </Table>
 
-        </Paper>
-      </FormControl>
-    </form>
+      </Paper>
+    </Fragment>
   );
 }
 
@@ -446,6 +507,7 @@ function RadialForm(props) {
 
   function handleChange(name) {
     // Set radio button state (parent state)
+    console.log(name)
     props.setState(oldValues => ({
       ...oldValues,
       [name]: !props.state[name],
@@ -458,16 +520,48 @@ function RadialForm(props) {
         <Paper style={{ padding: 20 }}>
           <Typography align='center' variant={'h5'}>Organism Domain</Typography>
           <FormGroup >
-            {Object.keys(domain).map(key =>
+            {domain.map(val =>
               <FormControlLabel
                 style={{ alignSelf: 'center' }}
-                key={key}
-                control={<Checkbox checked={props.state[key]} onChange={() => handleChange(key)} value={key} />}
-                label={key}>{key}
+                key={val}
+                control={<Checkbox checked={props.state[val]} onChange={() => handleChange(val)} value={val} />}
+                label={val}>
+                {val}
               </FormControlLabel>)}
           </FormGroup>
         </Paper>
       </FormControl>
+
+      <FormControl style={{ minWidth: '100%' }} component='fieldset'>
+        <Paper style={{ padding: 20 }}>
+          <Typography align='center' variant={'h5'}>State</Typography>
+
+          <Grid container
+            spacing={0}
+            direction='row'
+            alignItems='center'
+            justify='center'>
+
+            {Object.keys(genState).map(key =>
+              <Grid key={key} item>
+                <FormGroup >
+                  {genState[key].map(val =>
+                    <FormControlLabel
+                      style={{ alignSelf: 'rigth' }}
+                      key={val}
+                      control={<Checkbox checked={props.state[val]} onChange={() => handleChange(val)} value={val} />}
+                      label={val}>
+                      {val}
+                    </FormControlLabel>)}
+                </FormGroup>
+              </Grid>
+            )
+            }
+          </Grid>
+
+        </Paper>
+      </FormControl>
+
 
     </form>
   );

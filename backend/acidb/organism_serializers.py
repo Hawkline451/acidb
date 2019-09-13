@@ -6,6 +6,11 @@ from rest_framework import serializers
 
 class OrganismSerializer(serializers.HyperlinkedModelSerializer):
     # organism_id = serializers.Field(source='organism.id')
+    isolated = serializers.SerializerMethodField(read_only=True)
+
+    def get_isolated(self, obj):
+        return 'yes' if obj.isolated else 'no'
+
     class Meta:
         model = Organism
         fields = ['id_organism', 'name', 'isolated', 'state', 'seq_date', 'gen_size',
@@ -37,6 +42,10 @@ class TaxonomySummarySerializer(serializers.HyperlinkedModelSerializer):
 class SummaryOrganismSerializer(serializers.HyperlinkedModelSerializer):
     strains = StrainSerializer(many=True)
     taxonomy = TaxonomySummarySerializer(many=True)
+    isolated = serializers.SerializerMethodField(read_only=True)
+
+    def get_isolated(self, obj):
+        return 'yes' if obj.isolated else 'no'
 
     class Meta:
         model = Organism
@@ -63,6 +72,10 @@ class DetailOrganismSerializer(serializers.HyperlinkedModelSerializer):
     taxonomy = TaxonomySerializer(many=True)
     references = ReferenceSerializer(many=True)
     growth_detail = GrowthDetailSerializer(many=False)
+    isolated = serializers.SerializerMethodField(read_only=True)
+
+    def get_isolated(self, obj):
+        return 'yes' if obj.isolated else 'no'
 
     class Meta:
         model = Organism
@@ -143,14 +156,18 @@ class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SimplePlotSerializer(serializers.HyperlinkedModelSerializer):
-    #strains = StrainSerializer(many=True)
+    strains = StrainSerializer(many=True)
     domain = serializers.SerializerMethodField(read_only=True)
+    isolated = serializers.SerializerMethodField(read_only=True)
 
     def get_domain(self, obj):
         return obj.taxonomy.all()[0].domain
 
+    def get_isolated(self, obj):
+        return 'yes' if obj.isolated else 'no'
+
     class Meta:
         model = Organism
-        fields = ['id_organism', 'name', 'domain', 'isolated', 'state', 'seq_date', 'gen_size',
+        fields = ['id_organism', 'name', 'strains', 'domain', 'isolated', 'state', 'seq_date', 'gen_size',
                   'gc_percentage', 'n_orfs', 'temp_associated', 'temp_min', 'temp_max',
                   'ph_associated', 'ph_min', 'ph_max', ]
