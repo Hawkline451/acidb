@@ -49,7 +49,7 @@ function renderInput(inputProps) {
 function renderSuggestion(suggestionProps) {
   const { suggestion, itemProps } = suggestionProps;
   return (
-    <MenuItem {...itemProps} key={suggestion.id_organism} component='div'>
+    <MenuItem {...itemProps} key={suggestion.id_organism+'_'+suggestion.strain_name} component='div'>
       <Grid
         container
         direction='column'

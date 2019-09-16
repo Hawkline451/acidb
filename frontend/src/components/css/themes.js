@@ -145,6 +145,10 @@ export const stylesTable = makeStyles({
   },
   noDecoratorLink: {
     textDecoration: 'none',
+  },
+  bigFontTable: {
+    fontSize: 16,
+    textDecoration: 'none',
   }
 });
 
@@ -187,7 +191,8 @@ export const stylesDetail = makeStyles({
 export const stylesTree = makeStyles({
   container: {
     margin: 20,
-    minWidth: '50%'
+    minWidth: '50%',
+    borderRadius: 0
   },
   icon: {
     fontSize: 26,

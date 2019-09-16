@@ -16,10 +16,12 @@
     "home" : "Home",
     "tools" : "Tools",
     "tree" : "Tree",
-    "table" : "Table"
+    "table" : "Table",
+    "plot" : "Viz"
   },
   "tree":{
-    "title": "Taxonomic Tree"
+    "title": "Navigation Tree",
+    "hint" : "Loaded: {{pages}} / Total: {{total}}. Click here to load more ...   "
   },
   "table":{
     "name": "Name",
@@ -85,6 +87,21 @@
   "button":{
     "open_detail": "Open Detail",
     "close": "Close"
+  },
+
+  "plot":{
+    "select_axis" : "Select Axis",
+    "x_axis" : " X Axis",
+    "y_axis" : "Y Axis",
+    "plot_size" : "Canvas size",
+    "height" : "Height",
+    "width" : "Width",
+    "organism_domain" : "Organism Domain",
+    "state" : "State",
+    "isolated" : "Isolated",
+    "non_isolated" : "Non Isolated",
+    "completed" : "Completed",
+    "draft" : "Draft"
   }
   
 }

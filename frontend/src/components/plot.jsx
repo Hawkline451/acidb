@@ -19,8 +19,7 @@ import {
 import 'react-vis/dist/style.css';
 
 import axios from 'axios';
-import { CSVLink } from "react-csv";
-
+import { CSVLink } from 'react-csv';
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -75,8 +74,9 @@ const legend = [
   { title: 'Eukarya', color: colors['Eukarya'], strokeWidth: 20 },
 ]
 
-export default function TestComponent() {
+export default function PlotComponent() {
   const classes = useStylesTable();
+  const { t } = useTranslation();
 
   // Data state
   const [state, setState] = useState({
@@ -172,12 +172,10 @@ export default function TestComponent() {
       return false;
     }
     const leftRight = datapoint[plotState.xAccessor] <= state.filterArea.right && datapoint[plotState.xAccessor] >= state.filterArea.left;
-    const upDown = datapoint[plotState.yAccessor] <= state.filterArea.top  && datapoint[plotState.yAccessor] >= state.filterArea.bottom ;
+    const upDown = datapoint[plotState.yAccessor] <= state.filterArea.top && datapoint[plotState.yAccessor] >= state.filterArea.bottom;
 
     return leftRight && upDown;
   };
-
-
 
   const selectedPointsInArea = state.filteredData.filter(highlightPointInArea);
   const selectedPointsIn = datapoint => {
@@ -186,8 +184,6 @@ export default function TestComponent() {
     });
     return points
   }
-
-
 
   const checkInHighlightedPoints = (point) => {
     var found = state.highlightedPoints.some(value => value['id_organism'] === point['id_organism']);
@@ -217,7 +213,6 @@ export default function TestComponent() {
         },
       ]
     }
-
     else {
       hint = [
         {
@@ -225,17 +220,15 @@ export default function TestComponent() {
           value: `There are ${nearPoints.length} organism in this coordinates`
         },
       ]
-
     }
-
     return hint
   }
 
   const getColor = (datapoint) => {
     // if highlighted points, check if current point in highligted point then return color
     return (state.highlightedPoints.some(point => point.id_organism === datapoint.id_organism) ? colors['highlighted'] : colors[datapoint.domain])
-
   }
+
   const getSize = (datapoint) => {
     let nearPoints = selectedPointsIn(datapoint)
     return 4 + nearPoints.length * 0.2
@@ -253,7 +246,7 @@ export default function TestComponent() {
 
   return (
     <ThemeProvider theme={theme}>
-      {false ?
+      {state.data === null ?
         (<Loader />) :
         (
           <Grid container
@@ -265,6 +258,7 @@ export default function TestComponent() {
             <Grid item
             >
               <XYPlot
+                id='svg-plot'
                 onMouseLeave={() => setStateValue('value', false)}
                 width={plotState.width}
                 height={plotState.height}
@@ -275,12 +269,12 @@ export default function TestComponent() {
                 <VerticalGridLines />
                 <HorizontalGridLines />
                 <XAxis
-                  title={plotState.xAccessor}
+                  title={t('table.' + plotState.xAccessor)}
                   style={{
                     text: { fontSize: 14 }
                   }} />
                 <YAxis
-                  title={plotState.yAccessor}
+                  title={t('table.' + plotState.yAccessor)}
                   style={{
                     text: { fontSize: 14 }
                   }} />
@@ -317,7 +311,6 @@ export default function TestComponent() {
                   getColor={datapoint => getColor(datapoint)}
                   sizeType='literal'
                   getSize={datapoint => getSize(datapoint)}
-
 
                   onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
                   onValueMouseOut={() => setStateValue('hovered', false)}
@@ -356,7 +349,7 @@ export default function TestComponent() {
               <DiscreteColorLegend items={legend} />
             </Grid>
 
-            <Grid item >
+            <Grid item style={{ marginTop: 20, maxWidth: 400 }}>
               <SelectForm setState={setPlotState} state={plotState} />
               <RadioForm setState={setFormState} state={formState} />
             </Grid>
@@ -383,12 +376,12 @@ export default function TestComponent() {
               separator={'\t'}
               filename={'filtered_points.csv'}
             >
-              <Button className={classes.formControl} variant="outlined" color="primary">{'download_csv'}</Button>
+              <Button className={classes.formControl} variant='outlined' color='primary'>{t('download_csv')}</Button>
             </CSVLink>
           </Grid>
         </Grid>
 
-        <Grid item>
+        <Grid >
           <OrganismView highlightedPoints={state.highlightedPoints} plotState={plotState} />
         </Grid>
       </Grid>

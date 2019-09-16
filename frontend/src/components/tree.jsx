@@ -15,7 +15,7 @@ import {
 } from '@material-ui/icons';
 
 // Styles
-import {ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@material-ui/styles";
 import { theme, stylesTree } from './css/themes'
 
 // import config
@@ -24,7 +24,7 @@ import { config } from "../config";
 // NPM 
 
 // Internationalization
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
 
 // mui tree
 import Tree from "material-ui-tree";
@@ -88,7 +88,7 @@ export default function TreeComponent() {
       }
       else {
         variant = "body2";
-        iconComp = <DescriptionIcon style={{color:'#F0008C'}} />;
+        iconComp = <DescriptionIcon style={{ color: '#F0008C' }} />;
       }
       let nodeName
       // if leaf, 
@@ -125,7 +125,6 @@ export default function TreeComponent() {
                 <div></div>
               }
             </Grid>
-
           </Grid>
         )
       );
@@ -142,7 +141,6 @@ export default function TreeComponent() {
 
   // Recursive fetch unclassified nodes, we only want the leaves of this kind of nodes
   const fetchData = useCallback(async (node, data) => {
-
     const res = await axiosFetch(data.url);
 
     if (res.data && res.data.tree) {
@@ -225,7 +223,7 @@ export default function TreeComponent() {
       >
         <div style={{ marginTop: 20 }} >
           <Typography variant="h4">
-            Navigation Tree
+            {t('tree.title')}
           </Typography>
         </div>
         <Tree
@@ -239,9 +237,9 @@ export default function TreeComponent() {
           renderLabel={renderLabel}
           renderLoadMoreText={(page, pageSize, total) =>
             (<div style={{ fontSize: 20 }}>
-              Loaded: {(page + 1) *
-                pageSize} / Total: {total}. Click here to load more ...
-            </div>)
+              {t('tree.hint', { pages: (page + 1) * pageSize, total: total })}
+            </div>
+            )
           }
           pageSize={10}
           actionsAlignRight={true}
@@ -273,10 +271,10 @@ function SimpleDialog(props) {
     <Dialog onClose={onClose} open={state.open}>
       {state.open ?
         (<div>
-          <DialogTitle style={{paddingBottom:5}}>{state.data.name}</DialogTitle>
+          <DialogTitle style={{ paddingBottom: 5 }}>{state.data.name}</DialogTitle>
           <DialogContent>
-            <DialogContentText style={{color:'#808080', paddingTop:0}}>
-            {t('table.strain') + ': ' + state.data.strains.map(a => a.strain_name).join(' = ')}
+            <DialogContentText style={{ color: '#808080', paddingTop: 0 }}>
+              {t('table.strain') + ': ' + state.data.strains.map(a => a.strain_name).join(' = ')}
             </DialogContentText>
             <Table>
               <TableBody >
@@ -297,11 +295,11 @@ function SimpleDialog(props) {
           </DialogContent>
 
           <DialogActions>
-          <Button component={Link} to={'/app/organism/' + state.data.id_organism} color="primary">
+            <Button component={Link} to={'/app/organism/' + state.data.id_organism} color="primary">
               {t('button.open_detail')}
             </Button>
             <Button onClick={onClose} color="primary">
-            {t('button.close')}
+              {t('button.close')}
             </Button>
           </DialogActions>
         </div>)

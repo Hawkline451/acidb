@@ -92,7 +92,7 @@ export default function NavBar() {
             className={classes.homeButton}
             onClick={cleanState}
             component={Link} to='/app'>
-            <Typography variant='h5' color='textContrast' noWrap>
+            <Typography variant='h5' style={{color:'#ffffff'}} noWrap>
               {t('navbar.title')}
             </Typography>
           </Button>
@@ -100,6 +100,7 @@ export default function NavBar() {
           <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
             <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
             <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
+            <Tab label={t('navbar.plot')} component={Link} to='/app/tools_plot' className={classes.tabRoot} />
             <TabMenu />
           </Tabs>
 

@@ -19,7 +19,7 @@ import { Loader } from './loader'
 import { config } from "../config";
 
 // components
-import OrganismNotFound from './organismNotFound';
+import OrganismNotFound from './organism_not_found';
 
 const useStylesDetail = stylesDetail
 

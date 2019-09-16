@@ -22,6 +22,7 @@ class App extends Component {
           <Route exact path='/app/tools_tree' component={AppPage} />
           <Route exact path='/app/tools' component={AppPage} />
           <Route exact path='/app/tools_table' component={AppPage} />
+          <Route exact path='/app/tools_plot' component={AppPage} />
 
           {/* Test page*/}
           <Route exact path="/test_page" component={TestComponent}/>
