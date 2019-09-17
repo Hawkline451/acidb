@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import {
-  Paper, IconButton, Grid, MenuItem, TextField, ButtonBase, Typography, Popper
+  Paper, IconButton, Grid, MenuItem, TextField, ButtonBase, Typography, Popper, Select
 } from '@material-ui/core';
 import {
   Search as SearchIcon
@@ -32,7 +32,7 @@ function renderInput(inputProps) {
   const { InputProps, classes, ref, ...other } = inputProps;
   return (
     <TextField
-    
+
       className={classes.input}
       InputProps={{
         classes: {
@@ -49,7 +49,7 @@ function renderInput(inputProps) {
 function renderSuggestion(suggestionProps) {
   const { suggestion, itemProps } = suggestionProps;
   return (
-    <MenuItem {...itemProps} key={suggestion.id_organism+'_'+suggestion.strain_name} component='div'>
+    <MenuItem {...itemProps} key={suggestion.id_organism + '_' + suggestion.strain_name} component='div'>
       <Grid
         container
         direction='column'
@@ -144,14 +144,45 @@ export default function CustomSearchInput(navProps) {
     }));
   }
 
+  function handleTypeSearchChange(value) {
+    setSearchState(oldValues => ({
+      ...oldValues,
+      searchType: value,
+    }));
+  }
+
+
   function handleSubmit(event) {
     //event.preventDefault()
     navProps.cleanTabs()
   }
 
+  const searchTypes = [
+    { value: 'name', label: 'Name' },
+    { value: 'strain', label: 'Strain' },
+  ]
+
   return (
     <form>
       <Paper className={classes.root}>
+        <Select
+          align='center'
+          MenuProps={{
+            getContentAnchorEl: null,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left',
+            },
+          }}
+          style={{ width: '30%', fontSize: 18 }}
+          name='type'
+          value={'name'}
+        >
+          {searchTypes.map(val =>
+            <MenuItem key={val.value} value={val.value}>{val.label}</MenuItem>
+          )}
+        </Select>
+
         <Downshift id='downshift-popper'
           onChange={(item) => handleInputChange(item)}
           itemToString={item => (item ? `${item.organism_name}  [ ${item.strain_name} ]` : '')}>
@@ -167,7 +198,7 @@ export default function CustomSearchInput(navProps) {
             });
 
             return (
-              <div style={{ width: '100%' }}>
+              <div style={{ width: '70%' }}>
                 {renderInput({
                   fullWidth: true,
                   classes,
@@ -183,7 +214,6 @@ export default function CustomSearchInput(navProps) {
                       : {})}
                   >
                     <Paper
-                      square
                       style={{
                         overflow: 'auto',
                         marginTop: 0,

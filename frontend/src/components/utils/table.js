@@ -32,7 +32,7 @@ function customEval(rows, filter, operation) {
         var var_1 = isNaN(operation[0]) ? row[filter.id] : operation[0] 
         var var_2 = isNaN(operation[0]) ? operation[1] : row[filter.id]
         var expression = String(var_1)+String(op)+String(var_2)
-        return eval(expression)
+        return (var_1 === null || var_2 === null) ? false : eval(expression)
       });  
   return tmp_result
 }
