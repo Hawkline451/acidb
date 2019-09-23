@@ -64,7 +64,7 @@ const headersCSV = [
 const colors = {
   'Archaea': '#893FE8',
   'Bacteria': '#12939A',
-  'Eukarya': '#37A14C',
+  'Eukarya': '#FF0000',
   'highlighted': '#FF911D'
 }
 
@@ -97,7 +97,7 @@ export default function PlotComponent() {
     height: 500,
     xAccessor: 'ph_associated',
     yAccessor: 'temp_associated',
-    colors: ''
+    gen_completeness: 0
   });
 
   // Radio buttons state
@@ -157,7 +157,7 @@ export default function PlotComponent() {
     };
 
     fetchData();
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
+    // Empty array as second argument means avoid fetching on component updates, only when mounting the component
   }, [state.data, plotState.xAccessor, plotState.yAccessor, formState]);
 
   function setStateValue(keyName, newValue) {
@@ -204,11 +204,11 @@ export default function PlotComponent() {
           value: state.hovered.strains.map(a => a.strain_name).join(' = ')
         },
         {
-          title: plotState.xAccessor,
+          title: t('table.'+ plotState.xAccessor),
           value: state.hovered[plotState.xAccessor]
         },
         {
-          title: plotState.yAccessor,
+          title: t('table.'+ plotState.yAccessor),
           value: state.hovered[plotState.yAccessor]
         },
       ]
@@ -216,8 +216,8 @@ export default function PlotComponent() {
     else {
       hint = [
         {
-          title: 'Hint',
-          value: `There are ${nearPoints.length} organism in this coordinates`
+          title: t('plot.hint'),
+          value: t('plot.hint_detail', { nearPoints: nearPoints.length })
         },
       ]
     }
@@ -231,7 +231,7 @@ export default function PlotComponent() {
 
   const getSize = (datapoint) => {
     let nearPoints = selectedPointsIn(datapoint)
-    return 4 + nearPoints.length * 0.2
+    return 4 + nearPoints.length * 0.3
   }
 
   function getProcesedData() {
@@ -262,7 +262,7 @@ export default function PlotComponent() {
                 onMouseLeave={() => setStateValue('value', false)}
                 width={plotState.width}
                 height={plotState.height}
-                margin={{ left: 50, bottom: 50 }}
+                margin={{ left: 70, bottom: 50 }}
                 getX={d => d[plotState.xAccessor]}
                 getY={d => d[plotState.yAccessor]}
               >

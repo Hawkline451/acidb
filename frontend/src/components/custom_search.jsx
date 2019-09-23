@@ -47,21 +47,38 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion(suggestionProps) {
-  const { suggestion, itemProps } = suggestionProps;
+  const { searchState, suggestion, itemProps } = suggestionProps;
   return (
-    <MenuItem {...itemProps} key={suggestion.id_organism + '_' + suggestion.strain_name} component='div'>
-      <Grid
-        container
-        direction='column'
-        justify='flex-start'
-        alignItems='stretch'
-      >
-        <Fragment>
-          <Grid item style={{ fontSize: 12, color: '#808080' }}>{suggestion.strain_name}</Grid>
-          <Grid item >{suggestion.organism_name}</Grid>
-        </Fragment>
-      </Grid>
-    </MenuItem>
+    searchState.searchType === 'name' ?
+
+      <MenuItem {...itemProps} key={suggestion.id_organism} component='div'>
+        <Grid
+          container
+          direction='column'
+          justify='flex-start'
+          alignItems='stretch'
+        >
+          <Fragment>
+            <Grid item style={{ fontSize: 12, color: '#808080' }}>{suggestion.strain_name}</Grid>
+            <Grid item >{suggestion.organism_name}</Grid>
+          </Fragment>
+        </Grid>
+      </MenuItem>
+
+      :
+      <MenuItem {...itemProps} key={suggestion.strain_name} component='div'>
+        <Grid
+          container
+          direction='column'
+          justify='flex-start'
+          alignItems='stretch'
+        >
+          <Fragment>
+            <Grid item style={{ fontSize: 12, color: '#808080' }}>{suggestion.organism_name}</Grid>
+            <Grid item >{suggestion.strain_name}</Grid>
+          </Fragment>
+        </Grid>
+      </MenuItem>
   );
 }
 
@@ -96,8 +113,10 @@ function getSuggestions(value, searchState, numSuggestions, setNumSuggestions, i
     return [];
   } else {
     let filteredData = searchState.searchData.filter(suggestion => {
-      let keep =
-        suggestion.organism_name.slice(0, inputLength).toLowerCase() === inputValue;
+      let keep = searchState.searchType === 'name' ?
+        suggestion.organism_name.slice(0, inputLength).toLowerCase() === inputValue :
+        suggestion.strain_name.slice(0, inputLength).toLowerCase() === inputValue;
+
       return keep;
     });
 
@@ -144,10 +163,10 @@ export default function CustomSearchInput(navProps) {
     }));
   }
 
-  function handleTypeSearchChange(value) {
+  function handleTypeSearchChange(event) {
     setSearchState(oldValues => ({
       ...oldValues,
-      searchType: value,
+      searchType: event.target.value,
     }));
   }
 
@@ -176,7 +195,8 @@ export default function CustomSearchInput(navProps) {
           }}
           style={{ width: '30%', fontSize: 18 }}
           name='type'
-          value={'name'}
+          value={searchState.searchType}
+          onChange={handleTypeSearchChange}
         >
           {searchTypes.map(val =>
             <MenuItem key={val.value} value={val.value}>{val.label}</MenuItem>
@@ -224,6 +244,7 @@ export default function CustomSearchInput(navProps) {
                       {getSuggestions(inputValue, searchState, numSuggestions, setNumSuggestions, isOpen).map((suggestion, index) => {
                         if (isNaN(suggestion.count)) {
                           return renderSuggestion({
+                            searchState,
                             suggestion,
                             index,
                             itemProps: getItemProps({ item: suggestion }),

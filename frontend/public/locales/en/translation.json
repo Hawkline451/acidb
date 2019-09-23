@@ -99,7 +99,10 @@
     "isolated" : "Isolated",
     "non_isolated" : "Non Isolated",
     "completed" : "Completed",
-    "draft" : "Draft"
+    "draft" : "Draft",
+
+    "hint" : "Hint",
+    "hint_detail" : "There are {{nearPoints}} organism in this coordinates"
   }
   
 }

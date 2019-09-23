@@ -146,9 +146,13 @@ export const stylesTable = makeStyles({
   noDecoratorLink: {
     textDecoration: 'none',
   },
-  bigFontTable: {
+  bigFontLink: {
     fontSize: 16,
     textDecoration: 'none',
+  },
+  bigFontTable: {
+    fontSize: 16,
+    color: '#000000'
   }
 });
 

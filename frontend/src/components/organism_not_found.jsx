@@ -17,6 +17,11 @@ const OrganismNotFoundPage = () => {
           ¯\_(ツ)_/¯ Organism not found
       </Box>
       </Typography>
+      <Typography component='div'>
+        <Box fontSize={64} m={1}>
+          Advance search coming soon 
+      </Box>
+      </Typography>
     </Grid>
   );
 };

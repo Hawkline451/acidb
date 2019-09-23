@@ -6,15 +6,13 @@ import {
 
 // NPM
 import {
-  DiscreteColorLegend,
   XYPlot,
   XAxis,
   YAxis,
   VerticalGridLines,
   HorizontalGridLines,
-  MarkSeries,
-  Highlight,
-  Hint
+  VerticalRectSeries,
+  VerticalRectSeriesCanvas
 } from 'react-vis';
 import 'react-vis/dist/style.css';
 
@@ -37,80 +35,30 @@ import { theme } from './css/themes'
 // import config
 import { config } from '../config';
 
-const useStylesTable = stylesTable
 
-const headersCSV = [
-  'id_organism',
-  'name',
-  'strains_str',
-  'seq_date',
-
-  'domain',
-
-  'ph_associated',
-  'ph_min',
-  'ph_max',
-  'temp_associated',
-  'temp_min',
-  'temp_max',
-
-  'isolated',
-  'gen_size',
-  'gc_percentage',
-  'state',
-
-  'n_orfs',
+const DATA = [
+  { x0: 0, x: 1, y: 1 },
+  { x0: 1, x: 2, y: 2 },
+  { x0: 2, x: 3, y: 10 },
+  { x0: 3, x: 4, y: 6 },
+  { x0: 4, x: 5, y: 5 },
+  { x0: 5, x: 6, y: 3 },
+  { x0: 6, x: 7, y: 1 }
 ];
 
-const colors = {
-  'Archaea': '#893FE8',
-  'Bacteria': '#12939A',
-  'Eukarya': '#37A14C',
-  'highlighted': '#FF911D'
+const binSize = {
+  ph: 1,
+  temp: 10,
+  gc: 10,
+  genSize: 100,
 }
 
-const legend = [
-  { title: 'Archaea', color: colors['Archaea'], strokeWidth: 20 },
-  { title: 'Bacteria', color: colors['Bacteria'], strokeWidth: 20 },
-  { title: 'Eukarya', color: colors['Eukarya'], strokeWidth: 20 },
-]
-
-export default function TestComponent() {
-  const classes = useStylesTable();
-
-  // Data state
+function DragableChartExample() {
   const [state, setState] = useState({
     data: null,
-    filteredData: [],
-    value: false,
-
-    filterArea: null,
-    highlightedPoints: [],
-
-    hovered: null,
-    highlighting: false
+    filteredData: null
   });
 
-  // Plot state
-  const [plotState, setPlotState] = useState({
-    width: 1000,
-    height: 500,
-    xAccessor: 'ph_associated',
-    yAccessor: 'temp_associated',
-    colors: ''
-  });
-
-  // Radio buttons state
-  const [formState, setFormState] = React.useState({
-    Archaea: true,
-    Bacteria: true,
-    Eukarya: true,
-
-    isolated: true,
-    non_isolated: true,
-    completed: true,
-    draft: true
-  });
 
   useEffect(() => {
     let filteredData
@@ -122,43 +70,31 @@ export default function TestComponent() {
           config.API_SIMPLE_PLOT,
         );
         setStateValue('data', result.data)
-        filteredData = result.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
+        var res = result.data.reduce((obj, v) => {
+          obj[v.domain] = (obj[v.domain] || 0) + 1;
+          return obj;
+        }, {})
+        let count = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        let binSize = 1
+        let nameMetric = 'ph_max'
 
-        setStateValue('filteredData', filteredData)
-        //setIsLoading(false);
-      }
-      else {
-        // Update axis
-        filteredData = state.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
+        var res = result.data.reduce((obj, v) => {
+          var i = 0;
+          while (v[nameMetric]>i){
+            i = i + binSize
+          }
+          count[i-1] = v[nameMetric] !== null ? (count[i-1] || 0) + 1 : count[i];
+          return count;
+        }, {})
+        console.log("yay")
+        console.log(res)
 
-        // Update categorical values 
-        let currentFormState = Object.keys(formState).filter(item => formState[item] === true)
-        // currentFormState contains an array with the names of the true properties eg [Archaea,Bacteria, isolated,draft,complete]
-
-        // if item.domain in filtered domain
-        filteredData = filteredData.filter(item => (currentFormState.indexOf(item.domain) !== -1))
-
-        // filter state (isolated, gen_state)
-
-        // isolated = 'yes' non_isolated='no'
-        let isolatedValues = []
-        if (currentFormState.indexOf('isolated') !== -1) {
-          isolatedValues.push('yes')
-        }
-        if (currentFormState.indexOf('non_isolated') !== -1) {
-          isolatedValues.push('no')
-        }
-
-        filteredData = filteredData.filter(item => (isolatedValues.indexOf(item.isolated) !== -1))
-        filteredData = filteredData.filter(item => (currentFormState.indexOf(item.state) !== -1))
-
-        setStateValue('filteredData', filteredData)
-      }
-    };
+      };
+    }
 
     fetchData();
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, [state.data, plotState.xAccessor, plotState.yAccessor, formState]);
+    // Empty array as second argument means avoid fetching on component updates, only when mounting the component
+  }, []);
 
   function setStateValue(keyName, newValue) {
     setState(oldValues => ({
@@ -167,231 +103,22 @@ export default function TestComponent() {
     }));
   }
 
-  const highlightPointInArea = datapoint => {
-    if (!state.filterArea) {
-      return false;
-    }
-    const leftRight = datapoint[plotState.xAccessor] <= state.filterArea.right && datapoint[plotState.xAccessor] >= state.filterArea.left;
-    const upDown = datapoint[plotState.yAccessor] <= state.filterArea.top  && datapoint[plotState.yAccessor] >= state.filterArea.bottom ;
-
-    return leftRight && upDown;
-  };
-
-
-
-  const selectedPointsInArea = state.filteredData.filter(highlightPointInArea);
-  const selectedPointsIn = datapoint => {
-    let points = state.filteredData.filter(point => {
-      return (point[plotState.xAccessor] === datapoint[plotState.xAccessor]) && (point[plotState.yAccessor] === datapoint[plotState.yAccessor])
-    });
-    return points
-  }
-
-
-
-  const checkInHighlightedPoints = (point) => {
-    var found = state.highlightedPoints.some(value => value['id_organism'] === point['id_organism']);
-    return found
-  };
-
-  const getHint = () => {
-    let hint
-    let nearPoints = selectedPointsIn(state.hovered)
-    if (nearPoints.length === 1) {
-      hint = [
-        {
-          title: 'Name',
-          value: state.hovered.name
-        },
-        {
-          title: 'Strain',
-          value: state.hovered.strains.map(a => a.strain_name).join(' = ')
-        },
-        {
-          title: plotState.xAccessor,
-          value: state.hovered[plotState.xAccessor]
-        },
-        {
-          title: plotState.yAccessor,
-          value: state.hovered[plotState.yAccessor]
-        },
-      ]
-    }
-
-    else {
-      hint = [
-        {
-          title: 'Hint',
-          value: `There are ${nearPoints.length} organism in this coordinates`
-        },
-      ]
-
-    }
-
-    return hint
-  }
-
-  const getColor = (datapoint) => {
-    // if highlighted points, check if current point in highligted point then return color
-    return (state.highlightedPoints.some(point => point.id_organism === datapoint.id_organism) ? colors['highlighted'] : colors[datapoint.domain])
-
-  }
-  const getSize = (datapoint) => {
-    let nearPoints = selectedPointsIn(datapoint)
-    return 4 + nearPoints.length * 0.2
-  }
-
-  function getProcesedData() {
-    let duplicated = state.highlightedPoints.slice(0)
-
-    for (var i = 0; i < duplicated.length; i++) {
-      duplicated[i].strains_str = duplicated[i].strains.map(a => a.strain_name).join(' = ')
-    }
-    return duplicated
-  }
 
 
   return (
-    <ThemeProvider theme={theme}>
-      {false ?
-        (<Loader />) :
-        (
-          <Grid container
-            spacing={5}
-            direction='row'
-            alignItems='center'
-            justify='center'
-          >
-            <Grid item
-            >
-              <XYPlot
-                onMouseLeave={() => setStateValue('value', false)}
-                width={plotState.width}
-                height={plotState.height}
-                margin={{ left: 50, bottom: 50 }}
-                getX={d => d[plotState.xAccessor]}
-                getY={d => d[plotState.yAccessor]}
-              >
-                <VerticalGridLines />
-                <HorizontalGridLines />
-                <XAxis
-                  title={plotState.xAccessor}
-                  style={{
-                    text: { fontSize: 14 }
-                  }} />
-                <YAxis
-                  title={plotState.yAccessor}
-                  style={{
-                    text: { fontSize: 14 }
-                  }} />
-
-                <Highlight
-                  drag
-                  onBrushStart={() => setStateValue('highlighting', true)}
-                  onBrush={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPointsInArea)
-                  }}
-                  onBrushEnd={area => {
-                    setStateValue('highlighting', false);
-                    setStateValue('filterArea', area);
-                  }}
-
-                  onDragStart={area => setStateValue('highlighting', true)}
-                  onDrag={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPointsInArea)
-                  }}
-                  onDragEnd={area => {
-                    setStateValue('highlighting', false);
-                    setStateValue('filterArea', area);
-                  }}
-
-                />
-                <MarkSeries
-                  className='mark-series-example'
-                  strokeWidth={2}
-                  opacity='0.7'
-                  style={{ pointerEvents: state.highlighting ? 'none' : '' }}
-                  colorType='literal'
-                  getColor={datapoint => getColor(datapoint)}
-                  sizeType='literal'
-                  getSize={datapoint => getSize(datapoint)}
-
-
-                  onValueMouseOver={datapoint => setStateValue('hovered', datapoint)}
-                  onValueMouseOut={() => setStateValue('hovered', false)}
-                  onValueClick={(datapoint, event) => {
-                    let nearPoints = selectedPointsIn(datapoint)
-                    //let nearPoints = [datapoint]                  
-                    // for each point in the same coordinates
-                    if (event.event.ctrlKey || event.event.metaKey) {
-                      // Call setState to re render the component after updating some values
-                      for (var i = 0; i < nearPoints.length; i++) {
-                        let tmpDatapoint = nearPoints[i]
-                        // check if point (and points with the same coordinates)already highlighted
-                        if (!checkInHighlightedPoints(tmpDatapoint)) {
-                          state.highlightedPoints.push(tmpDatapoint);
-                        }
-                        // if highlighted the remove
-                        else {
-                          var index = state.highlightedPoints.findIndex(item => item.id_organism === tmpDatapoint.id_organism);
-                          state.highlightedPoints.splice(index, 1);;
-                        }
-                      }
-                      setStateValue('highlightedPoints', state.highlightedPoints)
-                    }
-                    else {
-                      setStateValue('highlightedPoints', nearPoints)
-                    }
-                  }
-                  }
-                  data={state.filteredData}
-                />
-                {state.hovered && <Hint value={state.hovered} format={() => getHint()} />}
-              </XYPlot>
-            </Grid>
-
-            <Grid item >
-              <DiscreteColorLegend items={legend} />
-            </Grid>
-
-            <Grid item >
-              <SelectForm setState={setPlotState} state={plotState} />
-              <RadioForm setState={setFormState} state={formState} />
-            </Grid>
-          </Grid>
-        )
-      }
-      <Grid container
-        direction='column'
-        alignItems='center'
-      >
-        <Grid container
-          direction='row'
-          alignItems='center'
-          justify='center'
-        >
-          <Grid item align='center'>
-            <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
-          </Grid>
-          <Grid item align='center'>
-            <CSVLink
-              className={classes.noDecoratorLink}
-              headers={headersCSV}
-              data={getProcesedData()}
-              separator={'\t'}
-              filename={'filtered_points.csv'}
-            >
-              <Button className={classes.formControl} variant="outlined" color="primary">{'download_csv'}</Button>
-            </CSVLink>
-          </Grid>
-        </Grid>
-
-        <Grid item>
-          <OrganismView highlightedPoints={state.highlightedPoints} plotState={plotState} />
-        </Grid>
-      </Grid>
-    </ThemeProvider >
+    <div>
+      <XYPlot width={500} height={300}>
+        <XAxis />
+        <YAxis />
+        <VerticalRectSeries
+          data={DATA}
+          stroke="white"
+          colorType="literal"
+        />
+      </XYPlot>
+    </div>
   );
 }
+
+
+export default DragableChartExample;

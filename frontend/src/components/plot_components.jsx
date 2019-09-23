@@ -28,7 +28,7 @@ const genState = {
   isolated:
     ['isolated',
       'non_isolated',],
-  gen_state:
+  state:
     ['completed',
       'draft',]
 }
@@ -46,6 +46,8 @@ const axis = [
   'ph_max'
 
 ]
+
+const completeness = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 function SelectForm(props) {
   const { t } = useTranslation();
@@ -65,10 +67,10 @@ function SelectForm(props) {
         <Table >
           <TableBody>
             <TableRow key={'x-axis'}>
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 {t('plot.x_axis')}
               </TableCell>
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <Select
                   MenuProps={{
                     getContentAnchorEl: null,
@@ -88,10 +90,10 @@ function SelectForm(props) {
             </TableRow>
 
             <TableRow>
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 {t('plot.y_axis')}
               </TableCell>
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <Select
                   MenuProps={{
                     getContentAnchorEl: null,
@@ -109,6 +111,31 @@ function SelectForm(props) {
                 </Select>
               </TableCell>
             </TableRow>
+
+            <TableRow>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
+                {t('plot.gen_quality')}
+              </TableCell>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
+                <Select
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }
+                  }}
+                  style={{ minWidth: '100%' }}
+                  name='gen_completeness'
+                  value={props.state.gen_completeness}
+                  onChange={event => handleChange(event.target)}
+                >
+                  {completeness.map(val => <MenuItem key={val} value={val}>{`Greater than ${val}`}</MenuItem>)}
+                </Select>
+              </TableCell>
+
+            </TableRow>
+
           </TableBody>
         </Table>
       </Paper>
@@ -117,7 +144,7 @@ function SelectForm(props) {
         <Table >
           <TableBody >
             <TableRow>
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <InputLabel>{t('plot.height')}</InputLabel>
                 <Select
                   MenuProps={{
@@ -136,7 +163,7 @@ function SelectForm(props) {
                 </Select>
               </TableCell>
 
-              <TableCell style={{ borderStyle: 'none' }}>
+              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <InputLabel>{t('plot.width')}</InputLabel>
                 <Select
                   MenuProps={{
@@ -193,7 +220,6 @@ function RadioForm(props) {
 
       <FormControl style={{ minWidth: '100%' }} component='fieldset'>
         <Paper square style={{ padding: 20 }}>
-          <Typography align='center' variant={'h5'}>{t('plot.state')}</Typography>
 
           <Grid container
             spacing={0}
@@ -203,6 +229,8 @@ function RadioForm(props) {
 
             {Object.keys(genState).map(key =>
               <Grid key={key} item>
+                <Typography align='left' variant={'h5'}>{t('table.' + key)}</Typography>
+
                 <FormGroup >
                   {genState[key].map(val =>
                     <FormControlLabel
@@ -229,7 +257,7 @@ function OrganismView(props) {
   let highlightedPoints = props.highlightedPoints
   let plotState = props.plotState
   return (
-    <Table>
+    <Table style={{ marginBottom: 30 }}>
       <TableHead>
         <TableRow>
           <TableCell className={classes.bigFontTable} >{t('table.name')}</TableCell>
@@ -241,14 +269,14 @@ function OrganismView(props) {
           <TableRow key={value.id_organism}>
             <TableCell align='left'>
               <Tooltip title='View organism detail' >
-                <Link to={'/app/organism/' + value.id_organism} className={classes.bigFontTable}>
+                <Link to={'/app/organism/' + value.id_organism} className={classes.bigFontLink}>
                   {value.name}
                 </Link>
               </Tooltip>
             </TableCell>
             <TableCell className={classes.bigFontTable}>{value.strains.map(a => a.strain_name).join(' = ')}</TableCell>
             <TableCell className={classes.bigFontTable}>{value[plotState.xAccessor]}</TableCell>
-            <TableCell className={classes.bigFontTable}>{value[plotState.xAccessor]}</TableCell>
+            <TableCell className={classes.bigFontTable}>{value[plotState.yAccessor]}</TableCell>
           </TableRow>)}
       </TableHead>
     </Table>
