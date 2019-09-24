@@ -47,7 +47,7 @@ const axis = [
 
 ]
 
-const completeness = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+const quality = ['none', '80-5','90-10']
 
 function SelectForm(props) {
   const { t } = useTranslation();
@@ -126,11 +126,11 @@ function SelectForm(props) {
                     }
                   }}
                   style={{ minWidth: '100%' }}
-                  name='gen_completeness'
-                  value={props.state.gen_completeness}
+                  name='genQuality'
+                  value={props.state.genQuality}
                   onChange={event => handleChange(event.target)}
                 >
-                  {completeness.map(val => <MenuItem key={val} value={val}>{`Greater than ${val}`}</MenuItem>)}
+                  {quality.map(val => <MenuItem key={val} value={val}>{val}</MenuItem>)}
                 </Select>
               </TableCell>
 

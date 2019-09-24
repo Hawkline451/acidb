@@ -328,7 +328,7 @@ function TableComponent() {
               getFilteredData();
             }}
           >
-            <Button className={classes.formControl} variant="outlined" color="primary">{t('download_csv')}</Button>
+            <Button className={classes.formControl} variant="outlined" color="primary">{t('download_file')}</Button>
           </CSVLink>
         </Grid>
       </Grid>

@@ -8,6 +8,7 @@ import TreeComponent from '../components/tree'
 import TableComponent from '../components/table_component'
 import OrganismComponent from '../components/organism'
 import PlotComponent from '../components/plot'
+import SimpleBarComponent from '../components/plot_bar_chart'
 import { Loader } from '../components/loader'
 
 import { ThemeProvider } from '@material-ui/styles';
@@ -29,7 +30,8 @@ function Page() {
                 <Route path="/app/tools_tree" component={TreeComponent} />
                 <Route path="/app/tools" component={Loader} />
                 <Route path="/app/tools_table" component={TableComponent} />
-                <Route path="/app/tools_plot" component={PlotComponent} />
+                <Route path="/app/tools_scatter_plot" component={PlotComponent} />
+                <Route path="/app/tools_bar_chart" component={SimpleBarComponent} />
               </Switch>
             )}
           />

@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 
 import {
-  Grid, Button, Select, Paper, Typography, Table, TableBody, TableCell, TableRow, MenuItem
+  Grid, Select, Paper, Typography, Table, TableBody, TableCell, TableRow, MenuItem
 } from '@material-ui/core';
 
 // NPM
@@ -9,17 +9,15 @@ import {
   XYPlot,
   XAxis,
   YAxis,
-  VerticalGridLines,
   HorizontalGridLines,
   VerticalRectSeries,
   VerticalBarSeries,
-  Hint
+  Hint,
+  ChartLabel
 } from 'react-vis';
 import 'react-vis/dist/style.css';
 
 import axios from 'axios';
-import { CSVLink } from "react-csv";
-
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -31,7 +29,6 @@ import { colors } from "./utils/const_color";
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
-import { stylesTable } from './css/themes'
 import { theme } from './css/themes'
 
 // import config
@@ -45,7 +42,9 @@ const binSize = {
   gen_size: 1000,
 }
 
-export default function DragableChartExample() {
+export default function SimpleBarComponent() {
+  const { t } = useTranslation();
+
   const [state, setState] = useState({
     data: null,
     barChartDomainData: null,
@@ -73,7 +72,6 @@ export default function DragableChartExample() {
       let bins
       let histogramData
 
-      console.log(binSize['ph_associated'])
       // if load for 1st time
       if (state.data === null) {
         //setIsLoading(true);
@@ -182,7 +180,7 @@ export default function DragableChartExample() {
     hint = [
       {
         title: 'Range',
-        value: state.hoveredHist.x0 + '-' + state.hoveredHist.x
+        value: '[' + state.hoveredHist.x0 + '-' + state.hoveredHist.x + ')'
       },
       {
         title: 'Count',
@@ -203,6 +201,7 @@ export default function DragableChartExample() {
             direction='column'
             alignItems='center'
             justify='center'
+            style={{ marginTop: 20 }}
           >
             <Grid item >
               <Grid container
@@ -212,11 +211,17 @@ export default function DragableChartExample() {
                 justify='center'
               >
                 <Grid item >
-                  <Typography align='center' variant={'h5'}>Histogram</Typography>
-                  <XYPlot width={500} height={300}>
+                  <Typography align='center' variant={'h5'}>{t('plot.histogram')}</Typography>
+                  <XYPlot width={600} height={400} margin={{ bottom: 60 }}>
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
+                    <ChartLabel
+                      text={t('table.'+formState.histogram)}
+                      includeMargin={true}
+                      xPercent={0.8}
+                      yPercent={0.85}
+                    />
                     <VerticalRectSeries
                       data={state.histogramData}
                       stroke="white"
@@ -241,7 +246,7 @@ export default function DragableChartExample() {
                 justify='center'
               >
                 <Grid item >
-                  <Typography align='center' variant={'h5'}>Domain</Typography>
+                  <Typography align='center' variant={'h5'}>{t('table.domain')}</Typography>
                   <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
                     <HorizontalGridLines />
                     <XAxis />
@@ -257,7 +262,7 @@ export default function DragableChartExample() {
                   </XYPlot>
                 </Grid>
                 <Grid item >
-                  <Typography align='center' variant={'h5'}>Isolated</Typography>
+                  <Typography align='center' variant={'h5'}>{t('table.isolated')}</Typography>
                   <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
                     <HorizontalGridLines />
                     <XAxis />
@@ -273,7 +278,7 @@ export default function DragableChartExample() {
                   </XYPlot>
                 </Grid>
                 <Grid item >
-                  <Typography align='center' variant={'h5'}>Assembly Level</Typography>
+                  <Typography align='center' variant={'h5'}>{t('table.state')}</Typography>
                   <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
                     <HorizontalGridLines />
                     <XAxis />
@@ -311,9 +316,9 @@ const axis = [
 
 
 function SelectHist(props) {
+  const { t } = useTranslation();
 
   function handleChange(target) {
-    console.log(target)
     props.setState(oldValues => ({
       ...oldValues,
       [target.name]: target.value,
@@ -323,13 +328,13 @@ function SelectHist(props) {
   return (
     <Fragment>
       <Paper square style={{ maxWidth: 300, padding: 20 }}>
-        <Typography align='center' variant={'h5'}>Select histogram</Typography>
+        <Typography align='center' variant={'h5'}>{t('plot.select_histogram')}</Typography>
 
         <Table >
           <TableBody>
             <TableRow key={'x-axis'}>
               <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
-                property
+              {t('plot.attribute')}
               </TableCell>
               <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <Select
@@ -345,7 +350,7 @@ function SelectHist(props) {
                   value={props.state.histogram}
                   onChange={event => handleChange(event.target)}
                 >
-                  {axis.map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                  {axis.map(key => <MenuItem key={key} value={key}>{t('table.'+key)}</MenuItem>)}
                 </Select>
               </TableCell>
             </TableRow>

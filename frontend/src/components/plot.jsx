@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 // Import components
 import { Loader } from './loader'
 import { SelectForm, RadioForm, OrganismView } from './plot_components'
+import { colors } from './utils/const_color'
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
@@ -61,12 +62,7 @@ const headersCSV = [
   'n_orfs',
 ];
 
-const colors = {
-  'Archaea': '#893FE8',
-  'Bacteria': '#12939A',
-  'Eukarya': '#FF0000',
-  'highlighted': '#FF911D'
-}
+const genQualityDict = { '80-5': { completeness: 80, contamination: 5 }, '90-10': { completeness: 90, contamination: 10 } }
 
 const legend = [
   { title: 'Archaea', color: colors['Archaea'], strokeWidth: 20 },
@@ -97,7 +93,7 @@ export default function PlotComponent() {
     height: 500,
     xAccessor: 'ph_associated',
     yAccessor: 'temp_associated',
-    gen_completeness: 0
+    genQuality: 'none'
   });
 
   // Radio buttons state
@@ -117,7 +113,6 @@ export default function PlotComponent() {
     const fetchData = async () => {
       // if load for 1st time
       if (state.data === null) {
-        //setIsLoading(true);
         const result = await axios(
           config.API_SIMPLE_PLOT,
         );
@@ -125,11 +120,19 @@ export default function PlotComponent() {
         filteredData = result.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
 
         setStateValue('filteredData', filteredData)
-        //setIsLoading(false);
       }
       else {
+        // First check completeness/contamination
+        if (plotState.genQuality !== 'none') {
+          filteredData = state.data.filter(item => 
+            (item.gen_completeness >= genQualityDict[plotState.genQuality].completeness && item.gen_contamination <= genQualityDict[plotState.genQuality].contamination))
+        }
+        else {
+          filteredData = state.data
+        }
+
         // Update axis
-        filteredData = state.data.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
+        filteredData = filteredData.filter(item => (item[plotState.yAccessor] !== null && item[plotState.xAccessor] !== null))
 
         // Update categorical values 
         let currentFormState = Object.keys(formState).filter(item => formState[item] === true)
@@ -158,7 +161,7 @@ export default function PlotComponent() {
 
     fetchData();
     // Empty array as second argument means avoid fetching on component updates, only when mounting the component
-  }, [state.data, plotState.xAccessor, plotState.yAccessor, formState]);
+  }, [state.data, plotState.xAccessor, plotState.yAccessor, plotState.genQuality, formState]);
 
   function setStateValue(keyName, newValue) {
     setState(oldValues => ({
@@ -204,11 +207,11 @@ export default function PlotComponent() {
           value: state.hovered.strains.map(a => a.strain_name).join(' = ')
         },
         {
-          title: t('table.'+ plotState.xAccessor),
+          title: t('table.' + plotState.xAccessor),
           value: state.hovered[plotState.xAccessor]
         },
         {
-          title: t('table.'+ plotState.yAccessor),
+          title: t('table.' + plotState.yAccessor),
           value: state.hovered[plotState.yAccessor]
         },
       ]
@@ -376,7 +379,7 @@ export default function PlotComponent() {
               separator={'\t'}
               filename={'filtered_points.csv'}
             >
-              <Button className={classes.formControl} variant='outlined' color='primary'>{t('download_csv')}</Button>
+              <Button className={classes.formControl} variant='outlined' color='primary'>{t('download_file')}</Button>
             </CSVLink>
           </Grid>
         </Grid>

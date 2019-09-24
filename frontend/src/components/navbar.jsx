@@ -46,16 +46,16 @@ function TabMenu(props) {
   return (
     <div>
       <ClickAwayListener onClickAway={handleClickAway}>
-        <Tab label='Tools Menu' onClick={handleClick} className={classes.tabRoot} />
+        <Tab label='Charts' onClick={handleClick} className={classes.tabRoot} />
       </ClickAwayListener>
       <Popper id={id} open={open} anchorEl={anchorEl} placement={'bottom-start'} className={classes.tabMenu}>
         <Paper square >
           <MenuList>
-            <MenuItem onClick={handleItemClick} component={Link} to='/app/tools'>
-              Tool 1
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_bar_chart'>
+              Bar Chart
             </MenuItem>
-            <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_table'>
-              Tool 2
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_scatter_plot'>
+              Scatter Plot
             </MenuItem>
           </MenuList>
         </Paper>
@@ -100,7 +100,6 @@ export default function NavBar() {
           <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
             <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
             <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
-            <Tab label={t('navbar.plot')} component={Link} to='/app/tools_plot' className={classes.tabRoot} />
             <TabMenu />
           </Tabs>
 
