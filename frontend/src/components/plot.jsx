@@ -285,23 +285,19 @@ export default function PlotComponent() {
                 <Highlight
                   drag
                   onBrushStart={() => setStateValue('highlighting', true)}
-                  onBrush={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPointsInArea)
-                  }}
+                  onBrush={area => {setStateValue('filterArea', area);}}
                   onBrushEnd={area => {
                     setStateValue('highlighting', false);
                     setStateValue('filterArea', area);
+                    setStateValue('highlightedPoints', selectedPointsInArea)
                   }}
 
                   onDragStart={area => setStateValue('highlighting', true)}
-                  onDrag={area => {
-                    setStateValue('filterArea', area);
-                    setStateValue('highlightedPoints', selectedPointsInArea)
-                  }}
+                  onDrag={area => {setStateValue('filterArea', area);}}
                   onDragEnd={area => {
                     setStateValue('highlighting', false);
                     setStateValue('filterArea', area);
+                    setStateValue('highlightedPoints', selectedPointsInArea)
                   }}
 
                 />

@@ -7,7 +7,7 @@
   "footer":{
     "desc": "Im a cool footer"
   },
-  "download_csv": "Download CSV",
+  "download_file": "Download CSV",
   "placeholder":{
     "search": "Search ..."
   },
@@ -107,7 +107,8 @@
 
     "histogram" : "Histogram",
     "select_histogram" : "Select histogram",
-    "attribute": "Attribute"
+    "attribute": "Attribute",
+    "none": "None"
 
   }
   

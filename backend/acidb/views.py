@@ -15,7 +15,7 @@ from acidb.models import Organism, Strain, Taxonomy
 class OrganismViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Organism.objects.filter(
-        visibility=1).prefetch_related('strains')
+        visibility=1).prefetch_related('strains').order_by('name')
     serializer_class = SummaryOrganismSerializer
 
     # Return everything
@@ -87,7 +87,7 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return data.select_related('organism')
 
     # Return everything
-    # @method_decorator(cache_page(60*60))
+    @method_decorator(cache_page(60*60))
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -105,7 +105,7 @@ class SimplePlotDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SimplePlotSerializer
 
     # Return everything
-    #@method_decorator(cache_page(60*60))
+    @method_decorator(cache_page(60*60))
     def list(self, request):
         serializer = SimplePlotSerializer(self.queryset, many=True)
         return Response(serializer.data)

@@ -130,7 +130,7 @@ function SelectForm(props) {
                   value={props.state.genQuality}
                   onChange={event => handleChange(event.target)}
                 >
-                  {quality.map(val => <MenuItem key={val} value={val}>{val}</MenuItem>)}
+                  {quality.map(val => <MenuItem key={val} value={val}>{val === 'none' ? t('plot.none') : val}</MenuItem>)}
                 </Select>
               </TableCell>
 

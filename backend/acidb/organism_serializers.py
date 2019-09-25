@@ -170,4 +170,4 @@ class SimplePlotSerializer(serializers.HyperlinkedModelSerializer):
         model = Organism
         fields = ['id_organism', 'name', 'strains', 'domain', 'isolated', 'state', 'seq_date', 'gen_size',
                   'gc_percentage', 'n_orfs', 'temp_associated', 'temp_min', 'temp_max',
-                  'ph_associated', 'ph_min', 'ph_max', ]
+                  'ph_associated', 'ph_min', 'ph_max', 'gen_completeness', 'gen_contamination' ]
