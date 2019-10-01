@@ -17,23 +17,33 @@ from django.contrib import admin
 
 from django.urls import include, path
 from rest_framework import routers
-from acidb.views import OrganismViewSet, OrganismDetailViewSet, SearchViewSet, TaxonomyViewSet, SimplePlotDataViewSet
+from acidb.views import OrganismViewSet, OrganismDetailViewSet, SearchViewSet, AdvanceSearchViewSet, TaxonomyViewSet, SimplePlotDataViewSet
 
 apiurl = routers.SimpleRouter()
 apiurl.register(r'organism', OrganismViewSet, base_name='organism')
-apiurl.register(r'organism_detail', OrganismDetailViewSet, base_name='organism_detail')
+apiurl.register(r'organism_detail', OrganismDetailViewSet,
+                base_name='organism_detail')
 apiurl.register(r'search_list', SearchViewSet, base_name='search_list')
+apiurl.register(r'search', AdvanceSearchViewSet, base_name='advance_search')
 
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)/(?P<genus>[^/.]+)/(?P<species>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)/(?P<genus>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
-apiurl.register(r'taxonomy/(?P<domain>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)/(?P<genus>[^/.]+)/(?P<species>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)/(?P<genus>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)/(?P<family>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)/(?P<order>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)/(?P<tax_class>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(
+    r'taxonomy/(?P<domain>[^/.]+)/(?P<phylum>[^/.]+)', TaxonomyViewSet, base_name='taxonomy')
+apiurl.register(r'taxonomy/(?P<domain>[^/.]+)',
+                TaxonomyViewSet, base_name='taxonomy')
 apiurl.register(r'taxonomy', TaxonomyViewSet, base_name='taxonomy')
 
-apiurl.register(r'simple_plot_data', SimplePlotDataViewSet, base_name='simple_plot')
+apiurl.register(r'simple_plot_data', SimplePlotDataViewSet,
+                base_name='simple_plot')
 
 
 urlpatterns = [

@@ -101,6 +101,22 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         model = Strain
         fields = ['id_organism', 'strain_name', 'organism_name']
 
+class AdvanceSearchSerializer(serializers.HyperlinkedModelSerializer):
+    strains = StrainSerializer(many=True)
+    taxonomy = TaxonomySerializer(many=True)
+    isolated = serializers.SerializerMethodField(read_only=True)
+
+    def get_isolated(self, obj):
+        return 'yes' if obj.isolated else 'no'
+
+    class Meta:
+        model = Organism
+        fields = ['id_organism', 'name', 'isolated', 'state', 'seq_date', 'gen_size',
+                  'gen_completeness', 'gen_contamination', 'gc_percentage', 'n_orfs',
+                  'temp_associated', 'temp_min', 'temp_max', 'ph_associated', 'ph_min',
+                  'ph_max', 'access_src', 'access_id', 'biosample', 'bioproject', 'ftp_url',
+                  'annotation', 'strains', 'taxonomy',]
+
 
 class TaxonomyNodeSerializer(serializers.HyperlinkedModelSerializer):
     category = serializers.SerializerMethodField(read_only=True)

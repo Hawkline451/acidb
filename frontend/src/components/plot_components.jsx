@@ -29,7 +29,7 @@ const genState = {
     ['isolated',
       'non_isolated',],
   state:
-    ['completed',
+    ['complete',
       'draft',]
 }
 const plotSize = [250, 500, 750, 1000, 1250]
@@ -117,6 +117,7 @@ function SelectForm(props) {
                 {t('plot.gen_quality')}
               </TableCell>
               <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
+              <InputLabel style={{fontSize:12}}>{t('plot.gen_quality_label')}</InputLabel>
                 <Select
                   MenuProps={{
                     getContentAnchorEl: null,

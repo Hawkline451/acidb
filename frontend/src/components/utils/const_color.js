@@ -6,7 +6,7 @@ export const colors = {
 
     'no': '#FFDD01',
     'yes': '#12939A',
-    'completed': '#82DDFF',
+    'complete': '#82DDFF',
     'draft': '#FF954F'
   }
 

@@ -1,19 +1,15 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.db.models import Count
-from django.db.models import F
-
+from django.db.models import Count, F
 
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
 
-from django_filters import rest_framework as filters
-
-from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer, SearchSerializer, TaxonomyNodeSerializer, SimplePlotSerializer
+from acidb.organism_serializers import SummaryOrganismSerializer, DetailOrganismSerializer, SearchSerializer, AdvanceSearchSerializer, TaxonomyNodeSerializer, SimplePlotSerializer
 from acidb.models import Organism, Strain, Taxonomy
 
+from .viewset_filter import SearchFilter
 
 class OrganismViewSet(viewsets.ReadOnlyModelViewSet):
 
@@ -47,27 +43,10 @@ class OrganismDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-# Filter class
-
-
-class SearchFilter(filters.FilterSet):
-    organism_name = filters.CharFilter(label="Organism name contains", method='filter_name')
-
-    def filter_name(self, queryset, name, value):
-        queryset = queryset.filter(organism__name__icontains=value)
-        return queryset
-
-    class Meta:
-        model = Strain
-        fields = {
-            'strain_name': ['icontains'],
-            }
-
 class SearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Strain.objects.select_related(
         'organism').filter(organism__visibility=1)
     serializer_class = SearchSerializer
-    filterset_class = SearchFilter
 
     # Return everything
     @method_decorator(cache_page(60*60))
@@ -81,7 +60,26 @@ class SearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-        
+
+class AdvanceSearchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Organism.objects.filter(visibility=1).prefetch_related('strains').prefetch_related(
+        'taxonomy').prefetch_related('references').prefetch_related('growth_detail')
+    serializer_class = AdvanceSearchSerializer
+    filterset_class = SearchFilter
+
+    # Return everything
+    # @method_decorator(cache_page(60*60))
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
@@ -124,11 +122,13 @@ class TaxonomyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        result = {'tree':serializer.data}
+        result = {'tree': serializer.data}
         return Response(result)
 
+
 class SimplePlotDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Organism.objects.filter(visibility=1).prefetch_related('strains').prefetch_related('taxonomy')
+    queryset = Organism.objects.filter(visibility=1).prefetch_related(
+        'strains').prefetch_related('taxonomy')
     # check if serializer class its needed
     # serializer_class = SimplePlotSerializer
 

@@ -1,360 +1,420 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 
 import {
-  Grid, Button, Select, Paper, Typography, Table, TableBody, TableCell, TableRow, MenuItem
+  Button, MenuItem, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, InputAdornment,
+  Table, TableBody, TableCell, TableRow, Select, InputLabel, TableHead, Tooltip, TextField, Divider
 } from '@material-ui/core';
 
 // NPM
 import {
-  XYPlot,
-  XAxis,
-  YAxis,
-  VerticalGridLines,
-  HorizontalGridLines,
-  VerticalRectSeries,
-  VerticalBarSeries,
-  Hint
-} from 'react-vis';
-import 'react-vis/dist/style.css';
-
-import axios from 'axios';
-import { CSVLink } from "react-csv";
-
-
-// Internationalization
-import { useTranslation } from 'react-i18next';
-
-// Import components
-import { Loader } from './loader'
-
-import { colors } from "./utils/const_color";
+  Link
+} from 'react-router-dom';
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
-import { stylesTable } from './css/themes'
-import { theme } from './css/themes'
+import { theme, stylesTable } from './css/themes'
 
-// import config
-import { config } from '../config';
-
-
-const binSize = {
-  ph_associated: 1,
-  temp_associated: 10,
-  gc_percentage: 5,
-  gen_size: 1000,
-}
-
-export default function DragableChartExample() {
-  const [state, setState] = useState({
-    data: null,
-    barChartDomainData: null,
-    barChartIsolatedData: null,
-    barChartAssemblyData: null,
-    histogramData: null,
-
-    hoveredBarDomain: null,
-    hoveredBarIsolated: null,
-    hoveredBarAssemblyLevel: null,
-
-    hoveredHist: null,
-  });
-
-  const [formState, setFormState] = useState({
-    histogram: 'ph_associated',
-  });
+import {
+  makeStyles
+} from '@material-ui/core/styles';
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let nameMetric
-      let bars
-      let barChartData
-      let bins
-      let histogramData
-
-      console.log(binSize['ph_associated'])
-      // if load for 1st time
-      if (state.data === null) {
-        //setIsLoading(true);
-        const result = await axios(
-          config.API_SIMPLE_PLOT,
-        );
-        setStateValue('data', result.data)
-
-        // bar chart
-        nameMetric = 'domain'
-        bars = getBarChart(result.data, nameMetric)
-        barChartData = makeBarChart(bars)
-        setStateValue('barChartDomainData', barChartData)
-        nameMetric = 'isolated'
-        bars = getBarChart(result.data, nameMetric)
-        barChartData = makeBarChart(bars)
-        setStateValue('barChartIsolatedData', barChartData)
-        nameMetric = 'state'
-        bars = getBarChart(result.data, nameMetric)
-        barChartData = makeBarChart(bars)
-        setStateValue('barChartAssemblyData', barChartData)
-
-        nameMetric = formState.histogram
-        bins = getHistogram(result.data, binSize[nameMetric], nameMetric)
-        histogramData = makeHistogram(bins, binSize[nameMetric])
-        setStateValue('histogramData', histogramData)
-      }
-      else {
-        nameMetric = formState.histogram
-        let tmpData = nameMetric !== 'gen_size' ? state.data : filterQuality(state.data)
-        bins = getHistogram(tmpData, binSize[nameMetric], nameMetric)
-        histogramData = makeHistogram(bins, binSize[nameMetric])
-        setStateValue('histogramData', histogramData)
-      }
-    }
-
-    fetchData();
-    // Empty array as second argument means avoid fetching on component updates, only when mounting the component
-  }, [formState.histogram, state.data]);
-
-  function filterQuality(data) {
-    let res = data.filter(item => item.gen_completeness >= 80 && item.gen_contamination <= 5)
-    return res
+const styles = makeStyles({
+  paper: {
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
+})
 
-  function setStateValue(keyName, newValue) {
-    setState(oldValues => ({
+export default function TestComponent() {
+  const classes = styles();
+
+
+  const [gridState, setGridState] = useState({ identifiers: true, tax_info: false, growth_range: false, gen_metadata: false, proteome_metadata: false, })
+
+  const [resultState, setResultState] = useState(null)
+
+  function handleHideGrid(name) {
+    setGridState(oldValues => ({
       ...oldValues,
-      [keyName]: newValue,
+      [name]: !gridState[name],
     }));
   }
 
-  // return dict like { att1: 3, att2: 4, att3: 2}
-  function getBarChart(data, attribute) {
-    let res = data.reduce((acc, val) => {
-      acc[val[attribute]] = (acc[val[attribute]] || 0) + 1;
-      return acc;
-    }, {})
-    return res
+  function handleSubmit(event) {
+    event.preventDefault()
+    setResultState('YAY RESULTS')
   }
 
-  // return array like [3,4,2]
-  function getHistogram(data, binSize, nameMetric) {
-    let count = []
-    let res = data.reduce((acc, val) => {
-      let i = 0;
-      let idx = 0;
-      while (val[nameMetric] > i) {
-        i = i + binSize
-        idx++
-      }
-      count[idx - 1] = val[nameMetric] !== null ? (count[idx - 1] || 0) + 1 : count[idx];
-      return count;
-    }, {})
-    return res
-  }
-
-  // return array for react-vis chart series  [{ x: A, y: 1},{ x: b, y: 5},...]
-  function makeBarChart(data) {
-    let res = []
-    let keys = Object.keys(data).sort()
-    let len = keys.length
-    for (let i = 0; i < len; i++) {
-      let key = keys[i]
-      let tmp = { x: key, y: data[key] }
-      res.push(tmp)
-    }
-    return res
-  }
-
-  // return array for react-vis histogram [{ x0: 0, x: 1, val: 1 },{ x0: 1, x: 2, val: 5 }....]
-  function makeHistogram(bins, binSize) {
-    let res = []
-    let len = bins.length
-    for (let i = 0; i < len; i++) {
-      let tmp = { x0: i * binSize, x: (i + 1) * binSize, y: bins[i] || 0 }
-      if (tmp.y !== 0) {
-        res.push(tmp)
-      }
-    }
-    return res
-  }
-
-  const getHint = () => {
-    let hint
-    hint = [
-      {
-        title: 'Range',
-        value: state.hoveredHist.x0 + '-' + state.hoveredHist.x
-      },
-      {
-        title: 'Count',
-        value: state.hoveredHist.y
-      },
-    ]
-
-    return hint
-  }
 
   return (
+
     <ThemeProvider theme={theme}>
-      {state.data === null ?
-        (<Loader />) :
-        (
-          <Grid container
-            spacing={5}
-            direction='column'
-            alignItems='center'
-            justify='center'
-          >
-            <Grid item >
-              <Grid container
-                spacing={5}
-                direction='row'
-                alignItems='center'
-                justify='center'
-              >
-                <Grid item >
-                  <Typography align='center' variant={'h5'}>Histogram</Typography>
-                  <XYPlot width={500} height={300}>
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <VerticalRectSeries
-                      data={state.histogramData}
-                      stroke="white"
-                      colorType="literal"
-                      onValueMouseOver={datapoint => setStateValue('hoveredHist', datapoint)}
-                      onValueMouseOut={() => setStateValue('hoveredHist', false)}
-                    />
-                    {state.hoveredHist && <Hint value={state.hoveredHist} format={() => getHint()} />}
-                  </XYPlot>
-                </Grid>
-                <Grid item>
-                  <SelectHist setState={setFormState} state={formState} />
-                </Grid>
-              </Grid>
-            </Grid>
+      <form>
+        <Paper style={{ padding: 20 }}>
 
-            <Grid item>
-              <Grid container
-                spacing={5}
-                direction='row'
-                alignItems='center'
-                justify='center'
-              >
-                <Grid item >
-                  <Typography align='center' variant={'h5'}>Domain</Typography>
-                  <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <VerticalBarSeries
-                      data={state.barChartDomainData}
-                      onValueMouseOver={datapoint => setStateValue('hoveredBarDomain', datapoint)}
-                      onValueMouseOut={() => setStateValue('hoveredBarDomain', false)}
-                      colorType='literal'
-                      getColor={datapoint => colors[datapoint.x]}
-                    />
-                    {state.hoveredBarDomain && <Hint value={state.hoveredBarDomain} />}
-                  </XYPlot>
+          <Grid container alignItems='center' alignContent='center'>
+            <Button color="primary" style={{ width: '100%', marginTop: 10, }} onClick={() => handleHideGrid('identifiers')}>
+              Identifiers
+          </Button>
+            {gridState.identifiers &&
+              <Fragment>
+                <Grid item xs={6} >
+                  <TextField
+                    type="text"
+                    label="Organism name"
+                    style={{ width: '90%' }}
+                  />
                 </Grid>
-                <Grid item >
-                  <Typography align='center' variant={'h5'}>Isolated</Typography>
-                  <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <VerticalBarSeries
-                      data={state.barChartIsolatedData}
-                      onValueMouseOver={datapoint => setStateValue('hoveredBarIsolated', datapoint)}
-                      onValueMouseOut={() => setStateValue('hoveredBarIsolated', false)}
-                      colorType='literal'
-                      getColor={datapoint => colors[datapoint.x]}
-                    />
-                    {state.hoveredBarIsolated && <Hint value={state.hoveredBarIsolated} />}
-                  </XYPlot>
+                <Grid item xs={6} >
+                  <TextField
+                    type="text"
+                    label="Strain name"
+                    style={{ width: '90%' }}
+                  />
                 </Grid>
-                <Grid item >
-                  <Typography align='center' variant={'h5'}>Assembly Level</Typography>
-                  <XYPlot xType="ordinal" width={300} height={300} xDistance={100}>
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <VerticalBarSeries
-                      data={state.barChartAssemblyData}
-                      onValueMouseOver={datapoint => setStateValue('hoveredBarAssembly', datapoint)}
-                      onValueMouseOut={() => setStateValue('hoveredBarAssembly', false)}
-                      colorType='literal'
-                      getColor={datapoint => colors[datapoint.x]}
-                    />
-                    {state.hoveredBarAssembly && <Hint value={state.hoveredBarAssembly} />}
-                  </XYPlot>
-                </Grid>
-              </Grid>
-            </Grid>
+              </Fragment>
+            }
           </Grid>
-        )
-      }
-    </ThemeProvider >
-  );
-}
+          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
+
+          <Grid container alignItems='center' alignContent='center'>
+            <Button color="primary" style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('tax_info')}>
+              Taxonomy info
+          </Button>
+            {gridState.tax_info &&
+              <Fragment>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Domain"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Class"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Order"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Family"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Genus"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+                <Grid item xs={4} >
+                  <TextField
+                    type="text"
+                    label="Species"
+                    style={{ width: '90%' }}
+                  />
+                </Grid>
+              </Fragment>
+            }
+          </Grid>
+          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
+
+          <Grid container alignItems='center' alignContent='center'>
+            <Button color="primary" style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('growth_range')}>
+              Growth range
+          </Button>
+            {gridState.growth_range &&
+              <Fragment>
+
+                <Grid item xs={6}>
+                  <Table >
+                    <TableBody>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>Optimal temperature range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Temperature [C°]"
+                          />
+                          <TextField
+                            type="text"
+                            label="Temperature [C°]"
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            style={{ verticalAlign: 'bottom' }}
+                            type="text"
+                            defaultValue="Can grow at temperature:"
+                            InputProps={{
+                              disableUnderline: true,
+                              readOnly: true,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Temperature [C°]"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Table >
+                    <TableBody>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>Optimal pH range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="pH"
+                          />
+                          <TextField
+                            type="text"
+                            label="pH"
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            style={{ verticalAlign: 'bottom' }}
+                            type="text"
+                            defaultValue="Can grow at pH:"
+                            InputProps={{
+                              disableUnderline: true,
+                              readOnly: true,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="pH"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Grid>
+              </Fragment>
+            }
+          </Grid>
+          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
+
+          <Grid container alignItems='center' alignContent='center'>
+            <Button color="primary" style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('gen_metadata')}>
+              Genome metadata
+          </Button>
+            {gridState.gen_metadata &&
+              <Fragment>
+                <Grid item xs={6} >
+                  <Table >
+                    <TableBody>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>Gene size range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="val 1"
+                          />
+                          <TextField
+                            type="text"
+                            label="val 2"
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>GC range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="val 1"
+                          />
+                          <TextField
+                            type="text"
+                            label="val 2"
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>Contamination range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="val 1"
+                          />
+                          <TextField
+                            type="text"
+                            label="val 2"
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>Completenes range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="val 1"
+                          />
+                          <TextField
+                            type="text"
+                            label="val 2"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Grid>
+
+                <Grid item xs={6} >
+                  <Table >
+                    <TableBody>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Assembly level"
+                            style={{ width: '90%' }}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Access src"
+                            style={{ width: '90%' }}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Access id"
+                            style={{ width: '90%' }}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Bioproject"
+                            style={{ width: '90%' }}
+                          />                      </TableCell>
+                      </TableRow>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <TextField
+                            type="text"
+                            label="Biosample"
+                            style={{ width: '90%' }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Grid>
+
+              </Fragment>
+            }
+          </Grid>
+          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
+
+          <Grid container alignItems='center' alignContent='center'>
+            <Button color="primary" style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('proteome_metadata')}>
+              Proteome metadata
+          </Button>
+            {gridState.proteome_metadata &&
+              <Fragment>
+                <Grid item xs={6} >
+
+                  <Table >
+                    <TableBody>
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align="left">
+                          <div style={{ fontSize: 16 }}>N orfs range</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} >
+                          <TextField
+                            type="text"
+                            label="val 1"
+                          />
+                          <TextField
+                            type="text"
+                            label="val 2"
+                          />
+                        </TableCell>
 
 
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Grid>
+
+                <Grid item xs={6} >
+
+                  <TextField
+                    type="text"
+                    label="Annotation"
+                    style={{ width: '90%' }}
+                  />
+
+                </Grid>
+              </Fragment>
+            }
+
+            <Button color="primary" style={{ padding: 10, fontSize: 18 }} variant='outlined' type='submit' onClick={handleSubmit}>
+              Search
+            </Button>
+          </Grid>
+        </Paper>
 
 
-
-
-const axis = [
-  'gen_size',
-  'gc_percentage',
-  'temp_associated',
-  'ph_associated',
-]
-
-
-function SelectHist(props) {
-
-  function handleChange(target) {
-    console.log(target)
-    props.setState(oldValues => ({
-      ...oldValues,
-      [target.name]: target.value,
-    }));
-  }
-
-  return (
-    <Fragment>
-      <Paper square style={{ maxWidth: 300, padding: 20 }}>
-        <Typography align='center' variant={'h5'}>Select histogram</Typography>
-
-        <Table >
-          <TableBody>
-            <TableRow key={'x-axis'}>
-              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
-                property
-              </TableCell>
-              <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
-                <Select
-                  MenuProps={{
-                    getContentAnchorEl: null,
-                    anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }
-                  }}
-                  style={{ minWidth: '100%' }}
-                  name='histogram'
-                  value={props.state.histogram}
-                  onChange={event => handleChange(event.target)}
-                >
-                  {axis.map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
-                </Select>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-        {props.state.histogram === 'gen_size' ? <div style={{ fontSize: 12 }} align='center'>
-          * Genome size filter values over 80% of completeness and less than 5% of contamination
-                </div> : <div></div>}
+      </form>
+      <Paper style={{ padding: 20 }}>
+      <div> Aca salen los resultados </div>
+      <div> {resultState} </div>
       </Paper>
-    </Fragment>
+    </ThemeProvider>
   );
 }

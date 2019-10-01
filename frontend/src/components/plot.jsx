@@ -104,7 +104,7 @@ export default function PlotComponent() {
 
     isolated: true,
     non_isolated: true,
-    completed: true,
+    complete: true,
     draft: true
   });
 
