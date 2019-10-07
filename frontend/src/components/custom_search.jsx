@@ -205,7 +205,7 @@ export default function CustomSearchInput(navProps) {
 
         <Downshift id='downshift-popper'
           onChange={(item) => handleInputChange(item)}
-          itemToString={item => (searchState.searchType === 'name' ? item.organism_name: item.strain_name)}>
+          itemToString={item => item ? (searchState.searchType === 'name' ? item.organism_name: item.strain_name) : ''}>
           {({
             getInputProps,
             getItemProps,

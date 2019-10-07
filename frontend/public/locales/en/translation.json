@@ -100,7 +100,7 @@
     "state" : "State",
     "isolated" : "Isolated",
     "non_isolated" : "Non Isolated",
-    "completed" : "Completed",
+    "complete" : "Completed",
     "draft" : "Draft",
 
     "hint" : "Hint",
