@@ -17,11 +17,13 @@
     "tools" : "Tools",
     "tree" : "Tree",
     "table" : "Table",
-    "plot" : "Viz"
+    "plot" : "Viz",
+    "advance_search": "Advance search",
+    "search_load_more" : "Loaded: {{suggestions}} / Total: {{total}}. Click here to load more"
   },
   "tree":{
     "title": "Navigation Tree",
-    "hint" : "Loaded: {{pages}} / Total: {{total}}. Click here to load more ...   "
+    "hint" : "Loaded: {{pages}} / {{total}}. Click here to load more ...   "
   },
   "table":{
     "name": "Name",

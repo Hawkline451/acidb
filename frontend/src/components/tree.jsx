@@ -16,7 +16,7 @@ import {
 
 // Styles
 import { ThemeProvider } from "@material-ui/styles";
-import { theme, stylesTree } from './css/themes'
+import { themeTree, stylesTree } from './css/themes'
 
 // import config
 import { config } from "../config";
@@ -214,7 +214,7 @@ export default function TreeComponent() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themeTree}>
       <Grid
         container
         direction="column"

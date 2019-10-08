@@ -24,7 +24,7 @@ class SearchFilter(filters.FilterSet):
         label='Gc percentage lower or equal than', field_name='gc_percentage', lookup_expr='lte')
     n_orfs_gte = filters.NumberFilter(
         label='N orfs greater or equal than', field_name='n_orfs', lookup_expr='gte')
-    n_orfs_percentage_lte = filters.NumberFilter(
+    n_orfs_lte = filters.NumberFilter(
         label='N orfs lower or equal than', field_name='n_orfs', lookup_expr='lte')
 
     temp_in_range = filters.CharFilter(
@@ -55,11 +55,11 @@ class SearchFilter(filters.FilterSet):
         label="Genus contains", method='filter_tax', field_name='genus')
     species = filters.CharFilter(
         label="Species contains", method='filter_tax', field_name='species')
-    strain_name = filters.CharFilter(
-        label="Organism strain contains", method='filter_strain')
+    organism_or_strain = filters.CharFilter(
+        label="Organism strain contains", method='filter_organism_strain')
 
-    def filter_strain(self, queryset, name, value):
-        queryset = queryset.filter(strains__strain_name__icontains=value)
+    def filter_organism_strain(self, queryset, name, value):
+        queryset = queryset.filter(Q(strains__strain_name__icontains=value) | Q(name__icontains=value))
         return queryset
     def filter_tax(self, queryset, name, value):
         if name == 'domain':
@@ -104,7 +104,6 @@ class SearchFilter(filters.FilterSet):
     class Meta:
         model = Organism
         fields = {
-            'name': ['icontains'],
             'isolated': ['iexact'],
             'state': ['iexact'],
 

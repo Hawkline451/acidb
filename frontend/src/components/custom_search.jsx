@@ -22,36 +22,19 @@ import { stylesInput } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
+
 
 const useStylesInput = stylesInput
 
 
 //Search Component
-
-function renderInput(inputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
-  return (
-    <TextField
-
-      className={classes.input}
-      InputProps={{
-        classes: {
-          input: classes.innerInput
-        },
-        inputRef: ref,
-        ...InputProps
-      }}
-      {...other}
-    />
-  );
-}
-
 function renderSuggestion(suggestionProps) {
   const { searchState, suggestion, itemProps } = suggestionProps;
   return (
     searchState.searchType === 'name' ?
 
-      <MenuItem {...itemProps} key={suggestion.id_organism} component='div'>
+      <MenuItem {...itemProps} key={suggestion.id_organism + suggestion.strain_name} component='div' style={{ whiteSpace: 'normal' }}>
         <Grid
           container
           direction='column'
@@ -66,7 +49,7 @@ function renderSuggestion(suggestionProps) {
       </MenuItem>
 
       :
-      <MenuItem {...itemProps} key={suggestion.strain_name} component='div'>
+      <MenuItem {...itemProps} key={suggestion.strain_name} component='div' style={{ whiteSpace: 'normal' }}>
         <Grid
           container
           direction='column'
@@ -88,13 +71,14 @@ function renderLoadMore(suggestionProps) {
   return (
     (count > suggestionProps.numSuggestions) ?
       (
-        <ButtonBase key={'load_more'} onClick={() => suggestionProps.setNumSuggestions(suggestionProps.numSuggestions + 5)} style={{ width: '100%' }}>
-          <div style={{ padding: 15 }}>
-            <Typography style={{ color: '#808080' }}>
-              {'Loaded: ' + suggestionProps.numSuggestions + ' / Total: ' + count + ' [Load more]'}
-            </Typography>
-          </div>
-        </ButtonBase>
+        <MenuItem  {...suggestionProps.itemProps} key={'load_more'} component='div' style={{ whiteSpace: 'normal' }}>
+          <ButtonBase component={Link} to={'/app/advance_search/organism_or_strain=' + suggestionProps.inputValue} style={{ width: '100%' }}>
+            <div style={{ color: '#808080', }}>
+
+              {i18next.t('navbar.search_load_more', { suggestions: suggestionProps.numSuggestions, total: count })}
+            </div>
+          </ButtonBase>
+        </MenuItem >
       )
       :
       (<div key={'empty'}></div>)
@@ -105,11 +89,11 @@ function getSuggestions(value, searchState, numSuggestions, setNumSuggestions, i
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
   if (!isOpen) {
-    setNumSuggestions(5)
+    setNumSuggestions(8)
   }
 
   if (inputLength === 0 && !showEmpty) {
-    setNumSuggestions(5)
+    setNumSuggestions(8)
     return [];
   } else {
     let filteredData = searchState.searchData.filter(suggestion => {
@@ -159,7 +143,7 @@ export default function CustomSearchInput(navProps) {
   function handleInputChange(value) {
     setSearchState(oldValues => ({
       ...oldValues,
-      searchQuery: value.id_organism,
+      searchQuery: value,
     }));
   }
 
@@ -174,6 +158,11 @@ export default function CustomSearchInput(navProps) {
   function handleSubmit(event) {
     //event.preventDefault()
     navProps.cleanTabs()
+  }
+
+  function handleSearch() {
+    let url = '/app/organism/' + searchState.searchQuery
+    return url
   }
 
   const searchTypes = [
@@ -204,8 +193,8 @@ export default function CustomSearchInput(navProps) {
         </Select>
 
         <Downshift id='downshift-popper'
-          onChange={(item) => handleInputChange(item)}
-          itemToString={item => item ? (searchState.searchType === 'name' ? item.organism_name: item.strain_name) : ''}>
+          onChange={(item) => handleInputChange(item.id_organism)}
+          itemToString={item => item ? (searchState.searchType === 'name' ? item.organism_name : item.strain_name) : ''}>
           {({
             getInputProps,
             getItemProps,
@@ -214,20 +203,28 @@ export default function CustomSearchInput(navProps) {
             isOpen,
           }) => {
             const { ...inputProps } = getInputProps({
-              placeholder: t('placeholder.search')
+              placeholder: t('placeholder.search'),
+              onChange: () => {
+                console.log(inputValue);
+  
+              }
             });
 
             return (
               <div style={{ width: '70%' }}>
-                {renderInput({
-                  fullWidth: true,
-                  classes,
-                  inputProps,
-                  ref: node => {
-                    popperNode = node;
-                  },
-                })}
-                <Popper open={isOpen} anchorEl={popperNode} >
+                <TextField
+                  className={classes.input}
+                  InputProps={{
+                    classes: {
+                      input: classes.innerInput
+                    },
+                    inputRef: node => {
+                      popperNode = node;
+                    },
+                    ...inputProps,
+                  }}
+                />
+                <Popper open={isOpen} anchorEl={popperNode} style={{ zIndex: 1200 }}>
                   <div
                     {...(isOpen
                       ? getMenuProps({}, { suppressRefError: true })
@@ -251,6 +248,8 @@ export default function CustomSearchInput(navProps) {
                           });
                         } else {
                           return renderLoadMore({
+                            inputValue,
+                            searchState,
                             suggestion,
                             numSuggestions,
                             setNumSuggestions
@@ -265,7 +264,7 @@ export default function CustomSearchInput(navProps) {
           }}
         </Downshift>
 
-        <IconButton aria-label='Search' label='Submit' type='submit' onClick={handleSubmit} component={Link} to={'/app/organism/' + searchState.searchQuery}>
+        <IconButton aria-label='Search' label='Submit' type='submit' onClick={handleSubmit} component={Link} to={handleSearch()}>
           <SearchIcon />
         </IconButton>
       </Paper>

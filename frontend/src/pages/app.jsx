@@ -7,6 +7,7 @@ import Footer from '../components/footer'
 import TreeComponent from '../components/tree'
 import TableComponent from '../components/table_component'
 import OrganismComponent from '../components/organism'
+import AdvanceSearchComponent from '../components/advance_search'
 import PlotComponent from '../components/plot'
 import SimpleBarComponent from '../components/plot_bar_chart'
 import { Loader } from '../components/loader'
@@ -18,15 +19,15 @@ function Page() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
+
         <div>
           <NavBar />
-        </div>
-        <div>
           <Route
             path="/app"
             render={() => (
               <Switch>
                 <Route path="/app/organism/:id" component={OrganismComponent} />
+                <Route path="/app/advance_search/:query" component={AdvanceSearchComponent} />
                 <Route path="/app/tools_tree" component={TreeComponent} />
                 <Route path="/app/tools" component={Loader} />
                 <Route path="/app/tools_table" component={TableComponent} />
@@ -35,8 +36,9 @@ function Page() {
               </Switch>
             )}
           />
+          <Footer />
+
         </div>
-        <Footer />
       </BrowserRouter>
     </ThemeProvider>
 

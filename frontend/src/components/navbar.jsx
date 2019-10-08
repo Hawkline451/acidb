@@ -13,7 +13,6 @@ import {
 import CustomSearchInput from './custom_search'
 
 // Themes
-import { ThemeProvider } from '@material-ui/styles';
 import { theme, stylesAppNav } from './css/themes'
 
 // Internationalization
@@ -84,7 +83,6 @@ export default function NavBar() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
 
       <AppBar position='static'>
         <Toolbar>
@@ -101,6 +99,7 @@ export default function NavBar() {
             <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
             <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
             <TabMenu />
+            <Tab label={t('navbar.advance_search')} component={Link} to='/app/advance_search/organism_or_strain=' className={classes.tabRoot} />
           </Tabs>
 
           <div className={classes.search}>
@@ -109,6 +108,5 @@ export default function NavBar() {
         </Toolbar>
       </AppBar>
 
-    </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 
 import {
   Button, MenuItem, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, InputAdornment,
@@ -8,7 +8,6 @@ import {
 import {
   ExpandMore, ExpandLess
 } from '@material-ui/icons';
-
 
 // NPM
 import {
@@ -36,7 +35,7 @@ const isolatedDict = { '': 'None', isolated__iexact: 'Isolated', nonisolated: 'N
 const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
 const accessSrcList = { '': 'None', genbank: 'GenBank', jgi: 'JGI', insdc: 'INSDC' }
 
-export default function TestComponent() {
+export default function AdvanceSearchComponent() {
   const classes = styles();
 
 
@@ -79,6 +78,7 @@ export default function TestComponent() {
       annotation: '',
     })
 
+
   function handleHideGrid(name) {
     setGridState(oldValues => ({
       ...oldValues,
@@ -105,7 +105,7 @@ export default function TestComponent() {
 
   return (
 
-    <ThemeProvider theme={theme}>
+    <Fragment>
       <form>
         <Paper style={{ padding: 20 }}>
           <Grid container direction='row'>
@@ -122,7 +122,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='organism_or_strain'
                           type='text'
-                          label='Organism / Strain'
+                          label={'Organism / Strain'}
                           value={formState.organism_or_strain}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -145,7 +145,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='domain'
                           type='text'
-                          label='Domain'
+                          label={'Domain'}
                           value={formState.domain}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -155,7 +155,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='tax_class'
                           type='text'
-                          label='Class'
+                          label={'Class'}
                           value={formState.tax_class}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -165,7 +165,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='order'
                           type='text'
-                          label='Order'
+                          label={'Order'}
                           value={formState.order}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -177,7 +177,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='family'
                           type='text'
-                          label='Family'
+                          label={'Family'}
                           value={formState.family}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -187,7 +187,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='genus'
                           type='text'
-                          label='Genus'
+                          label={'Genus'}
                           value={formState.genus}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -197,7 +197,7 @@ export default function TestComponent() {
                         <TextField variant='outlined'
                           name='species'
                           type='text'
-                          label='Species'
+                          label={'Species'}
                           value={formState.species}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -230,14 +230,14 @@ export default function TestComponent() {
                               <TextField variant='outlined'
                                 name='temp_associated_gte'
                                 type='text'
-                                label='min value [C°]'
+                                label={'min value [C°]'}
                                 value={formState.temp_associated_gte}
                                 onChange={event => handleChange(event.target)}
                               />
                               <TextField variant='outlined'
                                 name='temp_associated_lte'
                                 type='text'
-                                label='max value [C°]'
+                                label={'max value [C°]'}
                                 value={formState.temp_associated_lte}
                                 onChange={event => handleChange(event.target)}
                                 style={{ marginTop: 5 }}
@@ -252,7 +252,7 @@ export default function TestComponent() {
                               <TextField variant='outlined'
                                 name='temp_in_range'
                                 type='text'
-                                label='Temperature [C°]'
+                                label={'Temperature [C°]'}
                                 value={formState.temp_in_range}
                                 onChange={event => handleChange(event.target)}
                               />
@@ -273,14 +273,14 @@ export default function TestComponent() {
                               <TextField variant='outlined'
                                 name='ph_associated_gte'
                                 type='text'
-                                label='min value'
+                                label={'min value'}
                                 value={formState.ph_associated_gte}
                                 onChange={event => handleChange(event.target)}
                               />
                               <TextField variant='outlined'
                                 name='ph_associated_lte'
                                 type='text'
-                                label='max value'
+                                label={'max value'}
                                 value={formState.ph_associated_lte}
                                 onChange={event => handleChange(event.target)}
                                 style={{ marginTop: 5 }}
@@ -295,7 +295,7 @@ export default function TestComponent() {
                               <TextField variant='outlined'
                                 name='ph_in_range'
                                 type='text'
-                                label='pH'
+                                label={'pH'}
                                 value={formState.ph_in_rage}
                                 onChange={event => handleChange(event.target)}
                               />
@@ -333,14 +333,14 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='gen_size_gte'
                             type='text'
-                            label='min value'
+                            label={'min value'}
                             value={formState.gen_size_gte}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
                             name='gen_size_lte'
                             type='text'
-                            label='max value'
+                            label={'max value'}
                             value={formState.gen_size_lte}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
@@ -356,14 +356,14 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='gc_percentage_gte'
                             type='text'
-                            label='min value'
+                            label={'min value'}
                             value={formState.gc_percentage_gte}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
                             name='gc_percentage_lte'
                             type='text'
-                            label='max value'
+                            label={'max value'}
                             value={formState.gc_percentage_lte}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
@@ -384,7 +384,7 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='gen_contamination_lte'
                             type='text'
-                            label='lower than'
+                            label={'lower than'}
                             value={formState.gen_contamination_lte}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
@@ -400,7 +400,7 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='gen_completeness_gte'
                             type='text'
-                            label='greater than'
+                            label={'greater than'}
                             value={formState.gen_completeness_gte}
                             onChange={event => handleChange(event.target)}
                           />
@@ -419,7 +419,7 @@ export default function TestComponent() {
                             select
                             name='state___iexact'
                             type='text'
-                            label='Assembly level'
+                            label={'Assembly level'}
                             value={formState.state___iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
@@ -441,7 +441,7 @@ export default function TestComponent() {
                             select
                             name='access_src__iexact'
                             type='text'
-                            label='Access src'
+                            label={'Access src'}
                             value={formState.access_src__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
@@ -462,7 +462,7 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='access_id__iexact'
                             type='text'
-                            label='Access id'
+                            label={'Access id'}
                             value={formState.access_id__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
@@ -482,7 +482,7 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             select
                             name='isolated__iexact'
-                            label='Isolated'
+                            label={'Isolated'}
                             value={formState.isolated__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
@@ -502,18 +502,19 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='bioproject__iexact'
                             type='text'
-                            label='Bioproject'
+                            label={'Bioproject'}
                             value={formState.bioproject__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
-                          />                      </TableCell>
+                          />
+                        </TableCell>
                       </TableRow>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
                             name='biosample__iexact'
                             type='text'
-                            label='Biosample'
+                            label={'Biosample'}
                             value={formState.biosample__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
@@ -548,14 +549,14 @@ export default function TestComponent() {
                           <TextField variant='outlined'
                             name='n_orfs_gte'
                             type='text'
-                            label='min value'
+                            label={'min value'}
                             value={formState.n_orfs_gte}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
                             name='n_orfs_lte'
                             type='text'
-                            label='max value'
+                            label={'max value'}
                             value={formState.n_orfs_lte}
                             onChange={event => handleChange(event.target)}
                           />
@@ -569,7 +570,7 @@ export default function TestComponent() {
                   <TextField variant='outlined'
                     name='annotation'
                     type='text'
-                    label='Annotation'
+                    label={'Annotation'}
                     value={formState.annotation}
                     onChange={event => handleChange(event.target)}
                     style={{ width: '100%' }}
@@ -589,6 +590,6 @@ export default function TestComponent() {
         <Typography variant='h5'> Search results </Typography>
         <div> {resultState} </div>
       </Paper>
-    </ThemeProvider >
+    </Fragment >
   );
 }
