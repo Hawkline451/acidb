@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import {
-  Paper, IconButton, Grid, MenuItem, TextField, ButtonBase, Typography, Popper, Select
+  Paper, IconButton, Grid, MenuItem, TextField, ButtonBase, Popper, Select
 } from '@material-ui/core';
 import {
   Search as SearchIcon

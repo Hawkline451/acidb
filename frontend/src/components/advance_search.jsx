@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 
 import {
-  Button, MenuItem, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, InputAdornment,
-  Table, TableBody, TableCell, TableRow, Select, InputLabel, TableHead, Tooltip, TextField, Divider
+  Button, MenuItem, Typography, Grid, Paper, 
+  Table, TableBody, TableCell, TableRow, TextField, Divider
 } from '@material-ui/core';
 
 import {
@@ -13,15 +13,23 @@ import {
 import {
   Link
 } from 'react-router-dom';
+import axios from 'axios';
+
+// Import components
+import { Loader } from './loader'
+import { ResultTable } from './advance_search_results'
 
 // Styles
-import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesTable } from './css/themes'
+import { stylesTable } from './css/themes'
+
+// import config
+import { config } from "../config";
 
 import {
   makeStyles
 } from '@material-ui/core/styles';
 
+const useStylesTable = stylesTable
 
 const styles = makeStyles({
   paper: {
@@ -31,20 +39,29 @@ const styles = makeStyles({
   }
 })
 
-const isolatedDict = { '': 'None', isolated__iexact: 'Isolated', nonisolated: 'Non Isolated' }
+const isolatedDict = { '': 'None', true: 'Isolated', false: 'Non Isolated' }
 const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
 const accessSrcList = { '': 'None', genbank: 'GenBank', jgi: 'JGI', insdc: 'INSDC' }
 
-export default function AdvanceSearchComponent() {
-  const classes = styles();
+const scrollToRef = (ref) => window.scrollTo({top:ref.current.offsetTop, behavior:'smooth'}) 
+
+// Sub components
 
 
-  const [gridState, setGridState] = useState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
 
-  const [resultState, setResultState] = useState(null)
+
+
+export default function AdvanceSearchComponent(props) {
+
+  const resultRef = useRef(null);
+  const [gridState, setGridState] = useState({ identifiers: false, tax_info: false, growth_range: false, gen_metadata: false, proteome_metadata: false, })
+
+  // query structure: organism_or_strain=something
+  const param = (props.match.params.query).split('=')[1]
+  const [resultState, setResultState] = useState([])
   const [formState, setFormState] = useState(
     {
-      organism_or_strain: '',
+      organism_or_strain: param,
 
       domain: '',
       tax_class: '',
@@ -66,8 +83,8 @@ export default function AdvanceSearchComponent() {
       gc_percentage_lte: '',
       gen_contamination_lte: '',
       gen_completeness_gte: '',
-      state___iexact: '',
-      isolated__iexact: '',
+      state__iexact: '',
+      isolated: '',
       access_src__iexact: '',
       access_id__iexact: '',
       bioproject__iexact: '',
@@ -78,6 +95,29 @@ export default function AdvanceSearchComponent() {
       annotation: '',
     })
 
+    useEffect(() => {
+      if (param !== ''){
+        let url = config.API_ADVANCE_SEARCH + props.match.params.query
+        let fetchData = (async () => {
+          let res = await axiosFetch(url);
+          setResultState(res.data)
+          executeScroll()
+        })
+        fetchData()
+      }
+      // Empty array as second argument avoid fetching on component updates, only when mounting the component
+    }, [ props, param ]);
+
+    // This is a hack, wait 1 secont to render the text field avoiding the outlined label bug
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
+      }, 1000);
+      return () => clearTimeout(timer);
+      
+      // Empty array as second argument avoid fetching on component updates, only when mounting the component
+    }, []);
+    
 
   function handleHideGrid(name) {
     setGridState(oldValues => ({
@@ -91,6 +131,8 @@ export default function AdvanceSearchComponent() {
     getResults()
   }
 
+  const executeScroll = () => scrollToRef(resultRef)
+
   function handleChange(target) {
     setFormState(oldValues => ({
       ...oldValues,
@@ -98,13 +140,25 @@ export default function AdvanceSearchComponent() {
     }));
   }
 
+  function axiosFetch(url) {
+    return axios.get(url).then(response => {
+      // returning the data here allows the caller to get it through another .then(...)
+      return response
+    })
+  }
+
   function getResults() {
-    let url = Object.keys(formState).map(key => key + '=' + formState[key])
-    setResultState(url.join('&'))
+    let url = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    url = config.API_ADVANCE_SEARCH + url
+    let fetchData = (async () => {
+      let res = await axiosFetch(url);
+      setResultState(res.data)
+      executeScroll()
+    })
+    fetchData()
   }
 
   return (
-
     <Fragment>
       <form>
         <Paper style={{ padding: 20 }}>
@@ -120,6 +174,7 @@ export default function AdvanceSearchComponent() {
                     <TableRow >
                       <TableCell style={{ borderStyle: 'none' }} align='left'>
                         <TextField variant='outlined'
+                          key='organism_or_strain'
                           name='organism_or_strain'
                           type='text'
                           label={'Organism / Strain'}
@@ -420,13 +475,13 @@ export default function AdvanceSearchComponent() {
                             name='state___iexact'
                             type='text'
                             label={'Assembly level'}
-                            value={formState.state___iexact}
+                            value={formState.state__iexact}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
                           >
                             {
                               Object.keys(assemblyList).map(key =>
-                                <MenuItem value={key}>
+                                <MenuItem key={'assembly'+key} value={key}>
                                   {assemblyList[key]}
                                 </MenuItem>
                               )
@@ -448,7 +503,7 @@ export default function AdvanceSearchComponent() {
                           >
                             {
                               Object.keys(accessSrcList).map(key =>
-                                <MenuItem value={key}>
+                                <MenuItem key={'access'+key} value={key}>
                                   {accessSrcList[key]}
                                 </MenuItem>
                               )
@@ -481,15 +536,15 @@ export default function AdvanceSearchComponent() {
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
                             select
-                            name='isolated__iexact'
+                            name='isolated'
                             label={'Isolated'}
-                            value={formState.isolated__iexact}
+                            value={formState.isolated}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
                           >
                             {
                               Object.keys(isolatedDict).map(key =>
-                                <MenuItem value={key}>
+                                <MenuItem key={'isolated'+key} value={key}>
                                   {isolatedDict[key]}
                                 </MenuItem>
                               )
@@ -586,9 +641,16 @@ export default function AdvanceSearchComponent() {
         </Paper>
 
       </form >
-      <Paper style={{ padding: 20 }}>
-        <Typography variant='h5'> Search results </Typography>
-        <div> {resultState} </div>
+      <span ref={resultRef}></span>
+      <Paper style={{ padding: 30 }}>
+        <Typography variant='h4'> Search results </Typography>
+        <Typography variant='h5'>{`Total: ${resultState.length}`}</Typography>
+        {resultState.length ?
+          <ResultTable state={resultState} />
+          :
+          <div/>
+        }
+
       </Paper>
     </Fragment >
   );

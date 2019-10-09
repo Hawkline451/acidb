@@ -13,7 +13,7 @@ import {
 import CustomSearchInput from './custom_search'
 
 // Themes
-import { theme, stylesAppNav } from './css/themes'
+import { stylesAppNav } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
