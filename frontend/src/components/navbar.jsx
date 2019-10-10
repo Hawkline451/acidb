@@ -99,7 +99,7 @@ export default function NavBar() {
             <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
             <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
             <TabMenu />
-            <Tab label={t('navbar.advance_search')} component={Link} to='/app/advance_search/organism_or_strain=' className={classes.tabRoot} />
+            <Tab label={t('navbar.advance_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
           </Tabs>
 
           <div className={classes.search}>

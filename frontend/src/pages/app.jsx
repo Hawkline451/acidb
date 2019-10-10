@@ -28,6 +28,7 @@ function Page() {
               <Switch>
                 <Route path="/app/organism/:id" component={OrganismComponent} />
                 <Route path="/app/advance_search/:query" component={AdvanceSearchComponent} />
+                <Route path="/app/advance_search/" component={AdvanceSearchComponent} />
                 <Route path="/app/tools_tree" component={TreeComponent} />
                 <Route path="/app/tools" component={Loader} />
                 <Route path="/app/tools_table" component={TableComponent} />

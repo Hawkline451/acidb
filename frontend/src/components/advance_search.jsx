@@ -1,7 +1,8 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 
+import { createBrowserHistory } from 'history';
 import {
-  Button, MenuItem, Typography, Grid, Paper, 
+  Button, MenuItem, Typography, Grid, Paper,
   Table, TableBody, TableCell, TableRow, TextField, Divider
 } from '@material-ui/core';
 
@@ -10,10 +11,9 @@ import {
 } from '@material-ui/icons';
 
 // NPM
-import {
-  Link
-} from 'react-router-dom';
+
 import axios from 'axios';
+import { CSVLink } from 'react-csv';
 
 // Import components
 import { Loader } from './loader'
@@ -23,7 +23,7 @@ import { ResultTable } from './advance_search_results'
 import { stylesTable } from './css/themes'
 
 // import config
-import { config } from "../config";
+import { config } from '../config';
 
 import {
   makeStyles
@@ -42,8 +42,72 @@ const styles = makeStyles({
 const isolatedDict = { '': 'None', true: 'Isolated', false: 'Non Isolated' }
 const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
 const accessSrcList = { '': 'None', genbank: 'GenBank', jgi: 'JGI', insdc: 'INSDC' }
+const headersCSV = [
+  'id_organism',
+  'name',
+  'strains_str',
+  'seq_date',
 
-const scrollToRef = (ref) => window.scrollTo({top:ref.current.offsetTop, behavior:'smooth'}) 
+  'domain',
+  'phylum',
+  'tax_class',
+  'order',
+  'family',
+  'genus',
+  'species',
+
+  'ph_associated',
+  'ph_min',
+  'ph_max',
+  'temp_associated',
+  'temp_min',
+  'temp_max',
+
+  'isolated',
+  'gen_size',
+  'gc_percentage',
+  'state',
+  'biosample',
+  'bioproject',
+
+  'n_orfs',
+];
+const att = {
+  organism_or_strain: '',
+
+  domain: '',
+  tax_class: '',
+  order: '',
+  family: '',
+  genus: '',
+  species: '',
+
+  temp_associated_gte: '',
+  temp_associated_lte: '',
+  temp_in_range: '',
+  ph_associated_gte: '',
+  ph_associated_lte: '',
+  ph_in_range: '',
+
+  gen_size_gte: '',
+  gen_size_lte: '',
+  gc_percentage_gte: '',
+  gc_percentage_lte: '',
+  gen_contamination_lte: '',
+  gen_completeness_gte: '',
+  state__iexact: '',
+  isolated: '',
+  access_src__iexact: '',
+  access_id__iexact: '',
+  bioproject__iexact: '',
+  biosample__iexact: '',
+
+  n_orfs_gte: '',
+  n_orfs_lte: '',
+  annotation: '',
+}
+
+const scrollToRef = (ref) => window.scrollTo({ top: ref.current.offsetTop, behavior: 'smooth' })
 
 // Sub components
 
@@ -53,71 +117,61 @@ const scrollToRef = (ref) => window.scrollTo({top:ref.current.offsetTop, behavio
 
 export default function AdvanceSearchComponent(props) {
 
+  const classes = useStylesTable();
+
   const resultRef = useRef(null);
   const [gridState, setGridState] = useState({ identifiers: false, tax_info: false, growth_range: false, gen_metadata: false, proteome_metadata: false, })
-
-  // query structure: organism_or_strain=something
-  const param = (props.match.params.query).split('=')[1]
+  const [isLoading, setIsLoading] = useState(false);
   const [resultState, setResultState] = useState([])
-  const [formState, setFormState] = useState(
-    {
-      organism_or_strain: param,
+  const [formState, setFormState] = useState(att)
 
-      domain: '',
-      tax_class: '',
-      order: '',
-      family: '',
-      genus: '',
-      species: '',
 
-      temp_associated_gte: '',
-      temp_associated_lte: '',
-      temp_in_range: '',
-      ph_associated_gte: '',
-      ph_associated_lte: '',
-      ph_in_range: '',
 
-      gen_size_gte: '',
-      gen_size_lte: '',
-      gc_percentage_gte: '',
-      gc_percentage_lte: '',
-      gen_contamination_lte: '',
-      gen_completeness_gte: '',
-      state__iexact: '',
-      isolated: '',
-      access_src__iexact: '',
-      access_id__iexact: '',
-      bioproject__iexact: '',
-      biosample__iexact: '',
+  const history = createBrowserHistory();
+  useEffect(() => {
+    if (props.match.params.query) {
 
-      n_orfs_gte: '',
-      n_orfs_lte: '',
-      annotation: '',
-    })
+      // Check if url contains params then update form state
+      let params = props.match.params.query ? (props.match.params.query).split('&') : '';
+      console.log(params)    
+      let pair = null
+      let dataParams = {}
+      params.forEach(function (d) {
+        pair = d.split('=');
+        dataParams[pair[0]] = pair[1]
+      });
+      setFormState(dataParams)
 
-    useEffect(() => {
-      if (param !== ''){
-        let url = config.API_ADVANCE_SEARCH + props.match.params.query
-        let fetchData = (async () => {
-          let res = await axiosFetch(url);
-          setResultState(res.data)
-          executeScroll()
-        })
-        fetchData()
-      }
-      // Empty array as second argument avoid fetching on component updates, only when mounting the component
-    }, [ props, param ]);
 
-    // This is a hack, wait 1 secont to render the text field avoiding the outlined label bug
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
-      }, 1000);
-      return () => clearTimeout(timer);
-      
-      // Empty array as second argument avoid fetching on component updates, only when mounting the component
-    }, []);
-    
+
+      let url = config.API_ADVANCE_SEARCH + props.match.params.query
+      let fetchData = (async () => {
+        setIsLoading(true)
+        let res = await axiosFetch(url);
+        setResultState(res.data)
+        setIsLoading(false)
+        executeScroll()
+      })
+      fetchData()
+    }
+    else{
+      setFormState(att)
+      setResultState([])
+    }
+    console.log("effect")
+    // Empty array as second argument avoid fetching on component updates, only when mounting the component
+  }, [props,]);
+
+  // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
+    }, 500);
+    return () => clearTimeout(timer);
+
+    // Empty array as second argument avoid fetching on component updates, only when mounting the component
+  }, []);
+
 
   function handleHideGrid(name) {
     setGridState(oldValues => ({
@@ -129,6 +183,8 @@ export default function AdvanceSearchComponent(props) {
   function handleSubmit(event) {
     event.preventDefault()
     getResults()
+    let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    history.push(searchUrl)
   }
 
   const executeScroll = () => scrollToRef(resultRef)
@@ -151,12 +207,31 @@ export default function AdvanceSearchComponent(props) {
     let url = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
     url = config.API_ADVANCE_SEARCH + url
     let fetchData = (async () => {
+      setIsLoading(true)
       let res = await axiosFetch(url);
       setResultState(res.data)
+      setIsLoading(false)
       executeScroll()
     })
     fetchData()
   }
+
+  function getProcesedData() {
+    let duplicated = resultState.slice(0)
+
+    for (var i = 0; i < duplicated.length; i++) {
+      duplicated[i].strains_str = duplicated[i].strains.map(a => a.strain_name).join(' = ')
+      duplicated[i].domain = duplicated[i].taxonomy[0].domain
+      duplicated[i].phylum = duplicated[i].taxonomy[0].phylum
+      duplicated[i].tax_class = duplicated[i].taxonomy[0].tax_class
+      duplicated[i].order = duplicated[i].taxonomy[0].order
+      duplicated[i].family = duplicated[i].taxonomy[0].family
+      duplicated[i].genus = duplicated[i].taxonomy[0].genus
+      duplicated[i].species = duplicated[i].taxonomy[0].species
+    }
+    return duplicated
+  }
+
 
   return (
     <Fragment>
@@ -481,7 +556,7 @@ export default function AdvanceSearchComponent(props) {
                           >
                             {
                               Object.keys(assemblyList).map(key =>
-                                <MenuItem key={'assembly'+key} value={key}>
+                                <MenuItem key={'assembly' + key} value={key}>
                                   {assemblyList[key]}
                                 </MenuItem>
                               )
@@ -503,7 +578,7 @@ export default function AdvanceSearchComponent(props) {
                           >
                             {
                               Object.keys(accessSrcList).map(key =>
-                                <MenuItem key={'access'+key} value={key}>
+                                <MenuItem key={'access' + key} value={key}>
                                   {accessSrcList[key]}
                                 </MenuItem>
                               )
@@ -544,7 +619,7 @@ export default function AdvanceSearchComponent(props) {
                           >
                             {
                               Object.keys(isolatedDict).map(key =>
-                                <MenuItem key={'isolated'+key} value={key}>
+                                <MenuItem key={'isolated' + key} value={key}>
                                   {isolatedDict[key]}
                                 </MenuItem>
                               )
@@ -644,12 +719,28 @@ export default function AdvanceSearchComponent(props) {
       <span ref={resultRef}></span>
       <Paper style={{ padding: 30 }}>
         <Typography variant='h4'> Search results </Typography>
-        <Typography variant='h5'>{`Total: ${resultState.length}`}</Typography>
-        {resultState.length ?
-          <ResultTable state={resultState} />
-          :
-          <div/>
-        }
+        <Grid container alignItems='center' alignContent='center'>
+          <Grid item xs={6}>
+            <Typography variant='h5'>{`Total: ${resultState.length}`}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <CSVLink
+              className={classes.noDecoratorLink}
+              headers={headersCSV}
+              data={getProcesedData()}
+              separator={'\t'}
+              filename={'filtered_points.csv'}
+            >
+              <Button variant='outlined' color='primary'>{'download_file'}</Button>
+            </CSVLink>
+          </Grid>
+          {isLoading ?
+            <Loader/>
+            :
+            <ResultTable state={resultState} />
+          }
+
+        </Grid>
 
       </Paper>
     </Fragment >
