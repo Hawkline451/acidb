@@ -1,4 +1,4 @@
-from import_export.widgets import ForeignKeyWidget
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import resources, fields
 
 from acidb.models import *
@@ -64,4 +64,25 @@ class TaxonomyResource(BaseOrganismResource):
         model = Taxonomy
         fields = ('organism', 'tax_src', 'tax_id', 'domain', 'phylum',
                   'tax_class', 'order', 'family', 'genus', 'species')
+        export_order = fields
+
+
+
+class ProteinResource(resources.ModelResource):
+
+    class Meta:
+        model = Protein
+        fields = ('nr_id', 'prot_len', 'isoelectric_p', 'mol_weight', 'tmhmm',
+                  'hmmtop', 'psort', 'pfam', 'signal_p', 'cog', 'cog_category')
+        import_id_fields = ['nr_id']
+
+        export_order = fields
+
+
+class ProteomeResource(resources.ModelResource):
+    class Meta:
+        model = Proteome
+        import_id_fields = ['id', ] 
+        fields = ('id','organism', 'prot_id', 'nr_id')
+
         export_order = fields

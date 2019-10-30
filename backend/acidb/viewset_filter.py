@@ -59,7 +59,7 @@ class SearchFilter(filters.FilterSet):
         label="Organism strain contains", method='filter_organism_strain')
 
     def filter_organism_strain(self, queryset, name, value):
-        queryset = queryset.filter(Q(strains__strain_name__icontains=value) | Q(name__icontains=value))
+        queryset = queryset.filter(Q(strains__strain_name__icontains=value) | Q(name__icontains=value)).distinct().order_by('name')
         return queryset
     def filter_tax(self, queryset, name, value):
         if name == 'domain':
@@ -104,7 +104,7 @@ class SearchFilter(filters.FilterSet):
     class Meta:
         model = Organism
         fields = {
-            'isolated': ['iexact'],
+            'isolated': ['exact'],
             'state': ['iexact'],
 
             'access_src': ['iexact'],
