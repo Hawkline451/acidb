@@ -59,6 +59,21 @@ class ProteomeAdmin(ImportExportModelAdmin):
     
     get_name.short_description = 'Organism name'
 
+class EcAdmin(ImportExportModelAdmin):
+    resource_class = EcResource
+    raw_id_fields = ('nr_id',)
+
+class InterfamAdmin(ImportExportModelAdmin):
+    resource_class = InterfamResource
+    raw_id_fields = ('nr_id',)
+
+class KeggAdmin(ImportExportModelAdmin):
+    resource_class = KeggResource
+    raw_id_fields = ('nr_id',)
+
+
+    
+
 
 admin.site.register(Organism,OrganismAdmin)
 admin.site.register(Strain, StrainAdmin)
@@ -68,3 +83,6 @@ admin.site.register(GrowthDetail,GrowthDetailAdmin)
 
 admin.site.register(Protein,ProteinAdmin)
 admin.site.register(Proteome,ProteomeAdmin)
+admin.site.register(Ec_number,EcAdmin)
+admin.site.register(Kegg_ko,KeggAdmin)
+admin.site.register(Inter_fam,InterfamAdmin)

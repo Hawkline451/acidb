@@ -86,3 +86,27 @@ class ProteomeResource(resources.ModelResource):
         fields = ('id','organism', 'prot_id', 'nr_id')
 
         export_order = fields
+
+class EcResource(resources.ModelResource):
+    class Meta:
+        model = Ec_number
+        import_id_fields = ['id', ] 
+        fields = ('id','nr_id', 'ec_number')
+
+        export_order = fields
+
+class InterfamResource(resources.ModelResource):
+    class Meta:
+        model = Inter_fam
+        import_id_fields = ['id', ] 
+        fields = ('id','nr_id', 'inter_fam')
+
+        export_order = fields
+
+class KeggResource(resources.ModelResource):
+    class Meta:
+        model = Inter_fam
+        import_id_fields = ['id', ] 
+        fields = ('id','nr_id', 'kegg_ko')
+
+        export_order = fields

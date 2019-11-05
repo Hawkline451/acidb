@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
-from acidb.models import Organism
+from acidb.models import Organism, Protein
 
 # Filter class
 
@@ -112,4 +112,37 @@ class SearchFilter(filters.FilterSet):
             'biosample': ['iexact'],
             'bioproject': ['iexact'],
             'annotation': ['iexact'],
+        }
+
+
+class ProteinSearchFilter(filters.FilterSet):
+    ec_number = filters.CharFilter(
+        label="Ec number contains", method='filter_ec_number', field_name='ec_number')
+    kegg_ko = filters.CharFilter(
+        label="Kegg ko contains", method='filter_kegg', field_name='kegg_ko')
+    inter_fam = filters.CharFilter(
+        label="Interfam contains", method='filter_interfam', field_name='inter_fam')
+
+    def filter_ec_number(self, queryset, name, value):
+        queryset = queryset.filter(ec_number__ec_number__iexact=value)
+        return queryset
+
+    def filter_kegg(self, queryset, name, value):
+        queryset = queryset.filter(kegg_ko__kegg_ko__iexact=value)
+        return queryset
+
+    def filter_interfam(self, queryset, name, value):
+        queryset = queryset.filter(inter_fam__interfam__iexact=value)
+        return queryset
+
+    class Meta:
+        model = Protein
+        fields = {
+            'tmhmm': ['iexact'], 
+            'hmmtop': ['iexact'], 
+            'psort': ['iexact'], 
+            'pfam': ['iexact'], 
+            'signal_p': ['iexact'], 
+            'cog': ['iexact'], 
+            'cog_category': ['icontains'],
         }

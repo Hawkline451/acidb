@@ -17,7 +17,7 @@ from django.contrib import admin
 
 from django.urls import include, path
 from rest_framework import routers
-from acidb.views import OrganismViewSet, OrganismDetailViewSet, SearchViewSet, AdvanceSearchViewSet, TaxonomyViewSet, SimplePlotDataViewSet
+from acidb.views import OrganismViewSet, OrganismDetailViewSet, SearchViewSet, AdvanceSearchViewSet, TaxonomyViewSet, SimplePlotDataViewSet, ProteinSearchViewSet
 
 apiurl = routers.SimpleRouter()
 apiurl.register(r'organism', OrganismViewSet, base_name='organism')
@@ -44,6 +44,11 @@ apiurl.register(r'taxonomy', TaxonomyViewSet, base_name='taxonomy')
 
 apiurl.register(r'simple_plot_data', SimplePlotDataViewSet,
                 base_name='simple_plot')
+
+# Proteome
+
+apiurl.register(r'protein_search', ProteinSearchViewSet,
+                base_name='protein_search')
 
 
 urlpatterns = [
