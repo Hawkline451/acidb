@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 // Import components
 import { Loader } from './loader'
+import Pagination from './table_pagination'
 
 // Styles
 import { ThemeProvider } from '@material-ui/styles';
@@ -340,6 +341,7 @@ function TableComponent() {
             <ReactTable
               ref={(r) => (reactTable = r)}
               data={state.data}
+              PaginationComponent={Pagination}
               filterable
               defaultFilterMethod={(filter, row) =>
                 String(row[filter.id]) === filter.value}
@@ -366,7 +368,6 @@ function TableComponent() {
                           <Tooltip title="View organism detail" >
                             <Button
                               component={Link} to={'/app/organism/' + row.id_organism}
-                              //onClick={() => openModal(row)}
                               style={{ marginRight: '5%', textTransform: 'none' }}>
                               <ZoomIcon />
                             </Button>

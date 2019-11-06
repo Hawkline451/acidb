@@ -51,7 +51,7 @@ function EmptyComponent() {
   )
 }
 
-export default function TreeComponent() {
+export default function TreeComponent(props) {
   const { t } = useTranslation();
 
   const classes = useStylesTree();

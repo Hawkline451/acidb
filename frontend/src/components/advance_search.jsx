@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 
-import { createBrowserHistory } from 'history';
 import {
   Button, MenuItem, Typography, Grid, Paper,
   Table, TableBody, TableCell, TableRow, TextField, Divider
@@ -15,6 +14,9 @@ import {
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
 
+// Internationalization
+import { useTranslation } from 'react-i18next';
+
 // Import components
 import { Loader } from './loader'
 import { ResultTable } from './advance_search_results'
@@ -25,19 +27,7 @@ import { stylesTable } from './css/themes'
 // import config
 import { config } from '../config';
 
-import {
-  makeStyles
-} from '@material-ui/core/styles';
-
 const useStylesTable = stylesTable
-
-const styles = makeStyles({
-  paper: {
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
 
 const isolatedDict = { '': 'None', true: 'Isolated', false: 'Non Isolated' }
 const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
@@ -107,17 +97,20 @@ const att = {
   annotation: '',
 }
 
-const scrollToRef = (ref) => window.scrollTo({ top: ref.current.offsetTop, behavior: 'smooth' })
+const scrollToRef = (ref) => {
+  if (ref.current) {
+    window.scrollTo({ top: ref.current.offsetTop, behavior: 'smooth' })
+  }
+}
 
 // Sub components
-
-
-
 
 
 export default function AdvanceSearchComponent(props) {
 
   const classes = useStylesTable();
+  const { t } = useTranslation();
+
 
   const resultRef = useRef(null);
   const [gridState, setGridState] = useState({ identifiers: false, tax_info: false, growth_range: false, gen_metadata: false, proteome_metadata: false, })
@@ -125,15 +118,11 @@ export default function AdvanceSearchComponent(props) {
   const [resultState, setResultState] = useState([])
   const [formState, setFormState] = useState(att)
 
-
-
-  const history = createBrowserHistory();
   useEffect(() => {
     if (props.match.params.query) {
 
       // Check if url contains params then update form state
       let params = props.match.params.query ? (props.match.params.query).split('&') : '';
-      console.log(params)    
       let pair = null
       let dataParams = {}
       params.forEach(function (d) {
@@ -141,8 +130,6 @@ export default function AdvanceSearchComponent(props) {
         dataParams[pair[0]] = pair[1]
       });
       setFormState(dataParams)
-
-
 
       let url = config.API_ADVANCE_SEARCH + props.match.params.query
       let fetchData = (async () => {
@@ -154,19 +141,16 @@ export default function AdvanceSearchComponent(props) {
       })
       fetchData()
     }
-    else{
-      setFormState(att)
-      setResultState([])
-    }
+
     console.log("effect")
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
   }, [props,]);
 
   // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
   useEffect(() => {
+    setFormState(att)
     const timer = setTimeout(() => {
       setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
-    }, 500);
+    }, 300);
     return () => clearTimeout(timer);
 
     // Empty array as second argument avoid fetching on component updates, only when mounting the component
@@ -184,7 +168,7 @@ export default function AdvanceSearchComponent(props) {
     event.preventDefault()
     getResults()
     let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
-    history.push(searchUrl)
+    props.history.push(searchUrl)
   }
 
   const executeScroll = () => scrollToRef(resultRef)
@@ -252,7 +236,7 @@ export default function AdvanceSearchComponent(props) {
                           key='organism_or_strain'
                           name='organism_or_strain'
                           type='text'
-                          label={'Organism / Strain'}
+                          label={t('placeholder.organism_strain')}
                           value={formState.organism_or_strain}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -729,13 +713,13 @@ export default function AdvanceSearchComponent(props) {
               headers={headersCSV}
               data={getProcesedData()}
               separator={'\t'}
-              filename={'filtered_points.csv'}
+              filename={'filtered_data.csv'}
             >
-              <Button variant='outlined' color='primary'>{'download_file'}</Button>
+              <Button variant='outlined' color='primary'>{t('download_file')}</Button>
             </CSVLink>
           </Grid>
           {isLoading ?
-            <Loader/>
+            <Loader />
             :
             <ResultTable state={resultState} />
           }

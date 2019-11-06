@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import {Router ,Route, Switch, Redirect } from 'react-router-dom';
 
 import './App.css';
 //Pages
@@ -9,11 +9,13 @@ import NotFoundPage from './pages/404';
 
 // Test page
 import TestComponent from './components/test';
+import { createBrowserHistory } from 'history';
 
+const history = createBrowserHistory();   
 class App extends Component {
   render() {
     return (
-      <Router>
+      <Router history={history}>
         <Switch>
           <Route exact path='/' component={HomePage} />
 
@@ -33,8 +35,8 @@ class App extends Component {
           <Route exact path ='/404' component ={NotFoundPage}/>
 
           <Redirect to='/404'/>
-        </Switch>
-      </Router> 
+          </Switch>
+        </Router>
     )
   }
 }

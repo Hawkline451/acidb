@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Switch, Route, BrowserRouter } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 import NavBar from '../components/navbar'
 import Footer from '../components/footer'
@@ -15,13 +15,11 @@ import { Loader } from '../components/loader'
 import { ThemeProvider } from '@material-ui/styles';
 import { theme } from '../components/css/themes'
 
-function Page() {
+function Page(props) {
   return (
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-
         <div>
-          <NavBar />
+          <NavBar {...props}/>
           <Route
             path="/app"
             render={() => (
@@ -38,18 +36,16 @@ function Page() {
             )}
           />
           <Footer />
-
         </div>
-      </BrowserRouter>
     </ThemeProvider>
-
   );
 }
 
-const AppPage = () => {
+const AppPage = (props) => {
+
   return (
     <Suspense fallback={<Loader />}>
-      <Page />
+      <Page {...props}/>
     </Suspense>
   );
 };

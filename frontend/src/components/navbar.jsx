@@ -64,7 +64,7 @@ function TabMenu(props) {
 }
 
 //NavBar component
-export default function NavBar() {
+export default function NavBar(props) {
 
   const classes = useStylesNav();
   const { t } = useTranslation();
@@ -103,7 +103,7 @@ export default function NavBar() {
           </Tabs>
 
           <div className={classes.search}>
-            <CustomSearchInput cleanTabs={cleanState}/>
+            <CustomSearchInput cleanTabs={cleanState} {...props}/>
           </div>
         </Toolbar>
       </AppBar>

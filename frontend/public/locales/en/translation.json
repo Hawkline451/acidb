@@ -9,7 +9,8 @@
   },
   "download_file": "Download CSV",
   "placeholder":{
-    "search": "Search ..."
+    "search": "Search ...",
+    "organism_strain": "Organism or Strain"
   },
   "navbar":{
     "title": "AciDB",

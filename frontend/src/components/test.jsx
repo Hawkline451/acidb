@@ -1,83 +1,106 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect, useRef, Suspense } from 'react';
 
 import {
-  Button, MenuItem, Typography, Grid, FormControlLabel, Checkbox, FormGroup, Paper, InputAdornment,
-  Table, TableBody, TableCell, TableRow, Select, InputLabel, TableHead, Tooltip, TextField, Divider
+  Button, MenuItem, Typography, Grid, Paper,
+  Table, TableBody, TableCell, TableRow, TextField, Divider
 } from '@material-ui/core';
 
 import {
   ExpandMore, ExpandLess
 } from '@material-ui/icons';
 
-
 // NPM
-import {
-  Link
-} from 'react-router-dom';
+
+import axios from 'axios';
+import { CSVLink } from 'react-csv';
+
+// Internationalization
+import { useTranslation } from 'react-i18next';
+
+// Import components
+import { Loader } from './loader'
+import { ResultTable } from './advance_search_results'
 
 // Styles
-import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesTable } from './css/themes'
+import { stylesTable } from './css/themes'
 
-import {
-  makeStyles
-} from '@material-ui/core/styles';
+// import config
+import { config } from '../config';
 
+const useStylesTable = stylesTable
 
-const styles = makeStyles({
-  paper: {
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center'
+const att = {
+  tmhmm: '',
+  hmmtop: '',
+  psort: '',
+  pfam: '',
+  signal_p: '',
+  cog: '',
+  cog_category: '',
+  kegg_ko: '',
+  inter_fam: '',
+  ec_number: '',
+
+}
+
+const scrollToRef = (ref) => {
+  if (ref.current) {
+    window.scrollTo({ top: ref.current.offsetTop, behavior: 'smooth' })
   }
-})
+}
 
-const isolatedDict = { '': 'None', isolated__iexact: 'Isolated', nonisolated: 'Non Isolated' }
-const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
-const accessSrcList = { '': 'None', genbank: 'GenBank', jgi: 'JGI', insdc: 'INSDC' }
-
-export default function TestComponent() {
-  const classes = styles();
+// Sub components
 
 
-  const [gridState, setGridState] = useState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
+function Test(props) {
 
-  const [resultState, setResultState] = useState(null)
-  const [formState, setFormState] = useState(
-    {
-      organism_or_strain: '',
+  const classes = useStylesTable();
+  const { t } = useTranslation();
 
-      domain: '',
-      tax_class: '',
-      order: '',
-      family: '',
-      genus: '',
-      species: '',
 
-      temp_associated_gte: '',
-      temp_associated_lte: '',
-      temp_in_range: '',
-      ph_associated_gte: '',
-      ph_associated_lte: '',
-      ph_in_range: '',
+  const resultRef = useRef(null);
+  const [gridState, setGridState] = useState({ gen_metadata: false, })
+  const [isLoading, setIsLoading] = useState(false);
+  const [resultState, setResultState] = useState([])
+  const [formState, setFormState] = useState(att)
 
-      gen_size_gte: '',
-      gen_size_lte: '',
-      gc_percentage_gte: '',
-      gc_percentage_lte: '',
-      gen_contamination_lte: '',
-      gen_completeness_gte: '',
-      state___iexact: '',
-      isolated__iexact: '',
-      access_src__iexact: '',
-      access_id__iexact: '',
-      bioproject__iexact: '',
-      biosample__iexact: '',
+  useEffect(() => {
+    if (props.match.params.query) {
 
-      n_orfs_gte: '',
-      n_orfs_lte: '',
-      annotation: '',
-    })
+      // Check if url contains params then update form state
+      let params = props.match.params.query ? (props.match.params.query).split('&') : '';
+      let pair = null
+      let dataParams = {}
+      params.forEach(function (d) {
+        pair = d.split('=');
+        dataParams[pair[0]] = pair[1]
+      });
+      setFormState(dataParams)
+
+      let url = config.API_ADVANCE_SEARCH + props.match.params.query
+      let fetchData = (async () => {
+        setIsLoading(true)
+        let res = await axiosFetch(url);
+        setResultState(res.data)
+        setIsLoading(false)
+        executeScroll()
+      })
+      fetchData()
+    }
+
+  }, [props,]);
+
+  // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
+  useEffect(() => {
+    setFormState(att)
+    const timer = setTimeout(() => {
+      setGridState({ gen_metadata: true, })
+    }, 300);
+    return () => clearTimeout(timer);
+
+    // Empty array as second argument avoid fetching on component updates, only when mounting the component
+  }, []);
+
 
   function handleHideGrid(name) {
     setGridState(oldValues => ({
@@ -88,8 +111,13 @@ export default function TestComponent() {
 
   function handleSubmit(event) {
     event.preventDefault()
-    getResults()
+    //getResults()
+    let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    //props.history.push(searchUrl)
+    console.log(searchUrl)
   }
+
+  const executeScroll = () => scrollToRef(resultRef)
 
   function handleChange(target) {
     setFormState(oldValues => ({
@@ -98,225 +126,35 @@ export default function TestComponent() {
     }));
   }
 
+  function axiosFetch(url) {
+    return axios.get(url).then(response => {
+      // returning the data here allows the caller to get it through another .then(...)
+      return response
+    })
+  }
+
   function getResults() {
-    let url = Object.keys(formState).map(key => key + '=' + formState[key])
-    setResultState(url.join('&'))
+    let url = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    url = config.API_ADVANCE_SEARCH + url
+    let fetchData = (async () => {
+      setIsLoading(true)
+      let res = await axiosFetch(url);
+      setResultState(res.data)
+      setIsLoading(false)
+      executeScroll()
+    })
+    fetchData()
   }
 
   return (
-
-    <ThemeProvider theme={theme}>
+    <Fragment>
       <form>
         <Paper style={{ padding: 20 }}>
-          <Grid container direction='row'>
-            <Grid item xs={6}>
-              <Button color='primary' style={{ width: '100%', marginTop: 10, }} onClick={() => handleHideGrid('identifiers')}>
-                Identifiers
-                {gridState.identifiers ? <ExpandLess /> : <ExpandMore />}
-              </Button>
-              {gridState.identifiers &&
-                <Table >
-                  <TableBody>
-                    <TableRow >
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='organism_or_strain'
-                          type='text'
-                          label='Organism / Strain'
-                          value={formState.organism_or_strain}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                    </TableRow >
-                  </TableBody>
-                </Table >
-              }
-
-              <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('tax_info')}>
-                Taxonomy info
-                {gridState.tax_info ? <ExpandLess /> : <ExpandMore />}
-              </Button>
-              {gridState.tax_info &&
-                <Table >
-                  <TableBody>
-                    <TableRow >
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='domain'
-                          type='text'
-                          label='Domain'
-                          value={formState.domain}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='tax_class'
-                          type='text'
-                          label='Class'
-                          value={formState.tax_class}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='order'
-                          type='text'
-                          label='Order'
-                          value={formState.order}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='family'
-                          type='text'
-                          label='Family'
-                          value={formState.family}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='genus'
-                          type='text'
-                          label='Genus'
-                          value={formState.genus}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='species'
-                          type='text'
-                          label='Species'
-                          value={formState.species}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              }
-            </Grid>
-
-            <Grid item xs={6}>
-              <Grid container alignItems='center' alignContent='center'>
-                <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('growth_range')}>
-                  Growth range
-                  {gridState.growth_range ? <ExpandLess /> : <ExpandMore />}
-                </Button>
-                {gridState.growth_range &&
-                  <Fragment>
-
-                    <Grid item xs={6}>
-                      <Table >
-                        <TableBody>
-                          <TableRow >
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Optimal temperature range</div>
-                            </TableCell>
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <TextField variant='outlined'
-                                name='temp_associated_gte'
-                                type='text'
-                                label='min value [C°]'
-                                value={formState.temp_associated_gte}
-                                onChange={event => handleChange(event.target)}
-                              />
-                              <TextField variant='outlined'
-                                name='temp_associated_lte'
-                                type='text'
-                                label='max value [C°]'
-                                value={formState.temp_associated_lte}
-                                onChange={event => handleChange(event.target)}
-                                style={{ marginTop: 5 }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                          <TableRow >
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Can grow at temperature:</div>
-                            </TableCell>
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <TextField variant='outlined'
-                                name='temp_in_range'
-                                type='text'
-                                label='Temperature [C°]'
-                                value={formState.temp_in_range}
-                                onChange={event => handleChange(event.target)}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <Table >
-                        <TableBody>
-                          <TableRow >
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Optimal pH range</div>
-                            </TableCell>
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <TextField variant='outlined'
-                                name='ph_associated_gte'
-                                type='text'
-                                label='min value'
-                                value={formState.ph_associated_gte}
-                                onChange={event => handleChange(event.target)}
-                              />
-                              <TextField variant='outlined'
-                                name='ph_associated_lte'
-                                type='text'
-                                label='max value'
-                                value={formState.ph_associated_lte}
-                                onChange={event => handleChange(event.target)}
-                                style={{ marginTop: 5 }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                          <TableRow >
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Can grow at pH:</div>
-                            </TableCell>
-                            <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <TextField variant='outlined'
-                                name='ph_in_range'
-                                type='text'
-                                label='pH'
-                                value={formState.ph_in_rage}
-                                onChange={event => handleChange(event.target)}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </Grid>
-                  </Fragment>
-                }
-              </Grid>
-
-            </Grid>
-          </Grid>
-          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
-
 
           <Grid container direction='row'>
 
             <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('gen_metadata')}>
-              Genome metadata
+              protein_search
               {gridState.gen_metadata ? <ExpandLess /> : <ExpandMore />}
             </Button>
             {gridState.gen_metadata &&
@@ -327,21 +165,14 @@ export default function TestComponent() {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Gene size range</div>
+                          <div style={{ fontSize: 16 }}>tmhmm</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='gen_size_gte'
+                            name='tmhmm'
                             type='text'
-                            label='min value'
-                            value={formState.gen_size_gte}
-                            onChange={event => handleChange(event.target)}
-                          />
-                          <TextField variant='outlined'
-                            name='gen_size_lte'
-                            type='text'
-                            label='max value'
-                            value={formState.gen_size_lte}
+                            label={'exact value'}
+                            value={formState.tmhmm}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
                           />
@@ -350,23 +181,30 @@ export default function TestComponent() {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>GC range</div>
+                          <div style={{ fontSize: 16 }}>hmmtop</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='gc_percentage_gte'
+                            name='hmmtop'
                             type='text'
-                            label='min value'
-                            value={formState.gc_percentage_gte}
+                            label={'exact value'}
+                            value={formState.hmmtop}
                             onChange={event => handleChange(event.target)}
                           />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <div style={{ fontSize: 16 }}>psort</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='gc_percentage_lte'
+                            name='psort'
                             type='text'
-                            label='max value'
-                            value={formState.gc_percentage_lte}
+                            label={'exact value'}
+                            value={formState.gen_completeness_gte}
                             onChange={event => handleChange(event.target)}
-                            style={{ marginTop: 5 }}
                           />
                         </TableCell>
                       </TableRow>
@@ -378,13 +216,67 @@ export default function TestComponent() {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Contamination</div>
+                          <div style={{ fontSize: 16 }}>pfam</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='gen_contamination_lte'
+                            name='pfam'
                             type='text'
-                            label='lower than'
+                            label={'exact value'}
+                            value={formState.pfam}
+                            onChange={event => handleChange(event.target)}
+                            style={{ marginTop: 5 }}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <div style={{ fontSize: 16 }}>signal_p</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <TextField variant='outlined'
+                            name='signal_p'
+                            type='text'
+                            label={'exact value'}
+                            value={formState.signal_p}
+                            onChange={event => handleChange(event.target)}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                    </TableBody>
+                  </Table>
+                </Grid>
+
+                <Grid item xs={3} >
+                  <Table >
+                    <TableBody>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <div style={{ fontSize: 16 }}>cog</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <TextField variant='outlined'
+                            name='cog'
+                            type='text'
+                            label={'exact value'}
+                            value={formState.cog}
+                            onChange={event => handleChange(event.target)}
+                          />
+                        </TableCell>
+                      </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <div style={{ fontSize: 16 }}>cog_category</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <TextField variant='outlined'
+                            name='cog_category'
+                            type='text'
+                            label={'contains'}
                             value={formState.gen_contamination_lte}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
@@ -394,13 +286,13 @@ export default function TestComponent() {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Completeness</div>
+                          <div style={{ fontSize: 16 }}>kegg_ko</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='gen_completeness_gte'
+                            name='kegg_ko'
                             type='text'
-                            label='greater than'
+                            label={'exact'}
                             value={formState.gen_completeness_gte}
                             onChange={event => handleChange(event.target)}
                           />
@@ -411,115 +303,40 @@ export default function TestComponent() {
                 </Grid>
 
                 <Grid item xs={3} >
-                  <Table >
-                    <TableBody>
-                      <TableRow >
-                        <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <TextField variant='outlined'
-                            select
-                            name='state___iexact'
-                            type='text'
-                            label='Assembly level'
-                            value={formState.state___iexact}
-                            onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
-                          >
-                            {
-                              Object.keys(assemblyList).map(key =>
-                                <MenuItem value={key}>
-                                  {assemblyList[key]}
-                                </MenuItem>
-                              )
-                            }
-                          </TextField>
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow >
-                        <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <TextField variant='outlined'
-                            select
-                            name='access_src__iexact'
-                            type='text'
-                            label='Access src'
-                            value={formState.access_src__iexact}
-                            onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
-                          >
-                            {
-                              Object.keys(accessSrcList).map(key =>
-                                <MenuItem value={key}>
-                                  {accessSrcList[key]}
-                                </MenuItem>
-                              )
-                            }
-                          </TextField>
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow >
-                        <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <TextField variant='outlined'
-                            name='access_id__iexact'
-                            type='text'
-                            label='Access id'
-                            value={formState.access_id__iexact}
-                            onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </Grid>
-
-                <Grid item xs={3} >
 
                   <Table >
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <TextField variant='outlined'
-                            select
-                            name='isolated__iexact'
-                            label='Isolated'
-                            value={formState.isolated__iexact}
-                            onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
-                          >
-                            {
-                              Object.keys(isolatedDict).map(key =>
-                                <MenuItem value={key}>
-                                  {isolatedDict[key]}
-                                </MenuItem>
-                              )
-                            }
-                          </TextField>
+                          <div style={{ fontSize: 16 }}>inter_fam</div>
                         </TableCell>
-                      </TableRow>
-                      <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='bioproject__iexact'
+                            name='inter_fam'
                             type='text'
-                            label='Bioproject'
-                            value={formState.bioproject__iexact}
+                            label={'exact'}
+                            value={formState.inter_fam}
                             onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
-                          />                      </TableCell>
-                      </TableRow>
-                      <TableRow >
-                        <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <TextField variant='outlined'
-                            name='biosample__iexact'
-                            type='text'
-                            label='Biosample'
-                            value={formState.biosample__iexact}
-                            onChange={event => handleChange(event.target)}
-                            style={{ width: '100%' }}
+                            style={{ marginTop: 5 }}
                           />
                         </TableCell>
                       </TableRow>
+
+                      <TableRow >
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <div style={{ fontSize: 16 }}>ec_number</div>
+                        </TableCell>
+                        <TableCell style={{ borderStyle: 'none' }} align='left'>
+                          <TextField variant='outlined'
+                            name='ec_number'
+                            type='text'
+                            label={'exact'}
+                            value={formState.ec_number}
+                            onChange={event => handleChange(event.target)}
+                          />
+                        </TableCell>
+                      </TableRow>
+
                     </TableBody>
                   </Table>
                 </Grid>
@@ -527,57 +344,8 @@ export default function TestComponent() {
               </Fragment>
             }
           </Grid>
-          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
 
           <Grid container alignItems='center' alignContent='center'>
-            <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('proteome_metadata')}>
-              Proteome metadata
-              {gridState.proteome_metadata ? <ExpandLess /> : <ExpandMore />}
-            </Button>
-            {gridState.proteome_metadata &&
-              <Fragment>
-                <Grid item xs={6} >
-
-                  <Table >
-                    <TableBody>
-                      <TableRow >
-                        <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>N orfs range</div>
-                        </TableCell>
-                        <TableCell style={{ borderStyle: 'none' }} >
-                          <TextField variant='outlined'
-                            name='n_orfs_gte'
-                            type='text'
-                            label='min value'
-                            value={formState.n_orfs_gte}
-                            onChange={event => handleChange(event.target)}
-                          />
-                          <TextField variant='outlined'
-                            name='n_orfs_lte'
-                            type='text'
-                            label='max value'
-                            value={formState.n_orfs_lte}
-                            onChange={event => handleChange(event.target)}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </Grid>
-
-                <Grid item xs={6} >
-                  <TextField variant='outlined'
-                    name='annotation'
-                    type='text'
-                    label='Annotation'
-                    value={formState.annotation}
-                    onChange={event => handleChange(event.target)}
-                    style={{ width: '100%' }}
-                  />
-                </Grid>
-              </Fragment>
-            }
-
             <Button color='primary' style={{ padding: 10, fontSize: 18 }} variant='outlined' type='submit' onClick={handleSubmit}>
               Search
             </Button>
@@ -585,10 +353,35 @@ export default function TestComponent() {
         </Paper>
 
       </form >
-      <Paper style={{ padding: 20 }}>
-        <Typography variant='h5'> Search results </Typography>
-        <div> {resultState} </div>
+      <span ref={resultRef}></span>
+      <Paper style={{ padding: 30 }}>
+        <Typography variant='h4'> Search results </Typography>
+        <Grid container alignItems='center' alignContent='center'>
+          <Grid item xs={6}>
+            <Typography variant='h5'>{`Total: ${resultState.length}`}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            tmp button
+          </Grid>
+          {isLoading ?
+            <Loader />
+            :
+            <ResultTable state={resultState} />
+          }
+
+        </Grid>
+
       </Paper>
-    </ThemeProvider >
+    </Fragment >
   );
 }
+
+const TestComponent = (props) => {
+
+  return (
+    <Suspense fallback={<Loader />}>
+      <Test {...props} />
+    </Suspense>
+  );
+};
+export default TestComponent
