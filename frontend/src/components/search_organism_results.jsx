@@ -18,7 +18,7 @@ import { stylesTable } from './css/themes'
 const useStylesTable = stylesTable
 
 // Sub components
-export function ResultTable(props) {
+function ResultTable(props) {
   const { t } = useTranslation();
   const classes = useStylesTable()
   let resultState = props.state
@@ -58,3 +58,5 @@ export function ResultTable(props) {
     </Table>
   )
 }
+
+export const MemoizedResults = React.memo(ResultTable);

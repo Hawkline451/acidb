@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 // Import components
 import { Loader } from './loader'
-import { ResultTable } from './advance_search_results'
+import {MemoizedResults} from './search_organism_results'
 
 // Styles
 import { stylesTable } from './css/themes'
@@ -113,10 +113,23 @@ export default function AdvanceSearchComponent(props) {
 
 
   const resultRef = useRef(null);
-  const [gridState, setGridState] = useState({ identifiers: false, tax_info: false, growth_range: false, gen_metadata: false, proteome_metadata: false, })
+  const [gridState, setGridState] = useState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
   const [isLoading, setIsLoading] = useState(false);
   const [resultState, setResultState] = useState([])
   const [formState, setFormState] = useState(att)
+
+    // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
+    useEffect(() => {
+      setFormState(att)
+      /** 
+      const timer = setTimeout(() => {
+        setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
+      }, 300);
+      return () => clearTimeout(timer);
+      */
+  
+      // Empty array as second argument avoid fetching on component updates, only when mounting the component
+    }, []);
 
   useEffect(() => {
     if (props.match.params.query) {
@@ -124,12 +137,12 @@ export default function AdvanceSearchComponent(props) {
       // Check if url contains params then update form state
       let params = props.match.params.query ? (props.match.params.query).split('&') : '';
       let pair = null
-      let dataParams = {}
+      let tmpDict = att
       params.forEach(function (d) {
         pair = d.split('=');
-        dataParams[pair[0]] = pair[1]
+        tmpDict[pair[0]] = pair[1]
       });
-      setFormState(dataParams)
+      setFormState(tmpDict)
 
       let url = config.API_ADVANCE_SEARCH + props.match.params.query
       let fetchData = (async () => {
@@ -141,20 +154,14 @@ export default function AdvanceSearchComponent(props) {
       })
       fetchData()
     }
+    else{
+      setFormState(att)
+    }
 
     console.log("effect")
   }, [props,]);
 
-  // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
-  useEffect(() => {
-    setFormState(att)
-    const timer = setTimeout(() => {
-      setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
-    }, 300);
-    return () => clearTimeout(timer);
 
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, []);
 
 
   function handleHideGrid(name) {
@@ -195,7 +202,6 @@ export default function AdvanceSearchComponent(props) {
       let res = await axiosFetch(url);
       setResultState(res.data)
       setIsLoading(false)
-      executeScroll()
     })
     fetchData()
   }
@@ -642,9 +648,11 @@ export default function AdvanceSearchComponent(props) {
               </Fragment>
             }
           </Grid>
+         
           <Divider style={{ marginTop: 20 }} orientation='horizontal' />
 
           <Grid container alignItems='center' alignContent='center'>
+            {/* 
             <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('proteome_metadata')}>
               Proteome metadata
               {gridState.proteome_metadata ? <ExpandLess /> : <ExpandMore />}
@@ -692,8 +700,9 @@ export default function AdvanceSearchComponent(props) {
                 </Grid>
               </Fragment>
             }
+            */}  
 
-            <Button color='primary' style={{ padding: 10, fontSize: 18 }} variant='outlined' type='submit' onClick={handleSubmit}>
+            <Button color='primary' style={{ padding: 10, margin: 10, fontSize: 18 }} variant='outlined' type='submit' onClick={handleSubmit}>
               Search
             </Button>
           </Grid>
@@ -721,7 +730,7 @@ export default function AdvanceSearchComponent(props) {
           {isLoading ?
             <Loader />
             :
-            <ResultTable state={resultState} />
+            <MemoizedResults state={resultState} />
           }
 
         </Grid>

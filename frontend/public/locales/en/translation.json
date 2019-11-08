@@ -8,6 +8,7 @@
     "desc": "Im a cool footer"
   },
   "download_file": "Download CSV",
+  "no_results": "No results found",
   "placeholder":{
     "search": "Search ...",
     "organism_strain": "Organism or Strain"
@@ -19,7 +20,8 @@
     "tree" : "Tree",
     "table" : "Table",
     "plot" : "Viz",
-    "advance_search": "Advance search",
+    "advance_organism_search": "Organism search",
+    "advance_protein_search": "Protein search",
     "search_load_more" : "Loaded: {{suggestions}} / Total: {{total}}. Click here to load more"
   },
   "tree":{

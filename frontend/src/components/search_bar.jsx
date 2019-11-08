@@ -12,7 +12,6 @@ import { stylesInput } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
 
 const useStylesInput = stylesInput
 

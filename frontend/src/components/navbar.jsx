@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 
 // Components
-import CustomSearchInput from './custom_search'
+import CustomSearchInput from './search_bar'
 
 // Themes
 import { stylesAppNav } from './css/themes'
@@ -99,7 +99,9 @@ export default function NavBar(props) {
             <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
             <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
             <TabMenu />
-            <Tab label={t('navbar.advance_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
+            <Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
+            <Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
+
           </Tabs>
 
           <div className={classes.search}>
