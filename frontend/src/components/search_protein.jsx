@@ -54,9 +54,8 @@ const scrollToRef = (ref) => {
 
 export default function AdvanceProteinSearchComponent(props) {
 
-  const classes = useStylesTable();
+  //const classes = useStylesTable();
   const { t } = useTranslation();
-
 
   const resultRef = useRef(null);
   const [gridState, setGridState] = useState({ prot_search: true, })
@@ -78,7 +77,7 @@ export default function AdvanceProteinSearchComponent(props) {
       });
       setFormState(tmpDict)
 
-      let url = 'http://127.0.0.1:8000/api/protein_search/?' + props.match.params.query
+      let url = config.API_PROTEIN_SEARCH + props.match.params.query
       setUrl(url)
 
       let fetchData = (async () => {
@@ -115,7 +114,6 @@ export default function AdvanceProteinSearchComponent(props) {
     let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
     props.history.push(searchUrl)
     getResults()
-
   }
 
   const executeScroll = () => scrollToRef(resultRef)
@@ -136,7 +134,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
   function getResults() {
     let url = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
-    url = 'http://127.0.0.1:8000/api/protein_search/?' + url
+    url = config.API_PROTEIN_SEARCH + url
 
     let fetchData = (async () => {
       setIsLoading(true)
@@ -155,7 +153,7 @@ export default function AdvanceProteinSearchComponent(props) {
           <Grid container direction='row'>
 
             <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('prot_search')}>
-              protein_search
+              {t('protein_search')}
               {gridState.prot_search ? <ExpandLess /> : <ExpandMore />}
             </Button>
             {gridState.prot_search &&
@@ -166,7 +164,7 @@ export default function AdvanceProteinSearchComponent(props) {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>tmhmm</div>
+                          <div style={{ fontSize: 16 }}>{t('tmhmm')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -182,7 +180,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>hmmtop</div>
+                          <div style={{ fontSize: 16 }}>{t('hmmtop')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -197,7 +195,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>psort</div>
+                          <div style={{ fontSize: 16 }}>{t('psort')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -217,7 +215,7 @@ export default function AdvanceProteinSearchComponent(props) {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>pfam</div>
+                          <div style={{ fontSize: 16 }}>{t('pfam')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -233,7 +231,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>signal_p</div>
+                          <div style={{ fontSize: 16 }}>{t('signal_p')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -256,7 +254,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>cog</div>
+                          <div style={{ fontSize: 16 }}>{t('cog')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -271,7 +269,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>cog_category</div>
+                          <div style={{ fontSize: 16 }}>{t('cog_category')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -287,7 +285,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>kegg_ko</div>
+                          <div style={{ fontSize: 16 }}>{t('kegg_ko')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -309,7 +307,7 @@ export default function AdvanceProteinSearchComponent(props) {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>inter_fam</div>
+                          <div style={{ fontSize: 16 }}>{t('inter_fam')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -325,7 +323,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>ec_number</div>
+                          <div style={{ fontSize: 16 }}>{t('ec_number')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -356,7 +354,7 @@ export default function AdvanceProteinSearchComponent(props) {
       </form >
       <span ref={resultRef}></span>
       <Paper style={{ padding: 30 }}>
-        <Typography variant='h4'> Search results </Typography>
+        <Typography variant='h4'>{t('search_results')}</Typography>
         <Grid container alignItems='center' alignContent='center'>
           <Grid item xs={6}>
             <Typography variant='h5'>{`Total: ${resultState.count ? resultState.count: 0}`}</Typography>
@@ -368,7 +366,6 @@ export default function AdvanceProteinSearchComponent(props) {
           }
 
         </Grid>
-
       </Paper>
     </Fragment >
   );

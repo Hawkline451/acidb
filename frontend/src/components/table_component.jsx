@@ -784,7 +784,7 @@ function TableComponent() {
           <em> Tip: Hold shift when sorting to multi - sort! </em> </div>;
       </div>
     </ThemeProvider>
-  );
+  )
 }
 
 export default TableComponent;

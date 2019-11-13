@@ -14,16 +14,16 @@ export default class Pagination extends Component {
     renderPageJump: ({
       onChange, value, onBlur, onKeyPress, inputType, pageJumpText,
     }) => (
-      <div className="-pageJump">
-        <input
-          aria-label={pageJumpText}
-          onChange={onChange}
-          value={value}
-          onBlur={onBlur}
-          onKeyPress={onKeyPress}
-        />
-      </div>
-    ),
+        <div className="-pageJump">
+          <input
+            aria-label={pageJumpText}
+            onChange={onChange}
+            value={value}
+            onBlur={onBlur}
+            onKeyPress={onKeyPress}
+          />
+        </div>
+      ),
     renderCurrentPage: page => <span className="-currentPage">{page + 1}</span>,
     renderTotalPagesCount: pages => <span className="-totalPages">{pages || 1}</span>,
     renderPageSizeOptions: ({
@@ -33,24 +33,24 @@ export default class Pagination extends Component {
       onPageSizeChange,
       rowsText,
     }) => (
-      <span className="select-wrap -pageSizeOptions">
-        <select
-          aria-label={rowsSelectorText}
-          onChange={e => onPageSizeChange(Number(e.target.value))}
-          value={pageSize}
-        >
-          {pageSizeOptions.map((option, i) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <option key={i} value={option}>
-              {`${option} ${rowsText}`}
-            </option>
-          ))}
-        </select>
-      </span>
-    ),
+        <span className="select-wrap -pageSizeOptions">
+          <select
+            aria-label={rowsSelectorText}
+            onChange={e => onPageSizeChange(Number(e.target.value))}
+            value={pageSize}
+          >
+            {pageSizeOptions.map((option, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <option key={i} value={option}>
+                {`${option} rows per page`}
+              </option>
+            ))}
+          </select>
+        </span>
+      ),
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.getSafePage = this.getSafePage.bind(this)
@@ -62,7 +62,7 @@ export default class Pagination extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.page !== this.props.page && prevState.page !== this.state.page) {
       // this is probably safe because we only update when old/new state.page are different
       // eslint-disable-next-line react/no-did-update-set-state
@@ -72,14 +72,14 @@ export default class Pagination extends Component {
     }
   }
 
-  getSafePage (page) {
+  getSafePage(page) {
     if (Number.isNaN(page)) {
       page = this.props.page
     }
     return Math.min(Math.max(page, 0), this.props.pages - 1)
   }
 
-  changePage (page) {
+  changePage(page) {
     page = this.getSafePage(page)
     this.setState({ page })
     if (this.props.page !== page) {
@@ -87,7 +87,7 @@ export default class Pagination extends Component {
     }
   }
 
-  applyPage (e) {
+  applyPage(e) {
     if (e) {
       e.preventDefault()
     }
@@ -95,7 +95,7 @@ export default class Pagination extends Component {
     this.changePage(page === '' ? this.props.page : page)
   }
 
-  getPageJumpProperties () {
+  getPageJumpProperties() {
     return {
       onKeyPress: e => {
         if (e.which === 13 || e.keyCode === 13) {
@@ -117,7 +117,7 @@ export default class Pagination extends Component {
     }
   }
 
-  render () {
+  render() {
     const {
       // Computed
       pages,
@@ -140,43 +140,48 @@ export default class Pagination extends Component {
     } = this.props
 
     return (
-      <div className={classnames(className, '-pagination')} style={this.props.style}>
-        <div className="-previous">
-          <PreviousComponent
-            onClick={() => {
-              if (!canPrevious) return
-              this.changePage(page - 1)
-            }}
-            disabled={!canPrevious}
-          >
-            {this.props.previousText}
-          </PreviousComponent>
-        </div>
-        <div className="-center">
-          <span className="-pageInfo">
-            {this.props.pageText}{' '}
-            {showPageJump ? renderPageJump(this.getPageJumpProperties()) : renderCurrentPage(page)}{' '}
-            {this.props.ofText} {renderTotalPagesCount(pages)}
-          </span>
-          {showPageSizeOptions &&
-            renderPageSizeOptions({
-              pageSize,
-              rowsSelectorText: this.props.rowsSelectorText,
-              pageSizeOptions,
-              onPageSizeChange,
-              rowsText: this.props.rowsText,
-            })}
-        </div>
-        <div className="-next">
-          <NextComponent
-            onClick={() => {
-              if (!canNext) return
-              this.changePage(page + 1)
-            }}
-            disabled={!canNext}
-          >
-            {this.props.nextText}
-          </NextComponent>
+      <div>
+        <div className={classnames(className, '-pagination')} style={this.props.style}>
+          <div className="-previous">
+            <PreviousComponent
+              onClick={() => {
+                if (!canPrevious) return
+                this.changePage(page - 1)
+              }}
+              disabled={!canPrevious}
+            >
+              {this.props.previousText}
+            </PreviousComponent>
+          </div>
+          <div className="-center">
+            <span className="-pageInfo">
+              {this.props.pageText}{' '}
+              {showPageJump ? renderPageJump(this.getPageJumpProperties()) : renderCurrentPage(page)}{' '}
+              {this.props.ofText} {renderTotalPagesCount(pages)}
+            </span>
+            {showPageSizeOptions &&
+              renderPageSizeOptions({
+                pageSize,
+                rowsSelectorText: this.props.rowsSelectorText,
+                pageSizeOptions,
+                onPageSizeChange,
+                rowsText: this.props.rowsText,
+              })}
+          </div>
+          <div className="-center">
+            <div variant='h5'> {'Total rows: '}{this.props.sortedData.length}</div>
+          </div>
+          <div className="-next">
+            <NextComponent
+              onClick={() => {
+                if (!canNext) return
+                this.changePage(page + 1)
+              }}
+              disabled={!canNext}
+            >
+              {this.props.nextText}
+            </NextComponent>
+          </div>
         </div>
       </div>
     )

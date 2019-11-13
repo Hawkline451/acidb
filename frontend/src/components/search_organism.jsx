@@ -105,7 +105,6 @@ const scrollToRef = (ref) => {
 
 // Sub components
 
-
 export default function AdvanceSearchComponent(props) {
 
   const classes = useStylesTable();
@@ -158,11 +157,7 @@ export default function AdvanceSearchComponent(props) {
       setFormState(att)
     }
 
-    console.log("effect")
   }, [props,]);
-
-
-
 
   function handleHideGrid(name) {
     setGridState(oldValues => ({

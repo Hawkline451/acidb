@@ -19,8 +19,6 @@ export default function CustomSearchInput(navProps) {
   const { t } = useTranslation();
   const classes = useStylesInput();
 
-  console.log(navProps)
-
   const [searchState, setSearchState] = useState({
     organism_or_strain: '',
   })

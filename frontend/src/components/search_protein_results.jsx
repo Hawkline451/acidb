@@ -2,7 +2,7 @@ import React, { useState, Fragment } from 'react';
 
 import {
   Grid, Table, TableBody, TableCell, TableFooter, TablePagination, TableRow, TableHead, IconButton, Tooltip,
-  DialogActions, DialogContent, DialogContentText, Button, Dialog, DialogTitle
+  DialogActions, DialogContent, DialogContentText, Button, Dialog
 } from '@material-ui/core';
 
 import {
@@ -88,7 +88,7 @@ function TablePaginationActions(props) {
 
 
 
-function ProteinResults(props) {
+function ProteinResultsTable(props) {
   const { t } = useTranslation();
   const maxRows = 1000
   const classes = useStylesTable()
@@ -96,29 +96,6 @@ function ProteinResults(props) {
   const [page, setPage] = useState(props.state);
   const [pageNum, setPageNum] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Modal
-
-  const [modalState, setModalState] = useState({
-    open: false,
-    data: null
-  });
-
-  function handleClose() {
-    setModalState(oldValues => ({
-      ...oldValues,
-      open: false,
-    }));
-  };
-
-  function handleOpen() {
-    setModalState(oldValues => ({
-      ...oldValues,
-      open: true,
-    }));
-  };
-
-
 
   // Fetch API data
   function getNewPage(url) {
@@ -162,8 +139,8 @@ function ProteinResults(props) {
           </TableHead>
           <TableHead>
             <TableRow>
-              <TableCell align="right">AciDB [nr id]</TableCell>
-              <TableCell align="right">Protein Length</TableCell>
+              <TableCell align="right">{t('nr_id')}</TableCell>
+              <TableCell align="right">t{('prot_len')}</TableCell>
               <TableCell align="right">
                 <Grid
                   container
@@ -171,8 +148,8 @@ function ProteinResults(props) {
                   justify="center"
                   alignItems="center"
                 >
-                  <Grid item xs>Organism</Grid>
-                  <Grid item xs>Protein</Grid>
+                  <Grid item xs>{t('organism')}</Grid>
+                  <Grid item xs>{t('protein')}</Grid>
                 </Grid>
               </TableCell>
             </TableRow>
@@ -190,7 +167,7 @@ function ProteinResults(props) {
             <TableBody>
               {page.results.map(row => (
                 <TableRow key={row.nr_id}>
-                  <TableCell align="right" ><Button onClick={handleOpen}>{row.nr_id}</Button></TableCell>
+                  <TableCell align="right" ><Button onClick={() => props.handleOpen(row)}>{row.nr_id}</Button></TableCell>
                   <TableCell align="right">{row.prot_len}</TableCell>
                   <TableCell align="right">
                     {row.proteome_nr_id.map(organism => (
@@ -204,7 +181,7 @@ function ProteinResults(props) {
                         <Grid item xs>
                           <Tooltip title='View organism detail' >
                             <Link to={'/app/organism/' + organism.organism_id} className={classes.bigFontLink}>
-                            {organism.name}
+                              {organism.name}
                             </Link>
                           </Tooltip>
                         </Grid>
@@ -234,7 +211,6 @@ function ProteinResults(props) {
             </TableRow>
           </TableFooter>
 
-          <SimpleDialog state={modalState} onClose={handleClose} />
         </Fragment>
 
         :
@@ -248,23 +224,71 @@ function ProteinResults(props) {
   );
 }
 
+function GridObject(props) {
+  const { t } = useTranslation();
+  const obj = props.obj
+  if (props.objKey === 'proteome_nr_id') {
+    return (
+      obj.map((val, idx) => (
+        <Fragment key={String(val.organism_id) + String(idx)}>
+          <Grid
+            container
+            style = {{marginBottom:5}}
+            direction="column"
+            justify="center"
+            alignItems="flex-start"
+          >
+            <Grid item xs>{t('prot_id:')} {val.prot_id}</Grid>
+            <Grid item xs>{t('organism_name:')} {val.name}</Grid>            
+          </Grid>         
+        </Fragment>
+      )
+      )
+    )
+  }
+  else {
+    return (
+      obj.map(val => (
+        Object.keys(val).map(key =>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="flex-start"
+            key={key}
+          >
+            <Grid item xs>{val[key]}</Grid>
+          </Grid>
+        )
+      ))
+    )
+
+  }
+}
 
 function SimpleDialog(props) {
   const { t } = useTranslation();
-
   const { state, onClose } = props;
+  
   return (
-    <Dialog onClose={onClose} open={state.open}>
+    <Dialog onClose={onClose} open={state.open} keepMounted={true}>
       {state.open ?
         (<div>
-          <DialogTitle style={{ paddingBottom: 5 }}>{'title'}</DialogTitle>
           <DialogContent>
             <DialogContentText style={{ color: '#808080', paddingTop: 0 }}>
-              {'asdasdasdasd'}
             </DialogContentText>
             <Table>
               <TableBody >
-
+                {Object.keys(state.data).map(key =>
+                  <TableRow key={t(key)}>
+                    <TableCell align='left'>
+                      {key}
+                    </TableCell>
+                    <TableCell align='left'>
+                      {Array.isArray(state.data[key]) ? <GridObject obj={state.data[key]} objKey={key} /> : state.data[key]}
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody >
             </Table>
           </DialogContent>
@@ -281,6 +305,49 @@ function SimpleDialog(props) {
     </Dialog>
   );
 }
+
+function ProteinResults(props) {
+
+  const [modalState, setModalState] = useState({
+    open: false,
+    data: null
+  });
+
+  function handleClose() {
+    setModalState(oldValues => ({
+      ...oldValues,
+      open: false,
+    }));
+  };
+
+  function handleOpen(row) {
+    setModalState(oldValues => ({
+      ...oldValues,
+      open: true,
+      data: row,
+    }));
+  };
+  return (
+    <Fragment>
+      <MemoizedProteinResultsTable {...props} handleOpen={handleOpen} />
+      <MemoizedSimpleDialog state={modalState} onClose={handleClose} />
+    </Fragment>)
+}
+
+function areEqual(prevProps, nextProps) {
+  if (prevProps.url === nextProps.url) {
+    return true
+  }
+  /*
+  return true if passing nextProps to render would return
+  the same result as passing prevProps to render,
+  otherwise return false
+  */
+  return false
+}
+
+const MemoizedProteinResultsTable = React.memo(ProteinResultsTable, areEqual);
+const MemoizedSimpleDialog = React.memo(SimpleDialog);
 
 export const MemoizedProteinResults = React.memo(ProteinResults);
 

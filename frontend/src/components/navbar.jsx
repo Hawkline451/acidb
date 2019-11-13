@@ -11,6 +11,7 @@ import {
 
 // Components
 import CustomSearchInput from './search_bar'
+import logo from '../acidb-logo.svg';
 
 // Themes
 import { stylesAppNav } from './css/themes'
@@ -23,6 +24,7 @@ const useStylesNav = stylesAppNav
 // Tab Menu component
 function TabMenu(props) {
   const classes = useStylesNav();
+  const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -45,16 +47,16 @@ function TabMenu(props) {
   return (
     <div>
       <ClickAwayListener onClickAway={handleClickAway}>
-        <Tab label='Charts' onClick={handleClick} className={classes.tabRoot} />
+        <Tab label={t('navbar.charts')} onClick={handleClick} className={classes.tabRoot} />
       </ClickAwayListener>
       <Popper id={id} open={open} anchorEl={anchorEl} placement={'bottom-start'} className={classes.tabMenu}>
         <Paper square >
           <MenuList>
             <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_bar_chart'>
-              Bar Chart
+              {t('navbar.bar_chart')}
             </MenuItem>
             <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_scatter_plot'>
-              Scatter Plot
+              {t('navbar.scatter_plot')}
             </MenuItem>
           </MenuList>
         </Paper>
@@ -84,31 +86,31 @@ export default function NavBar(props) {
 
   return (
 
-      <AppBar position='static'>
-        <Toolbar>
-          <Button
-            className={classes.homeButton}
-            onClick={cleanState}
-            component={Link} to='/app'>
-            <Typography variant='h5' style={{color:'#ffffff'}} noWrap>
-              {t('navbar.title')}
-            </Typography>
-          </Button>
+    <AppBar position='static'>
+      <Toolbar>
+        <Button
+          className={classes.homeButton}
+          onClick={cleanState}
+          component={Link} to='/app'>
+          <Typography variant='h5' style={{ color: '#ffffff' }} noWrap>
+            <img src={logo} alt="acidb-logo" height={40} />
+          </Typography>
+        </Button>
 
-          <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
-            <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
-            <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
-            <TabMenu />
-            <Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
-            <Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
+        <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
+          <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
+          <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
+          <TabMenu />
+          <Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
+          <Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
 
-          </Tabs>
+        </Tabs>
 
-          <div className={classes.search}>
-            <CustomSearchInput cleanTabs={cleanState} {...props}/>
-          </div>
-        </Toolbar>
-      </AppBar>
+        <div className={classes.search}>
+          <CustomSearchInput cleanTabs={cleanState} {...props} />
+        </div>
+      </Toolbar>
+    </AppBar>
 
   );
 }
