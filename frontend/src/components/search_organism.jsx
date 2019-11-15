@@ -13,13 +13,14 @@ import {
 
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
+import { Link } from 'react-router-dom';
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
 
 // Import components
 import { Loader } from './loader'
-import {MemoizedResults} from './search_organism_results'
+import { MemoizedResults } from './search_organism_results'
 
 // Styles
 import { stylesTable } from './css/themes'
@@ -117,18 +118,18 @@ export default function AdvanceSearchComponent(props) {
   const [resultState, setResultState] = useState([])
   const [formState, setFormState] = useState(att)
 
-    // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
-    useEffect(() => {
-      setFormState(att)
-      /** 
-      const timer = setTimeout(() => {
-        setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
-      }, 300);
-      return () => clearTimeout(timer);
-      */
-  
-      // Empty array as second argument avoid fetching on component updates, only when mounting the component
-    }, []);
+  // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
+  useEffect(() => {
+    setFormState(att)
+    /** 
+    const timer = setTimeout(() => {
+      setGridState({ identifiers: true, tax_info: true, growth_range: true, gen_metadata: false, proteome_metadata: false, })
+    }, 300);
+    return () => clearTimeout(timer);
+    */
+
+    // Empty array as second argument avoid fetching on component updates, only when mounting the component
+  }, []);
 
   useEffect(() => {
     if (props.match.params.query) {
@@ -153,7 +154,7 @@ export default function AdvanceSearchComponent(props) {
       })
       fetchData()
     }
-    else{
+    else {
       setFormState(att)
     }
 
@@ -217,7 +218,6 @@ export default function AdvanceSearchComponent(props) {
     return duplicated
   }
 
-
   return (
     <Fragment>
       <form>
@@ -225,7 +225,7 @@ export default function AdvanceSearchComponent(props) {
           <Grid container direction='row'>
             <Grid item xs={6}>
               <Button color='primary' style={{ width: '100%', marginTop: 10, }} onClick={() => handleHideGrid('identifiers')}>
-                Identifiers
+                {t('organism_search.identifiers')}
                 {gridState.identifiers ? <ExpandLess /> : <ExpandMore />}
               </Button>
               {gridState.identifiers &&
@@ -248,8 +248,9 @@ export default function AdvanceSearchComponent(props) {
                 </Table >
               }
 
+
               <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('tax_info')}>
-                Taxonomy info
+                {t('organism_search.taxonomy_info')}
                 {gridState.tax_info ? <ExpandLess /> : <ExpandMore />}
               </Button>
               {gridState.tax_info &&
@@ -339,7 +340,7 @@ export default function AdvanceSearchComponent(props) {
                         <TableBody>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Optimal temperature range</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.optimal_temp_range')}</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -361,7 +362,7 @@ export default function AdvanceSearchComponent(props) {
                           </TableRow>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Can grow at temperature:</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.can_grow_temp')}</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -382,7 +383,7 @@ export default function AdvanceSearchComponent(props) {
                         <TableBody>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Optimal pH range</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.optimal_ph_range')}</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -404,7 +405,7 @@ export default function AdvanceSearchComponent(props) {
                           </TableRow>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>Can grow at pH:</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.can_grow_ph')}:</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -431,7 +432,7 @@ export default function AdvanceSearchComponent(props) {
           <Grid container direction='row'>
 
             <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('gen_metadata')}>
-              Genome metadata
+              {t('organism_search.genome_metadata')}
               {gridState.gen_metadata ? <ExpandLess /> : <ExpandMore />}
             </Button>
             {gridState.gen_metadata &&
@@ -442,7 +443,7 @@ export default function AdvanceSearchComponent(props) {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Gene size range</div>
+                          <div style={{ fontSize: 16 }}>{t('organism_search.gen_size_range')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -465,7 +466,7 @@ export default function AdvanceSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>GC range</div>
+                          <div style={{ fontSize: 16 }}>{t('organism_search.gc_range')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -493,7 +494,7 @@ export default function AdvanceSearchComponent(props) {
                     <TableBody>
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Contamination</div>
+                          <div style={{ fontSize: 16 }}>{t('table.gen_contamination')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -509,7 +510,7 @@ export default function AdvanceSearchComponent(props) {
 
                       <TableRow >
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
-                          <div style={{ fontSize: 16 }}>Completeness</div>
+                          <div style={{ fontSize: 16 }}>{t('table.gen_completeness')}</div>
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
@@ -643,8 +644,10 @@ export default function AdvanceSearchComponent(props) {
               </Fragment>
             }
           </Grid>
-         
-          <Divider style={{ marginTop: 20 }} orientation='horizontal' />
+
+          <div style={{ padding: 10, margin: 10, fontSize: 18 }} >
+            <em>{t('organism_search.tip')}<Link  to={'/app/#organism_search_docs'}>{' Here'}</Link></em>
+          </div>
 
           <Grid container alignItems='center' alignContent='center'>
             {/* 
@@ -695,10 +698,10 @@ export default function AdvanceSearchComponent(props) {
                 </Grid>
               </Fragment>
             }
-            */}  
+            */}
 
             <Button color='primary' style={{ padding: 10, margin: 10, fontSize: 18 }} variant='outlined' type='submit' onClick={handleSubmit}>
-              Search
+              {t('search')}
             </Button>
           </Grid>
         </Paper>
@@ -706,7 +709,7 @@ export default function AdvanceSearchComponent(props) {
       </form >
       <span ref={resultRef}></span>
       <Paper style={{ padding: 30 }}>
-        <Typography variant='h4'> Search results </Typography>
+        <Typography variant='h4'> {t('search_results')} </Typography>
         <Grid container alignItems='center' alignContent='center'>
           <Grid item xs={6}>
             <Typography variant='h5'>{`Total: ${resultState.length}`}</Typography>
@@ -727,9 +730,7 @@ export default function AdvanceSearchComponent(props) {
             :
             <MemoizedResults state={resultState} />
           }
-
         </Grid>
-
       </Paper>
     </Fragment >
   );

@@ -86,7 +86,7 @@ export default function NavBar(props) {
 
   return (
 
-    <AppBar position='static'>
+    <AppBar position='static' className={classes.appBar}>
       <Toolbar>
         <Button
           className={classes.homeButton}

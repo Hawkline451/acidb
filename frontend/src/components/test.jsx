@@ -1,313 +1,106 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
 
-import {
-  Grid, Table, TableBody, TableCell, TableFooter, TablePagination,TableRow, TableHead, Paper, IconButton
-} from '@material-ui/core';
+const drawerWidth = 240;
 
-import {
-  FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage
-} from '@material-ui/icons';
-
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-
-const useStyles1 = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
+    display: 'flex',
   },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  toolbar: theme.mixins.toolbar,
 }));
 
-function TablePaginationActions(props) {
-  const classes = useStyles1();
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onChangePage } = props;
-
-  const handleFirstPageButtonClick = event => {
-    onChangePage(event, 0);
-  };
-
-  const handleBackButtonClick = event => {
-    onChangePage(event, page - 1);
-  };
-
-  const handleNextButtonClick = event => {
-    onChangePage(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = event => {
-    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
+export default function ClippedDrawer() {
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
+      <CssBaseline />
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h6" noWrap>
+            Clipped drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
       >
-        {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
-      </IconButton>
+        <div className={classes.toolbar} />
+        <List>
+          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
+          facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
+          gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
+          donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
+          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
+          Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
+          imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
+          arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
+          donec massa sapien faucibus et molestie ac.
+        </Typography>
+        <Typography paragraph>
+          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
+          facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
+          tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
+          consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
+          vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
+          hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
+          tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
+          nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
+          accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
+        </Typography>
+      </main>
     </div>
   );
 }
-
-const rows1 = [
-  {
-    "nr_id": 5,
-    "prot_len": 3,
-    "mol_weight": 335.38,
-    "tmhmm": null,
-    "hmmtop": null,
-    "psort": "u",
-    "pfam": null,
-    "signal_p": null,
-    "cog": null,
-    "cog_category": null,
-    "ec_number": [],
-    "kegg_ko": [],
-    "inter_fam": [],
-    "proteome_nr_id": [
-      {
-        "prot_id": "CEK13874.1",
-        "organism_id": 924,
-        "name": "Chthonomonas calidirosea"
-      }
-    ]
-  },
-  {
-    "nr_id": 6,
-    "prot_len": 4,
-    "mol_weight": 531.71,
-    "tmhmm": null,
-    "hmmtop": null,
-    "psort": null,
-    "pfam": null,
-    "signal_p": null,
-    "cog": null,
-    "cog_category": null,
-    "ec_number": [],
-    "kegg_ko": [],
-    "inter_fam": [],
-    "proteome_nr_id": [
-      {
-        "prot_id": "EME25939.1",
-        "organism_id": 124,
-        "name": "Galdieria sulphuraria"
-      }
-    ]
-  },
-  {
-    "nr_id": 27,
-    "prot_len": 7,
-    "mol_weight": 912.12,
-    "tmhmm": null,
-    "hmmtop": null,
-    "psort": "e",
-    "pfam": null,
-    "signal_p": null,
-    "cog": null,
-    "cog_category": null,
-    "ec_number": [],
-    "kegg_ko": [],
-    "inter_fam": [],
-    "proteome_nr_id": [
-      {
-        "prot_id": "2515031834",
-        "organism_id": 131,
-        "name": "Sulfolobales sp."
-      }
-    ]
-  },
-  {
-    "nr_id": 48,
-    "prot_len": 9,
-    "mol_weight": 942.27,
-    "tmhmm": null,
-    "hmmtop": null,
-    "psort": "u",
-    "pfam": null,
-    "signal_p": null,
-    "cog": null,
-    "cog_category": null,
-    "ec_number": [],
-    "kegg_ko": [],
-    "inter_fam": [],
-    "proteome_nr_id": [
-      {
-        "prot_id": "OZB68939.1",
-        "organism_id": 993,
-        "name": "Xanthomonadales bacterium"
-      }
-    ]
-  },
-]
-
-const rows2 = [
-  {
-    "nr_id": 10000,
-    "prot_len": 9,
-    "mol_weight": 942.27,
-    "tmhmm": null,
-    "hmmtop": null,
-    "psort": "u",
-    "pfam": null,
-    "signal_p": null,
-    "cog": null,
-    "cog_category": null,
-    "ec_number": [],
-    "kegg_ko": [],
-    "inter_fam": [],
-    "proteome_nr_id": [
-      {
-        "prot_id": "OZB68939.1",
-        "organism_id": 993,
-        "name": "Xanthomonadales bacterium"
-      },
-      {
-        "prot_id": "OZB68939.1",
-        "organism_id": 994,
-        "name": "Xanthomonadales bacteriumzzzz"
-      }
-    ]
-  },
-];
-
-
-const useStyles2 = makeStyles(theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing(3),
-  },
-  table: {
-    minWidth: 500,
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-}));
-
-export default function CustomPaginationActionsTable() {
-  const classes = useStyles2();
-  const [page, setPage] = React.useState(rows1);
-  const [pageNum, setPageNum] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const handleChangePage = (event, newPage) => {
-    let le_dict = { 0: rows1, 1: rows2 }
-    console.log("change page!!!!" + String(newPage))
-    setPageNum(newPage);
-    setPage(le_dict[newPage])
-  };
-
-  return (
-    <Paper className={classes.root}>
-      <div className={classes.tableWrapper}>
-        <Table className={classes.table} aria-label="custom pagination table">
-          <TableHead>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                colSpan={3}
-                count={9}
-                rowsPerPage={rowsPerPage}
-                page={pageNum}
-                SelectProps={{
-                  inputProps: { 'aria-label': 'rows per page' },
-                  native: true,
-                }}
-                onChangePage={handleChangePage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableHead>
-          <TableHead>
-            <TableRow>
-              <TableCell align="right">AciDB [nr id]</TableCell>
-              <TableCell align="right">Protein Length</TableCell>
-              <TableCell align="right">
-                <Grid
-                  container
-                  direction="row"
-                  justify="center"
-                  alignItems="center"
-                >
-                  <Grid item xs>Organism</Grid>
-                  <Grid item xs>Protein</Grid>
-                </Grid>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {page.map(row => (
-              <TableRow key={row.nr_id}>
-                <TableCell align="right">{row.nr_id}</TableCell>
-                <TableCell align="right">{row.prot_len}</TableCell>
-                <TableCell align="right">
-                  {row.proteome_nr_id.map(organism => (
-                    <Grid
-                      container
-                      direction="row"
-                      justify="center"
-                      alignItems="center"
-                      key={organism.organism_id}
-                    >
-                      <Grid item xs>{organism.name}</Grid>
-                      <Grid item xs>{organism.prot_id}</Grid>
-                    </Grid>
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
-
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                colSpan={3}
-                count={9}
-                rowsPerPage={rowsPerPage}
-                page={pageNum}
-                SelectProps={{
-                  inputProps: { 'aria-label': 'rows per page' },
-                  native: true,
-                }}
-                onChangePage={handleChangePage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
-    </Paper>
-  );
-}
-
-/*
-const TestComponent = (props) => {
-
-  return (
-    <Suspense fallback={<Loader />}>
-      <Test {...props} />
-    </Suspense>
-  );
-};
-export default TestComponent
-*/

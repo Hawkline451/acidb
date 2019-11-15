@@ -20,6 +20,7 @@ class App extends Component {
           <Route exact path='/' component={HomePage} />
 
           <Route exact path='/app' component={AppPage} />
+          <Route exact path='/app/documentation' component={AppPage} />
           <Route exact path='/app/organism/:id' component={AppPage} />
           <Route exact path='/app/advance_search/:query' component={AppPage} />
           <Route exact path='/app/advance_search/' component={AppPage} />
@@ -37,8 +38,8 @@ class App extends Component {
           <Route exact path ='/404' component ={NotFoundPage}/>
 
           <Redirect to='/404'/>
-          </Switch>
-        </Router>
+        </Switch>
+      </Router>
     )
   }
 }

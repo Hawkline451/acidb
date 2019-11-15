@@ -139,8 +139,8 @@ function ProteinResultsTable(props) {
           </TableHead>
           <TableHead>
             <TableRow>
-              <TableCell align="right">{t('nr_id')}</TableCell>
-              <TableCell align="right">t{('prot_len')}</TableCell>
+              <TableCell align="right">{t('protein_search.nr_id')}</TableCell>
+              <TableCell align="right">{t('protein_search.prot_len')}</TableCell>
               <TableCell align="right">
                 <Grid
                   container
@@ -148,8 +148,8 @@ function ProteinResultsTable(props) {
                   justify="center"
                   alignItems="center"
                 >
-                  <Grid item xs>{t('organism')}</Grid>
-                  <Grid item xs>{t('protein')}</Grid>
+                  <Grid item xs>{t('protein_search.organism')}</Grid>
+                  <Grid item xs>{t('protein_search.protein')}</Grid>
                 </Grid>
               </TableCell>
             </TableRow>
@@ -167,7 +167,10 @@ function ProteinResultsTable(props) {
             <TableBody>
               {page.results.map(row => (
                 <TableRow key={row.nr_id}>
-                  <TableCell align="right" ><Button onClick={() => props.handleOpen(row)}>{row.nr_id}</Button></TableCell>
+                  <TableCell align="right" >
+                    <Button onClick={() => props.handleOpen(row)} style={{ width: '100%', color:'#0645AD' }}>
+                      {row.nr_id}
+                    </Button></TableCell>
                   <TableCell align="right">{row.prot_len}</TableCell>
                   <TableCell align="right">
                     {row.proteome_nr_id.map(organism => (
@@ -210,13 +213,12 @@ function ProteinResultsTable(props) {
               />
             </TableRow>
           </TableFooter>
-
         </Fragment>
 
         :
         <TableBody>
           <TableRow key={'no_results'}>
-            <TableCell align='left'>{('no_results')}</TableCell>
+            <TableCell align='left'>{t('no_results')}</TableCell>
           </TableRow>
         </TableBody>
       }
@@ -233,14 +235,14 @@ function GridObject(props) {
         <Fragment key={String(val.organism_id) + String(idx)}>
           <Grid
             container
-            style = {{marginBottom:5}}
+            style={{ marginBottom: 5 }}
             direction="column"
             justify="center"
             alignItems="flex-start"
           >
-            <Grid item xs>{t('prot_id:')} {val.prot_id}</Grid>
-            <Grid item xs>{t('organism_name:')} {val.name}</Grid>            
-          </Grid>         
+            <Grid item xs>{t('protein_search.prot_id')+':'} {val.prot_id}</Grid>
+            <Grid item xs>{t('protein_search.organism_name')+':'} {val.name}</Grid>
+          </Grid>
         </Fragment>
       )
       )
@@ -262,14 +264,13 @@ function GridObject(props) {
         )
       ))
     )
-
   }
 }
 
 function SimpleDialog(props) {
   const { t } = useTranslation();
   const { state, onClose } = props;
-  
+
   return (
     <Dialog onClose={onClose} open={state.open} keepMounted={true}>
       {state.open ?
@@ -280,9 +281,9 @@ function SimpleDialog(props) {
             <Table>
               <TableBody >
                 {Object.keys(state.data).map(key =>
-                  <TableRow key={t(key)}>
+                  <TableRow key={key}>
                     <TableCell align='left'>
-                      {key}
+                      {t('protein_search.'+key)}
                     </TableCell>
                     <TableCell align='left'>
                       {Array.isArray(state.data[key]) ? <GridObject obj={state.data[key]} objKey={key} /> : state.data[key]}

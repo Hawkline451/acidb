@@ -14,10 +14,10 @@ import {
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#8662BD',
+      main: '#343940',
     },
     secondary: {
-      main: '#D6B3FE',
+      main: '#9BABBF',
       //light: "#ff79b0",
       //dark: "#c60055",
       //contrastText: "#fff"
@@ -66,7 +66,8 @@ export const stylesInput = makeStyles({
     alignItems: 'center',
     borderRadius: 2,
     padding: 2,
-    fontSize: 18
+    fontSize: 18,
+    zIndex: 1000
   },
   input: {
     flexGrow: 1,
@@ -75,7 +76,9 @@ export const stylesInput = makeStyles({
   innerInput: {
     fontSize: 18
   },
-  
+  appBar: {
+    zIndex: 1000
+  }
 });
 
 export const stylesAppNav = makeStyles(theme => ({
@@ -186,7 +189,16 @@ export const stylesDetail = makeStyles({
     backgroundColor: theme.palette.primary.main,
     color: '#ffffff',
   },
+  listItemTitle: {
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.text.primary,
+    },
+    color: '#ffffff',
+  },
   listItem: {
+    paddingLeft:40,
     backgroundColor: theme.palette.primary.main,
     '&:hover': {
       backgroundColor: theme.palette.secondary.main,

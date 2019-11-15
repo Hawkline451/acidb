@@ -19,7 +19,7 @@ const OrganismNotFoundPage = () => {
       </Typography>
       <Typography component='div'>
         <Box fontSize={64} m={1}>
-          Advance search coming soon 
+          Use advance search
       </Box>
       </Typography>
     </Grid>

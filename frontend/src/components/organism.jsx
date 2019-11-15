@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 
 import {
   Divider, List, ListItem, ListItemText, Table, TableBody, TableCell, Grid, TableRow, Link,
 } from '@material-ui/core';
 
 // Styles
-import { ThemeProvider } from '@material-ui/styles';
-import { theme, stylesDetail } from './css/themes'
+import { stylesDetail } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -121,7 +120,7 @@ export default function Organism(props) {
       {isLoading && !error ? (<Loader />) :        
         error ? (<OrganismNotFound />) :
 
-        (<ThemeProvider theme={theme}>
+        (<Fragment>
           <Grid container>
             <Grid item xs={3}>
               <div className={classes.fixedList}>
@@ -288,7 +287,7 @@ export default function Organism(props) {
               </Table>
             </Grid>
           </Grid>
-        </ThemeProvider>)
+        </Fragment>)
       }
     </div>
   );

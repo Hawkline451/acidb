@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import NavBar from '../components/navbar'
 import Footer from '../components/footer'
 
+import DocumentationComponent from '../components/documentation'
 import TreeComponent from '../components/tree'
 import TableComponent from '../components/table_component'
 import OrganismComponent from '../components/organism'
@@ -25,16 +26,17 @@ function Page(props) {
             path="/app"
             render={() => (
               <Switch>
-                <Route path="/app/organism/:id" component={OrganismComponent} />
-                <Route path="/app/advance_search/:query" component={AdvanceSearchComponent} />
-                <Route path="/app/advance_search/" component={AdvanceSearchComponent} />
-                <Route path="/app/advance_protein_search/:query" component={AdvanceProteinSearchComponent} />
-                <Route path="/app/advance_protein_search/" component={AdvanceProteinSearchComponent} />
-                <Route path="/app/tools_tree" component={TreeComponent} />
-                <Route path="/app/tools" component={Loader} />
-                <Route path="/app/tools_table" component={TableComponent} />
-                <Route path="/app/tools_scatter_plot" component={PlotComponent} />
-                <Route path="/app/tools_bar_chart" component={SimpleBarComponent} />
+                <Route exact path="/app" component={DocumentationComponent} />
+                <Route exact path="/app/organism/:id" component={OrganismComponent} />
+                <Route exact path="/app/advance_search/:query" component={AdvanceSearchComponent} />
+                <Route exact path="/app/advance_search/" component={AdvanceSearchComponent} />
+                <Route exact path="/app/advance_protein_search/:query" component={AdvanceProteinSearchComponent} />
+                <Route exact path="/app/advance_protein_search/" component={AdvanceProteinSearchComponent} />
+                <Route exact path="/app/tools_tree" component={TreeComponent} />
+                <Route exact path="/app/tools" component={Loader} />
+                <Route exact path="/app/tools_table" component={TableComponent} />
+                <Route exact path="/app/tools_scatter_plot" component={PlotComponent} />
+                <Route exact path="/app/tools_bar_chart" component={SimpleBarComponent} />
               </Switch>
             )}
           />

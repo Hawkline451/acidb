@@ -1,14 +1,11 @@
 {
-  "name": "le name",
-  "description": {
-    "part1": "To get started, edit <1>src/App.js</1> and save to reload1111.",
-    "part2": "Switch language between english and german using buttons above."
-  },
   "footer":{
     "desc": "Im a cool footer"
   },
   "download_file": "Download CSV",
   "no_results": "No results found",
+  "search": "Search",
+  "search_results": "Search results",
   "placeholder":{
     "search": "Search ...",
     "organism_strain": "Organism or Strain"
@@ -17,7 +14,7 @@
     "title": "AciDB",
     "home" : "Home",
     "tools" : "Tools",
-    "tree" : "Tree",
+    "tree" : "Nav. Tree",
     "table" : "Table",
     "plot" : "Viz",
     "advance_organism_search": "Organism search",
@@ -78,7 +75,9 @@
     "tax_info": "Taxonomy info",
     "gen_metadata": "Genome Metadata",
     "growth_range": "Growth range",
-    "proteome_metadata": "Proteome metadata"
+    "proteome_metadata": "Proteome metadata",
+
+    "tip":"Hold shift when sorting to multi-sort"
   },
 
   "detail":{
@@ -118,7 +117,46 @@
     "select_histogram" : "Select histogram",
     "attribute": "Attribute",
     "none": "None"
+  },
 
+  "organism_search":{
+    "optimal_temp_range": "Optimal temp. range",
+    "can_grow_temp": "Can grow at temperature:",
+    "optimal_ph_range": "Optimal pH range:",
+    "can_grow_ph": "Can grow at pH",
+    "taxonomy_info": "Taxonomy info",
+    "identifiers": "Identifiers",
+    "genome_metadata": "Genome metadata",
+    "gen_size_range": "Genome size range",
+    "gc_range": "GC range",
+    "tip": "Check the documentation for detailed info"
+  },
+
+  "protein_search":{
+    "protein_search": "Protein Search",
+    "tmhmm": "tmhmm",
+    "hmmtop": "hmmtop",
+    "psort": "psort",
+    "pfam": "pfam",
+    "signal_p": "signal p",
+    "cog": "COG",
+    "cog_category": "COG Category",
+    "kegg_ko": "kegg ko",
+    "inter_fam": "inter fam",
+    "ec_number": "ec number",
+    "nr_id": "nr id",
+    "protein": "Protein",
+    "organism": "Organism",
+    "prot_len": "Protein length",
+    "prot_id": "Protein id",
+    "proteome_nr_id": "Protein/Organism",
+    "mol_weight": "Mol weight",
+    "organism_name": "Organism name",
+    "tip": "Check the documentation for detailed info"
+  },  
+
+  "documentation":{
+    "metodology": "Metodology",
+    "features": "Features"
   }
-  
 }

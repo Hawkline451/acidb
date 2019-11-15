@@ -7,4 +7,4 @@ export const Loader = () => (
       <img src={logo} className="App-logo" alt="logo"/>
       <div>loading...</div>
     </div>
-  );
+  )

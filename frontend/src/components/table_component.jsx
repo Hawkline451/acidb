@@ -781,7 +781,7 @@ function TableComponent() {
           )}
         <br />
         <div style={{ textAlign: "center" }}>
-          <em> Tip: Hold shift when sorting to multi - sort! </em> </div>;
+          <em> {t('table.tip')} </em> </div>;
       </div>
     </ThemeProvider>
   )
