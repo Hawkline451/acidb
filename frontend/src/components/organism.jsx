@@ -154,7 +154,6 @@ export default function Organism(props) {
             </Grid>
 
             <Grid item xs={9} >
-
               <span id="identifiers"></span>
               <div className={classes.tableTitle}><h1>General info</h1></div>
               <Table className={classes.table}>

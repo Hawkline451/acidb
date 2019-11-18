@@ -156,7 +156,7 @@ class ProteinSearchViewSet(viewsets.ReadOnlyModelViewSet):
     #TODO only show visible organisms proteome, check query speed  
     visible_organisms = list(Organism.objects.filter(visibility=1))
 
-    queryset = Protein.objects.prefetch_related('proteome_nr_id__organism').filter(proteome_nr_id__organism_id__in=visible_organisms).order_by('nr_id').prefetch_related('ec_number').prefetch_related('inter_fam').prefetch_related('kegg_ko')
+    queryset = Protein.objects.prefetch_related('proteome_nr_id__organism').filter(proteome_nr_id__organism_id__in=visible_organisms).distinct('nr_id').order_by('nr_id').prefetch_related('ec_number').prefetch_related('inter_fam').prefetch_related('kegg_ko')
     serializer_class = ProteinSearchSerializer
     filterset_class = ProteinSearchFilter
 

@@ -122,6 +122,7 @@ class ProteinSearchFilter(filters.FilterSet):
         label="Kegg ko contains", method='filter_kegg', field_name='kegg_ko')
     inter_fam = filters.CharFilter(
         label="Interfam contains", method='filter_interfam', field_name='inter_fam')
+    signalp_null = filters.BooleanFilter(field_name='signal_p', lookup_expr='isnull')
 
     def filter_ec_number(self, queryset, name, value):
         queryset = queryset.filter(ec_number__ec_number__iexact=value)
@@ -141,7 +142,7 @@ class ProteinSearchFilter(filters.FilterSet):
             'tmhmm': ['iexact'], 
             'hmmtop': ['iexact'], 
             'psort': ['iexact'], 
-            'pfam': ['iexact'], 
+            'pfam': ['icontains'], 
             'signal_p': ['iexact'], 
             'cog': ['iexact'], 
             'cog_category': ['icontains'],

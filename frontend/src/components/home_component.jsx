@@ -8,9 +8,11 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import MediaQuery from 'react-responsive'
+import MediaQuery from 'react-responsive';
 
-import Footer from '../components/footer'
+// Components
+import Footer from '../components/footer';
+import logo from '../acidb-logo.svg';
 
 // Themes
 import { ThemeProvider } from '@material-ui/styles';
@@ -24,8 +26,6 @@ const useStylesNav = stylesAppNav
 
 function AboutSection() {
   const classes = useStylesHome();
-
-
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#' }}>
 
@@ -55,7 +55,6 @@ function AboutSection() {
 
 function FeaturesSection() {
   const classes = useStylesHome();
-
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#' }}>
 
@@ -121,9 +120,7 @@ export default function Home() {
                   <Button
                     className={classes.homeButton}
                     component={Link} to='/'>
-                    <Typography variant='h5' color='#FFFFFF' noWrap>
-                      {t('navbar.title')}
-                    </Typography>
+                    <img src={logo} alt="acidb-logo" height={40} />
                   </Button>
                 </Toolbar>
               </AppBar>
@@ -133,9 +130,7 @@ export default function Home() {
               <Button
                 className={classes.homeButton}
                 component={Link} to='/'>
-                <Typography variant='h5' color='textSecondary' noWrap>
-                  {t('navbar.title')}
-                </Typography>
+                <img src={logo} alt="acidb-logo" height={40} />
               </Button>
               <Box>
                 <Tabs value={false}>

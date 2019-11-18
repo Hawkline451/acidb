@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  AppBar, Typography, Toolbar, Paper, Button, Popper, MenuList,
+  AppBar, Toolbar, Paper, Button, Popper, MenuList,
   Tab, Tabs, ClickAwayListener, MenuItem,
 } from '@material-ui/core';
 
@@ -92,9 +92,7 @@ export default function NavBar(props) {
           className={classes.homeButton}
           onClick={cleanState}
           component={Link} to='/app'>
-          <Typography variant='h5' style={{ color: '#ffffff' }} noWrap>
-            <img src={logo} alt="acidb-logo" height={40} />
-          </Typography>
+          <img src={logo} alt="acidb-logo" height={40} />
         </Button>
 
         <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>

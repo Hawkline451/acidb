@@ -177,7 +177,7 @@ export const stylesDetail = makeStyles({
   table: {
     marginLeft: '15%',
     marginBottom: 50,
-    width: '50%',
+    width: '50% !important',
   },
   tableTitle: {
     marginTop: 20,
@@ -187,7 +187,7 @@ export const stylesDetail = makeStyles({
   tableCell: {
     width: '50%',
     backgroundColor: theme.palette.primary.main,
-    color: '#ffffff',
+    color: '#ffffff !important',
   },
   listItemTitle: {
     backgroundColor: theme.palette.primary.main,

@@ -2,6 +2,7 @@ version: '3.5'
 
 services:
   postgres:
+    shm_size: '2gb'
     container_name: postgres_container
     image: postgres
     environment:

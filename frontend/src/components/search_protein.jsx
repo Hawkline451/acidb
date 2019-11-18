@@ -28,7 +28,7 @@ const att = {
   tmhmm__iexact: '',
   hmmtop__iexact: '',
   psort__iexact: '',
-  pfam__iexact: '',
+  pfam__icontains: '',
   signal_p__iexact: '',
   cog__iexact: '',
   cog_category__icontains: '',
@@ -36,7 +36,6 @@ const att = {
   inter_fam: '',
   ec_number: '',
   signalp_null: '',
-
 }
 
 const psortList = { '': 'Select an option...', c: 'Cytoplasmic', im: 'Inner membrane', p: 'Periplasmic', om: 'Outer membrane', e: 'Exported', w: 'Cell wall', u: 'Unknown' }

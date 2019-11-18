@@ -59,4 +59,5 @@ function ResultTable(props) {
   )
 }
 
+// Check memo result table comparing props.url if exist
 export const MemoizedResults = React.memo(ResultTable);

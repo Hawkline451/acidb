@@ -67,6 +67,7 @@ const att = {
   organism_or_strain: '',
 
   domain: '',
+  phylum: '',
   tax_class: '',
   order: '',
   family: '',
@@ -261,8 +262,18 @@ export default function AdvanceSearchComponent(props) {
                         <TextField variant='outlined'
                           name='domain'
                           type='text'
-                          label={'Domain'}
+                          label={t('table.domain')}
                           value={formState.domain}
+                          onChange={event => handleChange(event.target)}
+                          style={{ width: '100%' }}
+                        />
+                      </TableCell>
+                      <TableCell style={{ borderStyle: 'none' }} align='left'>
+                        <TextField variant='outlined'
+                          name='phylum'
+                          type='text'
+                          label={t('table.phylum')}
+                          value={formState.phylum}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
                         />
@@ -271,18 +282,8 @@ export default function AdvanceSearchComponent(props) {
                         <TextField variant='outlined'
                           name='tax_class'
                           type='text'
-                          label={'Class'}
+                          label={t('table.tax_class')}
                           value={formState.tax_class}
-                          onChange={event => handleChange(event.target)}
-                          style={{ width: '100%' }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ borderStyle: 'none' }} align='left'>
-                        <TextField variant='outlined'
-                          name='order'
-                          type='text'
-                          label={'Order'}
-                          value={formState.order}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
                         />
@@ -291,9 +292,19 @@ export default function AdvanceSearchComponent(props) {
                     <TableRow>
                       <TableCell style={{ borderStyle: 'none' }} align='left'>
                         <TextField variant='outlined'
+                          name='order'
+                          type='text'
+                          label={t('table.order')}
+                          value={formState.order}
+                          onChange={event => handleChange(event.target)}
+                          style={{ width: '100%' }}
+                        />
+                      </TableCell>
+                      <TableCell style={{ borderStyle: 'none' }} align='left'>
+                        <TextField variant='outlined'
                           name='family'
                           type='text'
-                          label={'Family'}
+                          label={t('table.family')}
                           value={formState.family}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
@@ -303,23 +314,24 @@ export default function AdvanceSearchComponent(props) {
                         <TextField variant='outlined'
                           name='genus'
                           type='text'
-                          label={'Genus'}
+                          label={t('table.genus')}
                           value={formState.genus}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
                         />
                       </TableCell>
+                    </TableRow>
+                    <TableRow>
                       <TableCell style={{ borderStyle: 'none' }} align='left'>
                         <TextField variant='outlined'
                           name='species'
                           type='text'
-                          label={'Species'}
+                          label={t('table.species')}
                           value={formState.species}
                           onChange={event => handleChange(event.target)}
                           style={{ width: '100%' }}
                         />
                       </TableCell>
-
                     </TableRow>
                   </TableBody>
                 </Table>
@@ -329,7 +341,7 @@ export default function AdvanceSearchComponent(props) {
             <Grid item xs={6}>
               <Grid container alignItems='center' alignContent='center'>
                 <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('growth_range')}>
-                  Growth range
+                  {t('table.growth_range')}
                   {gridState.growth_range ? <ExpandLess /> : <ExpandMore />}
                 </Button>
                 {gridState.growth_range &&
@@ -430,7 +442,6 @@ export default function AdvanceSearchComponent(props) {
 
 
           <Grid container direction='row'>
-
             <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('gen_metadata')}>
               {t('organism_search.genome_metadata')}
               {gridState.gen_metadata ? <ExpandLess /> : <ExpandMore />}
@@ -449,14 +460,14 @@ export default function AdvanceSearchComponent(props) {
                           <TextField variant='outlined'
                             name='gen_size_gte'
                             type='text'
-                            label={'min value'}
+                            label={'min value [KB]'}
                             value={formState.gen_size_gte}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
                             name='gen_size_lte'
                             type='text'
-                            label={'max value'}
+                            label={'max value [KB]'}
                             value={formState.gen_size_lte}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
@@ -646,7 +657,7 @@ export default function AdvanceSearchComponent(props) {
           </Grid>
 
           <div style={{ padding: 10, margin: 10, fontSize: 18 }} >
-            <em>{t('organism_search.tip')}<Link  to={'/app/#organism_search_docs'}>{' Here'}</Link></em>
+            <em>{t('organism_search.tip')}<Link to={'/app/#organism_search_docs'}>{' Here'}</Link></em>
           </div>
 
           <Grid container alignItems='center' alignContent='center'>
