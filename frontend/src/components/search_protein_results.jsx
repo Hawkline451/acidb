@@ -117,7 +117,7 @@ function ProteinResultsTable(props) {
   };
 
   return (
-    <Table className={classes.table} aria-label="custom pagination table">
+    <Table className={classes.table} aria-label='custom pagination table' align='center' style={{width:'50%'}}>>
       {page.results ?
         <Fragment>
           <TableHead>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import {
-  Grid, Button
+  Grid, Button, Typography
 } from '@material-ui/core';
 
 // NPM
@@ -260,6 +260,7 @@ export default function PlotComponent() {
           >
             <Grid item
             >
+              <Typography align='center' variant={'h5'}>{`${t('table.' + plotState.xAccessor)} vs ${t('table.' + plotState.yAccessor)}`}</Typography>
               <XYPlot
                 id='svg-plot'
                 onMouseLeave={() => setStateValue('value', false)}

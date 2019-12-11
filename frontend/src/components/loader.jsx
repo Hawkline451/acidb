@@ -5,6 +5,6 @@ import logo from '../logo.svg';
 export const Loader = () => (
     <div align='center'>
       <img src={logo} className="App-logo" alt="logo"/>
-      <div>loading...</div>
+      <div align='center'>Loading...</div>
     </div>
   )

@@ -23,7 +23,7 @@ function ResultTable(props) {
   const classes = useStylesTable()
   let resultState = props.state
   return (
-    <Table>
+    <Table align='center' style={{width:'50%'}}>
 
       {resultState.length ?
         <Fragment>
@@ -58,6 +58,7 @@ function ResultTable(props) {
     </Table>
   )
 }
+
 
 // Check memo result table comparing props.url if exist
 export const MemoizedResults = React.memo(ResultTable);

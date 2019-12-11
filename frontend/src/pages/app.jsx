@@ -26,7 +26,7 @@ function Page(props) {
             path="/app"
             render={() => (
               <Switch>
-                <Route exact path="/app" component={DocumentationComponent} />
+                <Route exact path="/app/documentation" component={DocumentationComponent} />
                 <Route exact path="/app/organism/:id" component={OrganismComponent} />
                 <Route exact path="/app/advance_search/:query" component={AdvanceSearchComponent} />
                 <Route exact path="/app/advance_search/" component={AdvanceSearchComponent} />

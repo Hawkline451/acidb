@@ -21,8 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { Loader } from './loader'
 import { MemoizedProteinResults } from './search_protein_results'
 
+// Styles
+import {stylesTable } from './css/themes'
+
 // import config
 import { config } from '../config';
+
+const useStylesTable = stylesTable
 
 const att = {
   tmhmm__iexact: '',
@@ -36,6 +41,7 @@ const att = {
   inter_fam: '',
   ec_number: '',
   signalp_null: '',
+  prot_id: '',
 }
 
 const psortList = { '': 'Select an option...', c: 'Cytoplasmic', im: 'Inner membrane', p: 'Periplasmic', om: 'Outer membrane', e: 'Exported', w: 'Cell wall', u: 'Unknown' }
@@ -50,7 +56,7 @@ const scrollToRef = (ref) => {
 // Sub components
 export default function AdvanceProteinSearchComponent(props) {
 
-  //const classes = useStylesTable();
+  const classes = useStylesTable();
   const { t } = useTranslation();
 
   const resultRef = useRef(null);
@@ -62,6 +68,7 @@ export default function AdvanceProteinSearchComponent(props) {
 
   useEffect(() => {
     if (props.match.params.query) {
+      console.log(props)
 
       // Check if url contains params then update form state
       let params = props.match.params.query ? (props.match.params.query).split('&') : '';
@@ -105,8 +112,19 @@ export default function AdvanceProteinSearchComponent(props) {
     }));
   }
 
+  function isObjEmpty(obj) {
+    for (var key in obj) {
+      if (obj[key] !== '')
+        return false;
+    }
+    return true;
+  }
   function handleSubmit(event) {
     event.preventDefault()
+    // TODO check if this is OK, If the search state is empty dont search
+    if (isObjEmpty(formState)) {
+      return
+    }
     let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
     props.history.push(searchUrl)
     getResults()
@@ -166,15 +184,30 @@ export default function AdvanceProteinSearchComponent(props) {
       <form>
         <Paper style={{ padding: 20 }}>
 
-          <Grid container direction='row'>
 
-            <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('prot_search')}>
-              {t('protein_search.protein_search')}
-              {gridState.prot_search ? <ExpandLess /> : <ExpandMore />}
-            </Button>
-            {gridState.prot_search &&
-              <Fragment>
+          <Button color='primary' className={classes.customButton} style={{marginBottom:20}} onClick={() => handleHideGrid('prot_search')}>
+            {t('protein_search.protein_search')}
+            {gridState.prot_search ? <ExpandLess /> : <ExpandMore />}
+          </Button>
+          {gridState.prot_search &&
+            <Fragment>
+              <Grid container
+                direction='row'
+                justify="center"
+                alignItems="center">
+                <Grid item xs={8}>
+                  <TextField variant='outlined'
+                    name='prot_id'
+                    type='text'
+                    label={'protein id'}
+                    value={formState.prot_id}
+                    onChange={event => handleChange(event.target)}
+                    style={{ width: '100%' }}
+                  />
+                </Grid>
+              </Grid>
 
+              <Grid container direction='row'>
                 <Grid item xs={3}>
                   <Table >
                     <TableBody>
@@ -246,10 +279,10 @@ export default function AdvanceProteinSearchComponent(props) {
                         </TableCell>
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
-                            name='pfam__iexact'
+                            name='pfam__icontains'
                             type='text'
                             label={'i.e. PF00001.1'}
-                            value={formState.pfam__iexact}
+                            value={formState.pfam__icontains}
                             onChange={event => handleChange(event.target)}
                             style={{ width: '100%' }}
                           />
@@ -380,12 +413,13 @@ export default function AdvanceProteinSearchComponent(props) {
                   </Table>
                 </Grid>
 
-              </Fragment>
-            }
-          </Grid>
+              </Grid>
+            </Fragment>
+          }
+
 
           <div style={{ padding: 10, margin: 10, fontSize: 18 }} >
-            <em>{t('protein_search.tip')}<Link  to={'/app/#protein_search_docs'}>{' Here'}</Link></em>
+            <em>{t('protein_search.tip')}<Link to={'/app/#protein_search_docs'}>{' Here'}</Link></em>
           </div>
 
           <Grid container alignItems='center' alignContent='center'>

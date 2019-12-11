@@ -4,7 +4,7 @@ import {
   Tab, Tabs, ClickAwayListener, MenuItem,
 } from '@material-ui/core';
 
-// npm
+// NPM
 import {
   Link
 } from 'react-router-dom';
@@ -22,10 +22,11 @@ import { useTranslation } from 'react-i18next';
 const useStylesNav = stylesAppNav
 
 // Tab Menu component
-function TabMenu(props) {
+function TabMenuCharts(props) {
   const classes = useStylesNav();
   const { t } = useTranslation();
 
+  //Charts popper
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
@@ -34,7 +35,6 @@ function TabMenu(props) {
   function handleClick(event) {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   }
-
   function handleItemClick(event) {
     setAnchorEl(null)
     props.onChange(event, props.value)
@@ -57,6 +57,49 @@ function TabMenu(props) {
             </MenuItem>
             <MenuItem onClick={handleItemClick} component={Link} to='/app/tools_scatter_plot'>
               {t('navbar.scatter_plot')}
+            </MenuItem>
+          </MenuList>
+        </Paper>
+      </Popper>
+    </div>
+  )
+}
+
+function TabMenuSearch(props) {
+  const classes = useStylesNav();
+  const { t } = useTranslation();
+
+  //Charts popper
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popper' : undefined;
+
+  // Open popper under the tab
+  function handleClick(event) {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  }
+  function handleItemClick(event) {
+    setAnchorEl(null)
+    props.onChange(event, props.value)
+  }
+  // Hide menu when clicking outside te menu items
+  function handleClickAway() {
+    setAnchorEl(null)
+  }
+
+  return (
+    <div>
+      <ClickAwayListener onClickAway={handleClickAway}>
+        <Tab label={t('search')} onClick={handleClick} className={classes.tabRoot} />
+      </ClickAwayListener>
+      <Popper id={id} open={open} anchorEl={anchorEl} placement={'bottom-start'} className={classes.tabMenu}>
+        <Paper square >
+          <MenuList>
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/advance_search/'>
+              {t('navbar.advance_organism_search')}
+            </MenuItem>
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/advance_protein_search'>
+              {t('navbar.advance_protein_search')}
             </MenuItem>
           </MenuList>
         </Paper>
@@ -91,16 +134,20 @@ export default function NavBar(props) {
         <Button
           className={classes.homeButton}
           onClick={cleanState}
-          component={Link} to='/app'>
+          component={Link} to='/'>
           <img src={logo} alt="acidb-logo" height={40} />
         </Button>
 
         <Tabs name='tabVal' value={tabVal.underline} onChange={handleTabChange}>
+          <Tab label={t('navbar.documentation')} component={Link} to='/app/documentation' className={classes.tabRoot} />
           <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
           <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
-          <TabMenu />
-          <Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
-          <Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
+          <TabMenuCharts />
+          <TabMenuSearch />
+          {
+            //<Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
+            //<Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
+          }
 
         </Tabs>
 

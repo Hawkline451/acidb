@@ -12,6 +12,7 @@
   },
   "navbar":{
     "title": "AciDB",
+    "documentation": "Documentation",
     "home" : "Home",
     "tools" : "Tools",
     "tree" : "Taxonomy",
@@ -21,7 +22,7 @@
     "charts" : "Charts",
     "bar_chart": "Bar Chart",
     "scatter_plot": "Scatter Plot",
-    "advance_protein_search": "Protein filter",
+    "advance_protein_search": "Protein search",
     "search_load_more" : "Loaded: {{suggestions}} / Total: {{total}}. Click here to load more",
     "organism_metadata": "Organism metadata",
     "proteome_metadata": "Proteome metadata"
@@ -40,10 +41,10 @@
     "gen_contamination":"Genome contamination",
     "gc_percentage":"GC %",
     "n_orfs":"N Orfs",
-    "temp_associated":"Temp. optimal [°C]",
+    "temp_associated":"Temp. optimum [°C]",
     "temp_min":"Temp. min [°C]",
     "temp_max":"Temp. max [°C]",
-    "ph_associated":"pH optimal",
+    "ph_associated":"pH optimum",
     "ph_min":"pH min",
     "ph_max":"pH max",
     "temp_confidence": "Temperature confidence",
@@ -68,7 +69,7 @@
 
     "select_col": "Select Columns",
     "max_cols": "Max number of columns",
-    "filter_tooltip": "Super tooltip",
+    "filter_tooltip": "Filter support expressions, eg: 0-1, <=50, >20, etc. More examples in the documentation",
     "filter": "Filter",
     "wrong_filter": "Wrong filter",
 
@@ -122,15 +123,15 @@
   },
 
   "organism_search":{
-    "optimal_temp_range": "Optimal temp. range",
+    "optimum_temp_range": "Optimum temp. range:",
     "can_grow_temp": "Can grow at temperature:",
-    "optimal_ph_range": "Optimal pH range:",
+    "optimum_ph_range": "Optimum pH range:",
     "can_grow_ph": "Can grow at pH",
     "taxonomy_info": "Taxonomy info",
     "identifiers": "Identifiers",
     "genome_metadata": "Genome metadata",
-    "gen_size_range": "Genome size range",
-    "gc_range": "GC range",
+    "gen_size_range": "Genome size range:",
+    "gc_range": "GC range:",
     "tip": "Check the documentation for detailed info"
   },
 

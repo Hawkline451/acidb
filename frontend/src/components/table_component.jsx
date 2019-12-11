@@ -94,7 +94,7 @@ const headersCSV = [
 
 const headerIndex = {
   0: 'identifiers',
-  2: 'tax_info',  
+  2: 'tax_info',
   4: 'growth_range',
   10: 'gen_metadata',
   19: 'proteome_metadata'
@@ -124,11 +124,9 @@ function CustomFilterInput(props) {
       var matchRange = String(val).match(/(\d+\.?\d*-\d+\.?\d*)|(\*-\d+\.?\d*)|(\d+\.?\d*-\*)/)
       // If val dont match expression and is not empty
       if ((match == null || match[0] !== String(val)) && (matchRange == null || matchRange[0] !== String(val))) {
-        //console.log("bad")
         setState({ error: true })
       }
       else {
-        //console.log("good")
         props.handler(val)
         setState({ error: false })
       }
@@ -168,10 +166,16 @@ function CustomFilterInput(props) {
 // Basic filter component
 function FilterInput(props) {
   const { t } = useTranslation();
-  var label = t('table.filter')
+  var label = t('table.filter')  
+  const [filterState, setFilterState] = useState(props.filterState)
+
   return (
     <Grid container>
-      <TextField label={label} onChange={event => props.handler(event.target.value)} style={{ width: "100%" }} error={false}
+      <TextField label={label}
+        onChange={event => {setFilterState(event.target.value);props.handler(event.target.value)}}
+        style={{ width: "100%" }}
+        error={false}
+        value={filterState}
         InputLabelProps={{
           style: {
             color: '#808080'
@@ -262,7 +266,7 @@ function TableComponent() {
   const [filteredData, setfilteredData] = useState({
     data: [],
   });
-
+  
   let reactTable = useRef(null);
 
   useEffect(() => {
@@ -299,11 +303,18 @@ function TableComponent() {
     setfilteredData({ data: data })
   }
 
+  // Only download visible columns
   function procesedData(data) {
+    let result = []
     for (var index = 0; index < data.length; ++index) {
-      data[index].strains_str = concatStrains(data[index].strains)
+      result.push({})
+      for (var chipIdx = 0; chipIdx < chipState.name.length; ++chipIdx) {
+        let key = chipState.name[chipIdx]
+        result[index][key] = data[index][key]
+      }
+      result[index].strains = concatStrains(data[index].strains)
     }
-    return data
+    return result
   }
 
   return (
@@ -321,7 +332,7 @@ function TableComponent() {
 
           <CSVLink
             className={classes.noDecoratorLink}
-            headers={headersCSV}
+            headers={chipState.name}
             data={procesedData(filteredData.data)}
             separator={'\t'}
             filename={'filtered_data.csv'}
@@ -379,8 +390,10 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['name'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+
+                        return  (<FilterInput handler={onChange} filterState={filter ? filter.value : ''}/>)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('strains') : false,

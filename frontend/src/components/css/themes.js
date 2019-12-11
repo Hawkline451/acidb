@@ -55,7 +55,8 @@ Component Styles
 */
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
-    paddingTop: 0,
+    paddingTop: 20,
+    paddingBottom: 20,
   }
 }));
 
@@ -85,7 +86,7 @@ export const stylesAppNav = makeStyles(theme => ({
 
   tabRoot: {
     fontSize: 20,
-    minWidth: 'auto'
+    minWidth: 'auto',
   },
   tabMenu: {
     fontSize: 18,
@@ -161,7 +162,17 @@ export const stylesTable = makeStyles({
   bigFontTable: {
     fontSize: 16,
     color: '#000000'
-  }
+  },
+  customButton: {
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.text.primary,
+    },
+    color: '#ffffff',
+    width: '100%', 
+    marginTop: 10
+  },
 });
 
 // Organism Detail

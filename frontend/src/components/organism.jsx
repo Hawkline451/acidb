@@ -105,7 +105,7 @@ export default function Organism(props) {
   function transformElement(key) {
     switch (key) {
       case ('ftp_url'):
-        return (<Link href={state.data[key]} color="primary">{state.data[key]}</Link>)
+        return (state.data[key] ? <Link href={state.data[key]} color="primary">{state.data[key]}</Link> : <div/>)
       case ('isolated'):
         return (state.data[key])
       default:

@@ -23,7 +23,7 @@ import { Loader } from './loader'
 import { MemoizedResults } from './search_organism_results'
 
 // Styles
-import { stylesTable } from './css/themes'
+import {stylesTable } from './css/themes'
 
 // import config
 import { config } from '../config';
@@ -168,10 +168,22 @@ export default function AdvanceSearchComponent(props) {
     }));
   }
 
+  function isObjEmpty(obj) {
+    for (var key in obj) {
+      if (obj[key] !== '')
+        return false;
+    }
+    return true;
+  }
+
   function handleSubmit(event) {
     event.preventDefault()
+    // TODO check if this is OK, If the search state is empty dont search
+    if (isObjEmpty(formState)){
+      return
+    }
     getResults()
-    let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key].replace(',', '.')).join('&')
     props.history.push(searchUrl)
   }
 
@@ -192,7 +204,7 @@ export default function AdvanceSearchComponent(props) {
   }
 
   function getResults() {
-    let url = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
+    let url = Object.keys(formState).map(key => key + '=' + formState[key].replace(',', '.')).join('&')
     url = config.API_ADVANCE_SEARCH + url
     let fetchData = (async () => {
       setIsLoading(true)
@@ -223,9 +235,9 @@ export default function AdvanceSearchComponent(props) {
     <Fragment>
       <form>
         <Paper style={{ padding: 20 }}>
-          <Grid container direction='row'>
+          <Grid container direction='row' spacing={3}>
             <Grid item xs={6}>
-              <Button color='primary' style={{ width: '100%', marginTop: 10, }} onClick={() => handleHideGrid('identifiers')}>
+              <Button color='primary' className={classes.customButton} onClick={() => handleHideGrid('identifiers')}>
                 {t('organism_search.identifiers')}
                 {gridState.identifiers ? <ExpandLess /> : <ExpandMore />}
               </Button>
@@ -250,7 +262,7 @@ export default function AdvanceSearchComponent(props) {
               }
 
 
-              <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('tax_info')}>
+              <Button color='primary' className={classes.customButton}  onClick={() => handleHideGrid('tax_info')}>
                 {t('organism_search.taxonomy_info')}
                 {gridState.tax_info ? <ExpandLess /> : <ExpandMore />}
               </Button>
@@ -340,7 +352,7 @@ export default function AdvanceSearchComponent(props) {
 
             <Grid item xs={6}>
               <Grid container alignItems='center' alignContent='center'>
-                <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('growth_range')}>
+                <Button color='primary' className={classes.customButton}  onClick={() => handleHideGrid('growth_range')}>
                   {t('table.growth_range')}
                   {gridState.growth_range ? <ExpandLess /> : <ExpandMore />}
                 </Button>
@@ -352,7 +364,7 @@ export default function AdvanceSearchComponent(props) {
                         <TableBody>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>{t('organism_search.optimal_temp_range')}</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.optimum_temp_range')}</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -395,7 +407,7 @@ export default function AdvanceSearchComponent(props) {
                         <TableBody>
                           <TableRow >
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
-                              <div style={{ fontSize: 16 }}>{t('organism_search.optimal_ph_range')}</div>
+                              <div style={{ fontSize: 16 }}>{t('organism_search.optimum_ph_range')}</div>
                             </TableCell>
                             <TableCell style={{ borderStyle: 'none' }} align='left'>
                               <TextField variant='outlined'
@@ -424,7 +436,7 @@ export default function AdvanceSearchComponent(props) {
                                 name='ph_in_range'
                                 type='text'
                                 label={'pH'}
-                                value={formState.ph_in_rage}
+                                value={formState.ph_in_range}
                                 onChange={event => handleChange(event.target)}
                               />
                             </TableCell>
@@ -442,7 +454,7 @@ export default function AdvanceSearchComponent(props) {
 
 
           <Grid container direction='row'>
-            <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('gen_metadata')}>
+            <Button color='primary' className={classes.customButton}  onClick={() => handleHideGrid('gen_metadata')}>
               {t('organism_search.genome_metadata')}
               {gridState.gen_metadata ? <ExpandLess /> : <ExpandMore />}
             </Button>
@@ -544,7 +556,7 @@ export default function AdvanceSearchComponent(props) {
                         <TableCell style={{ borderStyle: 'none' }} align='left'>
                           <TextField variant='outlined'
                             select
-                            name='state___iexact'
+                            name='state__iexact'
                             type='text'
                             label={'Assembly level'}
                             value={formState.state__iexact}
@@ -662,7 +674,7 @@ export default function AdvanceSearchComponent(props) {
 
           <Grid container alignItems='center' alignContent='center'>
             {/* 
-            <Button color='primary' style={{ width: '100%', marginTop: 10 }} onClick={() => handleHideGrid('proteome_metadata')}>
+            <Button color='primary' className={classes.customButton} onClick={() => handleHideGrid('proteome_metadata')}>
               Proteome metadata
               {gridState.proteome_metadata ? <ExpandLess /> : <ExpandMore />}
             </Button>

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import classnames from 'classnames'
 
+// Modified version of the original pagination component in React Table
+
 const defaultButton = props => (
   <button type="button" {...props} className="-btn">
     {props.children}
@@ -42,7 +44,7 @@ export default class Pagination extends Component {
             {pageSizeOptions.map((option, i) => (
               // eslint-disable-next-line react/no-array-index-key
               <option key={i} value={option}>
-                {`${option} rows per page`}
+                {`${option} organisms per page`}
               </option>
             ))}
           </select>
