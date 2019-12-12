@@ -148,11 +148,16 @@ export default function AdvanceSearchComponent(props) {
       let url = config.API_ADVANCE_SEARCH + props.match.params.query
       let fetchData = (async () => {
         setIsLoading(true)
-        let res = await axiosFetch(url);
-        setResultState(res.data)
-        setIsLoading(false)
-        executeScroll()
-      })
+        try {
+          let res = await axiosFetch(url);
+          setResultState(res.data)
+          setIsLoading(false)
+          executeScroll()
+        } catch (error) {
+          setIsLoading(false)
+        }   
+
+      })    
       fetchData()
     }
     else {
@@ -374,6 +379,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'min value [C°]'}
                                 value={formState.temp_associated_gte}
+                                error={isNaN(formState.temp_associated_gte) ? true : false}
                                 onChange={event => handleChange(event.target)}
                               />
                               <TextField variant='outlined'
@@ -381,6 +387,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'max value [C°]'}
                                 value={formState.temp_associated_lte}
+                                error={isNaN(formState.temp_associated_lte) ? true : false}
                                 onChange={event => handleChange(event.target)}
                                 style={{ marginTop: 5 }}
                               />
@@ -396,6 +403,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'Temperature [C°]'}
                                 value={formState.temp_in_range}
+                                error={isNaN(formState.temp_in_range) ? true : false}
                                 onChange={event => handleChange(event.target)}
                               />
                             </TableCell>
@@ -417,6 +425,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'min value'}
                                 value={formState.ph_associated_gte}
+                                error={isNaN(formState.ph_associated_gte) ? true : false}
                                 onChange={event => handleChange(event.target)}
                               />
                               <TextField variant='outlined'
@@ -424,6 +433,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'max value'}
                                 value={formState.ph_associated_lte}
+                                error={isNaN(formState.ph_associated_lte) ? true : false}
                                 onChange={event => handleChange(event.target)}
                                 style={{ marginTop: 5 }}
                               />
@@ -439,6 +449,7 @@ export default function AdvanceSearchComponent(props) {
                                 type='text'
                                 label={'pH'}
                                 value={formState.ph_in_range}
+                                error={isNaN(formState.ph_in_range) ? true : false}
                                 onChange={event => handleChange(event.target)}
                               />
                             </TableCell>
@@ -476,6 +487,7 @@ export default function AdvanceSearchComponent(props) {
                             type='text'
                             label={'min value [KB]'}
                             value={formState.gen_size_gte}
+                            error={isNaN(formState.gen_size_gte) ? true : false}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
@@ -483,6 +495,7 @@ export default function AdvanceSearchComponent(props) {
                             type='text'
                             label={'max value [KB]'}
                             value={formState.gen_size_lte}
+                            error={isNaN(formState.gen_size_lte) ? true : false}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
                           />
@@ -499,6 +512,7 @@ export default function AdvanceSearchComponent(props) {
                             type='text'
                             label={'min value'}
                             value={formState.gc_percentage_gte}
+                            error={isNaN(formState.gc_percentage_gte) ? true : false}
                             onChange={event => handleChange(event.target)}
                           />
                           <TextField variant='outlined'
@@ -506,6 +520,7 @@ export default function AdvanceSearchComponent(props) {
                             type='text'
                             label={'max value'}
                             value={formState.gc_percentage_lte}
+                            error={isNaN(formState.gc_percentage_lte) ? true : false}
                             onChange={event => handleChange(event.target)}
                             style={{ marginTop: 5 }}
                           />

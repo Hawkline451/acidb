@@ -87,10 +87,14 @@ export default function AdvanceProteinSearchComponent(props) {
 
       let fetchData = (async () => {
         setIsLoading(true)
-        let res = await axiosFetch(url);
-        setResultState(res.data)
-        setIsLoading(false)
-        executeScroll()
+        try {
+          let res = await axiosFetch(url);
+          setResultState(res.data)
+          setIsLoading(false)
+          executeScroll()          
+        } catch (error) {
+          setIsLoading(false)
+        }
       })
       fetchData()
     }
@@ -430,7 +434,7 @@ export default function AdvanceProteinSearchComponent(props) {
       <Paper style={{ padding: 30 }}>
         <Typography variant='h4'>{t('search_results')}</Typography>
         <Grid container alignItems='center' alignContent='center'>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography variant='h5'>{`Total: ${resultState.count ? resultState.count : 0}`}</Typography>
           </Grid>
           {isLoading ?

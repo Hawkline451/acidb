@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  Divider, List, ListItem, ListItemText, Grid, Typography, Paper, Container,
+  Divider, List, ListItem, ListItemText, Grid, Typography, Paper,
 } from '@material-ui/core';
 
 // Styles
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 // Videos
 import 'video-react/dist/video-react.css';
-import { Player } from 'video-react';
+import { Player, BigPlayButton } from 'video-react';
 
 const useStylesDocumetation = stylesDetail
 
@@ -100,6 +100,7 @@ export default function DocumentationComponent(props) {
               <Grid item xs={6}>
                 <Player>
                   <source src={process.env.PUBLIC_URL + '/videos/tree.mp4'} />
+                  <BigPlayButton position="center" />
                 </Player>
               </Grid>
             </Grid>
@@ -118,6 +119,7 @@ export default function DocumentationComponent(props) {
               <Grid item xs={6}>
                 <Player>
                   <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                  <BigPlayButton position="center" />
                 </Player>
               </Grid>
               <Grid item xs={6}>
@@ -156,6 +158,7 @@ export default function DocumentationComponent(props) {
               <Grid item xs={6}>
                 <Player>
                   <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                  <BigPlayButton position="center" />
                 </Player>
               </Grid>
             </Grid>
@@ -174,6 +177,7 @@ export default function DocumentationComponent(props) {
               <Grid item xs={6}>
                 <Player>
                   <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                  <BigPlayButton position="center" />
                 </Player>
               </Grid>
               <Grid item xs={6}>

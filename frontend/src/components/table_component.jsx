@@ -573,10 +573,10 @@ function TableComponent() {
                       },
                       Cell: ({ value }) =>
                         <div className={classes.verticalAlign}>
-                          {value.toString()}
+                          {value}
                         </div>,
                       filterMethod: (filter, rows) =>
-                        matchSorter(rows, filter.value, { keys: ['seq_date'] }),
+                        matchSorter(rows, filter.value, { keys: ['seq_date'], threshold: matchSorter.rankings.CONTAINS }),
                       filterAll: true,
                       Filter: ({ onChange, filter }) => {
                         return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)

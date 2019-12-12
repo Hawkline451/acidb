@@ -73,7 +73,7 @@ function FeaturesSection() {
           spacing={5}
         >
           <Grid item xs={6}>
-            <Typography variant='h5' align='center'>Genomic Data of more than 450 acidophilic organisms</Typography>
+            <Typography variant='h5' align='center'>Genomic Data of more than 600 acidophilic organisms</Typography>
             <p align='justify'>Navigate through all organisms by using taxonomy information. Genome metadata that include the full taxonomy,
                reported growth condition, references and direct links to the NCBI ftp site of the organism are available.</p>
           </Grid>
