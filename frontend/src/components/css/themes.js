@@ -56,7 +56,7 @@ Component Styles
 export const stylesHome = makeStyles(theme => ({
   fixedDiv: {
     paddingTop: 20,
-    paddingBottom: 20,
+    paddingBottom: 30,
   }
 }));
 

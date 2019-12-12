@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  Divider, List, ListItem, ListItemText, Grid, Typography, Paper,
+  Divider, List, ListItem, ListItemText, Grid, Typography, Paper, Container,
 } from '@material-ui/core';
 
 // Styles
@@ -9,6 +9,10 @@ import { stylesDetail } from './css/themes'
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
+
+// Videos
+import 'video-react/dist/video-react.css';
+import { Player } from 'video-react';
 
 const useStylesDocumetation = stylesDetail
 
@@ -23,22 +27,6 @@ export default function DocumentationComponent(props) {
         <Grid item xs={2}>
           <div className={classes.fixedList}>
             <List>
-              <ListItem className={classes.listItemTitle} button component='a' href={props.location.pathname + '#methodology'}>
-                <ListItemText primary={
-                  <Typography type='body2' style={{ fontSize: 20 }}>{t('documentation.methodology')}</Typography>
-                } />
-              </ListItem>
-              <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#organism_metadata'}>
-                <ListItemText primary={t('navbar.organism_metadata')} />
-              </ListItem>
-              <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#proteome_metadata'}>
-                <ListItemText primary={t('navbar.proteome_metadata')} />
-              </ListItem>
-              <Divider />
-
-
               <ListItem className={classes.listItemTitle} button component='a' href={props.location.pathname + '#features'}>
                 <ListItemText primary={
                   <Typography type='body2' style={{ fontSize: 20 }}>{t('documentation.features')}</Typography>
@@ -61,16 +49,149 @@ export default function DocumentationComponent(props) {
                 <ListItemText primary={t('navbar.advance_organism_search')} />
               </ListItem>
               <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#advance_protein_search'}>
-                <ListItemText primary={t('navbar.advance_protein_search')} />
+            </List>
+
+            <List>
+              <ListItem className={classes.listItemTitle} button component='a' href={props.location.pathname + '#methodology'}>
+                <ListItemText primary={
+                  <Typography type='body2' style={{ fontSize: 20 }}>{t('documentation.methodology')}</Typography>
+                } />
+              </ListItem>
+              <Divider />
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#organism_metadata'}>
+                <ListItemText primary={t('navbar.organism_metadata')} />
+              </ListItem>
+              <Divider />
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#proteome_metadata'}>
+                <ListItemText primary={t('navbar.proteome_metadata')} />
               </ListItem>
             </List>
+
           </div>
         </Grid>
 
         <Grid item xs={10} >
+
+
+          <span id='features'></span>
+          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
+            <Typography variant='h4' style={{ marginBottom: 15 }}>
+              Features
+            </Typography>
+            <span id='tree'></span>
+            <Typography variant='h5' style={{marginTop:20}}>
+              {'Taxonomy Browser'}
+            </Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={5}
+            >
+              <Grid item xs={6}>
+                <div>
+                  Searching for <i>Kyrpidia spormannii:</i>
+                  <p align='justify'>Navigate through the taxonomic ranks (displayed at the right side of the folders) from domain through strain.
+                Each strain in the final branch can be clicked to get complete information of the organism including NCBI ftp direct links and references.</p>
+                </div>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Player>
+                  <source src={process.env.PUBLIC_URL + '/videos/tree.mp4'} />
+                </Player>
+              </Grid>
+            </Grid>
+
+            <span id='table'></span>
+            <Typography variant='h5' style={{marginTop:20}}>
+              {'DB Browser'}
+            </Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={5}
+            >
+              <Grid item xs={6}>
+                <Player>
+                  <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                </Player>
+              </Grid>
+              <Grid item xs={6}>
+                <div>
+                  Obtaining all extreme acidophilic organisms in Firmicutes phylum
+                  <p align='justify'>By adding the column “phylum” to the displayed is possible to use the filter function to obtain organism from the Firmicutes phylum.
+                    The optimum pH column can use expressions like less than (&#60;) or greater than (&#62;) to further filter the table (you can also use range
+                    expressions e.g. 0-10). Each column can sort
+                    the table in ascending or descending order. Finally it’s possible to add further columns and download the table to a csv file for further analyses. </p>
+                </div>
+              </Grid>
+            </Grid>
+
+
+            <span id='charts'></span>
+            <Typography variant='h5' style={{marginTop:20}}>
+              {'Scatter plot'}
+            </Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={5}
+            >
+              <Grid item xs={6}>
+                <div>
+                  Selecting a dataset of thermoacidophilic bacteria from isolated source:
+                  <p align='justify'>The plot allows for custom axis selection with growth conditions such as optimum pH and Temperature (ºC).
+                    A combination of all domain or just a specific domain like Bacteria can be selected. Options for quality of
+                    the genome and source (isolated or non isolated sample) can be used to narrow the desired data. Selection
+                    of organism in the dot can be done to get specific organisms and download the full data of each one. </p>
+                </div>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Player>
+                  <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                </Player>
+              </Grid>
+            </Grid>
+
+            <span id='advance_organism_search'></span>
+            <Typography variant='h5' style={{marginTop:20}}>
+              {'Advance search'}
+            </Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={5}
+            >
+              <Grid item xs={6}>
+                <Player>
+                  <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                </Player>
+              </Grid>
+              <Grid item xs={6}>
+                <div>
+                  Curated dataset of moderate acidophilic Archaea of genus <i>sulfolobus</i> with complete genomes.
+                  <p align='justify'>All taxonomy ranks are available to use as filter. Growth range conditions add the “Can grow at”
+                    feature that will search in the range each organism can grow. Detailed options of genome metadata are
+                     available to filter. This tool download give a csv file with all fields available in the database
+                     for all the results of the search.</p>
+                </div>
+              </Grid>
+            </Grid>
+
+          </Paper>
+
+
           <span id='methodology'></span>
-          <Paper style={{ margin: 30, boxShadow: 'none' }}>
+          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h4' style={{ marginBottom: 15 }}>
               Methodology
             </Typography>
@@ -93,7 +214,7 @@ export default function DocumentationComponent(props) {
           </Paper>
 
           <span id='organism_metadata'></span>
-          <Paper style={{ margin: 30, boxShadow: 'none' }}>
+          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h5' style={{ marginBottom: 15 }}>
               Organism metadata
           </Typography>
@@ -304,7 +425,7 @@ export default function DocumentationComponent(props) {
           </Paper>
 
           <span id='proteome_metadata'></span>
-          <Paper style={{ margin: 30, boxShadow: 'none' }}>
+          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h5' style={{ marginBottom: 15 }}>
               Proteome metadata
           </Typography>
@@ -398,37 +519,7 @@ export default function DocumentationComponent(props) {
             </List>
           </Paper>
 
-          <span id='features'></span>
-          <Paper style={{ margin: 30, boxShadow: 'none' }}>
-            <Typography variant='h4' style={{ marginBottom: 15 }}>
-              Features
-          </Typography>
-            <span id='tree'></span>
-            <Typography variant='h6'>
-              {t('navbar.tree')}
-            </Typography>
 
-            <span id='table'></span>
-            <Typography variant='h6'>
-              {t('navbar.table')}
-            </Typography>
-
-            <span id='charts'></span>
-            <Typography variant='h6'>
-              {t('navbar.charts')}
-            </Typography>
-
-            <span id='advance_organism_search'></span>
-            <Typography variant='h6'>
-              {t('navbar.advance_organism_search')}
-            </Typography>
-
-            <span id='advance_protein_search'></span>
-            <Typography variant='h6'>
-              {t('navbar.advance_protein_search')}
-            </Typography>
-
-          </Paper>
 
         </Grid>
       </Grid >

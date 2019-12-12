@@ -63,41 +63,11 @@ const colNames = [
   'n_orfs',
 ];
 
-const headersCSV = [
-  'name',
-  'strains_str',
-
-  'domain',
-  'phylum',
-
-  'ph_associated',
-  'ph_min',
-  'ph_max',
-  'temp_associated',
-  'temp_min',
-  'temp_max',
-
-  'access_src',
-  'access_id',
-  'ftp_url',
-  'isolated',
-  'gen_size',
-  'gc_percentage',
-  'state',
-  'seq_date',
-  'gen_completeness',
-  'gen_contamination',
-
-  'annotation',
-  'n_orfs',
-];
-
 const headerIndex = {
-  0: 'identifiers',
-  2: 'tax_info',
-  4: 'growth_range',
-  10: 'gen_metadata',
-  19: 'proteome_metadata'
+  0: 'tax_info',
+  2: 'growth_range',
+  8: 'gen_metadata',
+  17: 'proteome_metadata'
 }
 
 
@@ -139,12 +109,15 @@ function CustomFilterInput(props) {
   }
   const tooltip = t('table.filter_tooltip');
   var label = state.error ? t('table.wrong_filter') : t('table.filter')
+  const [filterState, setFilterState] = useState(props.filterState)
+
   return (
     <Grid container spacing={0} alignItems="flex-end" item>
       <Grid item xs={11}>
         <TextField
           label={label}
-          onChange={event => handlerWarapper(event.target.value)}
+          onChange={event => { setFilterState(event.target.value); handlerWarapper(event.target.value) }}
+          value={filterState}
           error={state.error}
           className={classes.specialTextInput}
           InputLabelProps={{
@@ -166,13 +139,13 @@ function CustomFilterInput(props) {
 // Basic filter component
 function FilterInput(props) {
   const { t } = useTranslation();
-  var label = t('table.filter')  
+  var label = t('table.filter')
   const [filterState, setFilterState] = useState(props.filterState)
 
   return (
     <Grid container>
       <TextField label={label}
-        onChange={event => {setFilterState(event.target.value);props.handler(event.target.value)}}
+        onChange={event => { setFilterState(event.target.value); props.handler(event.target.value) }}
         style={{ width: "100%" }}
         error={false}
         value={filterState}
@@ -220,7 +193,13 @@ function SelectColumns(props) {
         error={error}
         renderValue={selected => (
           <div >
-            {selected.map(value => <Chip key={value} label={t('table.' + value)} onDelete={() => handleDeleteChip(value)} />)}
+            {selected.map(value => {
+              if (value === 'name' || value === 'strains') {
+                return <Chip key={value} label={t('table.' + value)} />
+              }
+              return <Chip key={value} label={t('table.' + value)} onDelete={() => handleDeleteChip(value)} />
+            })
+            }
           </div>
         )}
         MenuProps={{
@@ -229,7 +208,7 @@ function SelectColumns(props) {
         }}
       >
         {
-          colNames.map((name, index) => (
+          colNames.slice(2).map((name, index) => (
             <MenuItem
               key={name}
               value={name}
@@ -266,7 +245,7 @@ function TableComponent() {
   const [filteredData, setfilteredData] = useState({
     data: [],
   });
-  
+
   let reactTable = useRef(null);
 
   useEffect(() => {
@@ -286,7 +265,7 @@ function TableComponent() {
   }, []);
 
   const [chipState, setChipState] = useState({
-    name: ['name', 'strains', 'ph_associated', 'temp_associated']
+    name: ['name', 'strains', 'temp_associated', 'ph_associated']
   });
 
   function concatStrains(arrayDicts) {
@@ -391,8 +370,7 @@ function TableComponent() {
                         matchSorter(rows, filter.value, { keys: ['name'] }),
                       filterAll: true,
                       Filter: ({ onChange, filter }) => {
-
-                        return  (<FilterInput handler={onChange} filterState={filter ? filter.value : ''}/>)
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
                       }
                     },
                     {
@@ -412,8 +390,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['strains.0.strain_name'] }).concat(matchSorter(rows, filter.value, { keys: ['strains.1.strain_name'] })),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                   ],
                 },
@@ -436,8 +415,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['domain'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('phylum') : false,
@@ -455,8 +435,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['phylum'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                   ],
                 },
@@ -478,8 +459,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['access_src'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: false,
@@ -501,8 +483,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['access_id'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('isolated') : false,
@@ -519,8 +502,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['isolated'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('gen_size') : false,
@@ -537,8 +521,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('gc_percentage') : false,
@@ -555,8 +540,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('state') : false,
@@ -573,8 +559,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['state'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('seq_date') : false,
@@ -591,8 +578,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['seq_date'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('gen_completeness') : false,
@@ -609,8 +597,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('gen_contamination') : false,
@@ -627,8 +616,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                   ],
                 },
@@ -650,8 +640,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('temp_min') : false,
@@ -668,8 +659,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('temp_max') : false,
@@ -686,8 +678,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('ph_associated') : false,
@@ -704,8 +697,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('ph_min') : false,
@@ -722,8 +716,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('ph_max') : false,
@@ -740,8 +735,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                   ],
                 },
@@ -763,8 +759,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         verboseFilter(filter, rows),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <CustomFilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<CustomFilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                     {
                       show: true ? chipState.name.includes('annotation') : false,
@@ -781,8 +778,9 @@ function TableComponent() {
                       filterMethod: (filter, rows) =>
                         matchSorter(rows, filter.value, { keys: ['annotation'] }),
                       filterAll: true,
-                      Filter: ({ onChange }) =>
-                        <FilterInput handler={onChange} />
+                      Filter: ({ onChange, filter }) => {
+                        return (<FilterInput handler={onChange} filterState={filter ? filter.value : ''} />)
+                      }
                     },
                   ]
                 }

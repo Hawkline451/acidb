@@ -185,6 +185,8 @@ export default function AdvanceSearchComponent(props) {
     getResults()
     let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key].replace(',', '.')).join('&')
     props.history.push(searchUrl)
+    console.log(searchUrl)
+
   }
 
   const executeScroll = () => scrollToRef(resultRef)

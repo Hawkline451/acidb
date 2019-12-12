@@ -1,6 +1,6 @@
 {
   "footer":{
-    "desc": "Im a cool footer"
+    "desc": "Bioinformatics and Genome Biology, Fundación Ciencia & Vida"
   },
   "download_file": "Download CSV",
   "no_results": "No results found",
@@ -16,7 +16,7 @@
     "home" : "Home",
     "tools" : "Tools",
     "tree" : "Taxonomy",
-    "table" : "Table",
+    "table" : "DB Browser",
     "plot" : "Viz",
     "advance_organism_search": "Organism search",
     "charts" : "Charts",

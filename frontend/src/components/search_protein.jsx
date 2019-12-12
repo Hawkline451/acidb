@@ -67,9 +67,11 @@ export default function AdvanceProteinSearchComponent(props) {
   const [urlState, setUrl] = useState('')
 
   useEffect(() => {
+    setFormState(att)
+  }, []);
+  
+  useEffect(() => {
     if (props.match.params.query) {
-      console.log(props)
-
       // Check if url contains params then update form state
       let params = props.match.params.query ? (props.match.params.query).split('&') : '';
       let pair = null
@@ -98,13 +100,6 @@ export default function AdvanceProteinSearchComponent(props) {
 
   }, [props,]);
 
-  // This is a hack, wait .5 secont to render the text field avoiding the outlined label bug
-  useEffect(() => {
-    setFormState(att)
-    // Empty array as second argument avoid fetching on component updates, only when mounting the component
-  }, []);
-
-
   function handleHideGrid(name) {
     setGridState(oldValues => ({
       ...oldValues,
@@ -125,9 +120,9 @@ export default function AdvanceProteinSearchComponent(props) {
     if (isObjEmpty(formState)) {
       return
     }
+    getResults()
     let searchUrl = Object.keys(formState).map(key => key + '=' + formState[key]).join('&')
     props.history.push(searchUrl)
-    getResults()
   }
 
   const executeScroll = () => scrollToRef(resultRef)
@@ -176,6 +171,7 @@ export default function AdvanceProteinSearchComponent(props) {
       setResultState(res.data)
       setIsLoading(false)
     })
+    console.log(url)
     fetchData()
   }
 

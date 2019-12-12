@@ -98,7 +98,7 @@ function TabMenuSearch(props) {
             <MenuItem onClick={handleItemClick} component={Link} to='/app/advance_search/'>
               {t('navbar.advance_organism_search')}
             </MenuItem>
-            <MenuItem onClick={handleItemClick} component={Link} to='/app/advance_protein_search'>
+            <MenuItem onClick={handleItemClick} component={Link} to='/app/advance_protein_search/'>
               {t('navbar.advance_protein_search')}
             </MenuItem>
           </MenuList>
