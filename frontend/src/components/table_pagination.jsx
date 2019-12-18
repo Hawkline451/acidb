@@ -171,7 +171,7 @@ export default class Pagination extends Component {
               })}
           </div>
           <div className="-center">
-            <div variant='h5'> {'Total rows: '}{this.props.sortedData.length}</div>
+            <div variant='h5'> {'Total organisms: '}{this.props.sortedData.length}</div>
           </div>
           <div className="-next">
             <NextComponent

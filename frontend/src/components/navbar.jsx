@@ -146,7 +146,6 @@ export default function NavBar(props) {
           <TabMenuSearch />
           {
             //<Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
-            //<Tab label={t('navbar.advance_protein_search')} component={Link} to='/app/advance_protein_search/' className={classes.tabRoot} />
           }
 
         </Tabs>

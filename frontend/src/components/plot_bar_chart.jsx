@@ -34,7 +34,6 @@ import { theme } from './css/themes'
 // import config
 import { config } from '../config';
 
-
 const binSize = {
   ph_associated: 1,
   temp_associated: 10,
@@ -62,7 +61,6 @@ export default function SimpleBarComponent() {
   const [formState, setFormState] = useState({
     histogram: 'ph_associated',
   });
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,19 +173,14 @@ export default function SimpleBarComponent() {
     return res
   }
 
-  const getHint = () => {
+  const getHint = (state) => {
     let hint
     hint = [
       {
-        title: 'Range',
-        value: '[' + state.hoveredHist.x0 + '-' + state.hoveredHist.x + ')'
-      },
-      {
         title: 'Count',
-        value: state.hoveredHist.y
+        value: state.y
       },
     ]
-
     return hint
   }
 
@@ -217,7 +210,7 @@ export default function SimpleBarComponent() {
                     <XAxis />
                     <YAxis />
                     <ChartLabel
-                      text={t('table.'+formState.histogram)}
+                      text={t('table.' + formState.histogram)}
                       includeMargin={true}
                       xPercent={0.8}
                       yPercent={0.85}
@@ -229,7 +222,7 @@ export default function SimpleBarComponent() {
                       onValueMouseOver={datapoint => setStateValue('hoveredHist', datapoint)}
                       onValueMouseOut={() => setStateValue('hoveredHist', false)}
                     />
-                    {state.hoveredHist && <Hint value={state.hoveredHist} format={() => getHint()} />}
+                    {state.hoveredHist && <Hint value={state.hoveredHist} format={() => getHint(state.hoveredHist)} />}
                   </XYPlot>
                 </Grid>
                 <Grid item>
@@ -258,7 +251,7 @@ export default function SimpleBarComponent() {
                       colorType='literal'
                       getColor={datapoint => colors[datapoint.x]}
                     />
-                    {state.hoveredBarDomain && <Hint value={state.hoveredBarDomain} />}
+                    {state.hoveredBarDomain && <Hint value={state.hoveredBarDomain} format={() => getHint(state.hoveredBarDomain)} />}
                   </XYPlot>
                 </Grid>
                 <Grid item >
@@ -274,7 +267,7 @@ export default function SimpleBarComponent() {
                       colorType='literal'
                       getColor={datapoint => colors[datapoint.x]}
                     />
-                    {state.hoveredBarIsolated && <Hint value={state.hoveredBarIsolated} />}
+                    {state.hoveredBarIsolated && <Hint value={state.hoveredBarIsolated} format={() => getHint(state.hoveredBarIsolated)} />}
                   </XYPlot>
                 </Grid>
                 <Grid item >
@@ -290,7 +283,7 @@ export default function SimpleBarComponent() {
                       colorType='literal'
                       getColor={datapoint => colors[datapoint.x]}
                     />
-                    {state.hoveredBarAssembly && <Hint value={state.hoveredBarAssembly} />}
+                    {state.hoveredBarAssembly && <Hint value={state.hoveredBarAssembly} format={() => getHint(state.hoveredBarAssembly)} />}
                   </XYPlot>
                 </Grid>
               </Grid>
@@ -302,18 +295,12 @@ export default function SimpleBarComponent() {
   );
 }
 
-
-
-
-
-
 const axis = [
   'gen_size',
   'gc_percentage',
   'temp_associated',
   'ph_associated',
 ]
-
 
 function SelectHist(props) {
   const { t } = useTranslation();
@@ -334,7 +321,7 @@ function SelectHist(props) {
           <TableBody>
             <TableRow key={'x-axis'}>
               <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
-              {t('plot.attribute')}
+                {t('plot.attribute')}
               </TableCell>
               <TableCell style={{ borderStyle: 'none', paddingRight: 10 }}>
                 <Select
@@ -350,7 +337,7 @@ function SelectHist(props) {
                   value={props.state.histogram}
                   onChange={event => handleChange(event.target)}
                 >
-                  {axis.map(key => <MenuItem key={key} value={key}>{t('table.'+key)}</MenuItem>)}
+                  {axis.map(key => <MenuItem key={key} value={key}>{t('table.' + key)}</MenuItem>)}
                 </Select>
               </TableCell>
             </TableRow>

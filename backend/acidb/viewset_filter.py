@@ -124,6 +124,8 @@ class ProteinSearchFilter(filters.FilterSet):
         label="Interfam contains", method='filter_interfam', field_name='inter_fam')
     signalp_null = filters.BooleanFilter(field_name='signal_p', lookup_expr='isnull')
 
+    prot_id = filters.CharFilter(label='prot_id', method='filter_prot_id')
+
     def filter_ec_number(self, queryset, name, value):
         queryset = queryset.filter(ec_number__ec_number__iexact=value)
         return queryset
@@ -134,6 +136,10 @@ class ProteinSearchFilter(filters.FilterSet):
 
     def filter_interfam(self, queryset, name, value):
         queryset = queryset.filter(inter_fam__interfam__iexact=value)
+        return queryset
+
+    def filter_prot_id(self, queryset, name, value):
+        queryset = queryset.filter(proteome_nr_id__prot_id__icontains=value)
         return queryset
 
     class Meta:

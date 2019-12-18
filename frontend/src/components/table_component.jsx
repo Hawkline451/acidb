@@ -292,6 +292,10 @@ function TableComponent() {
         result[index][key] = data[index][key]
       }
       result[index].strains = concatStrains(data[index].strains)
+      // Always download the ftp url (access_id accesor contains the ftp url)
+      if (!('access_id' in chipState.name)){
+        result[index].ftp_url = data[index]['ftp_url']
+      }
     }
     return result
   }
@@ -311,7 +315,6 @@ function TableComponent() {
 
           <CSVLink
             className={classes.noDecoratorLink}
-            headers={chipState.name}
             data={procesedData(filteredData.data)}
             separator={'\t'}
             filename={'filtered_data.csv'}
@@ -324,7 +327,7 @@ function TableComponent() {
         </Grid>
       </Grid>
 
-      <div>
+      <div style={{marginBottom:20}}>
         {isLoading ?
           (<Loader />) :
           (
@@ -790,9 +793,6 @@ function TableComponent() {
               className="-striped -highlight"
             />
           )}
-        <br />
-        <div style={{ textAlign: "center" }}>
-          <em> {t('table.tip')} </em> </div>;
       </div>
     </ThemeProvider>
   )

@@ -13,7 +13,7 @@ import {
 
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
-import { Link } from 'react-router-dom';
+import { HashLink } from "react-router-hash-link";
 
 // Internationalization
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,6 @@ const isolatedDict = { '': 'None', true: 'Isolated', false: 'Non Isolated' }
 const assemblyList = { '': 'None', complete: 'Complete', draft: 'Draft' }
 const accessSrcList = { '': 'None', genbank: 'GenBank', jgi: 'JGI', insdc: 'INSDC' }
 const headersCSV = [
-  'id_organism',
   'name',
   'strains_str',
   'seq_date',
@@ -60,6 +59,7 @@ const headersCSV = [
   'state',
   'biosample',
   'bioproject',
+  'ftp_url',
 
   'n_orfs',
 ];
@@ -686,7 +686,7 @@ export default function AdvanceSearchComponent(props) {
           </Grid>
 
           <div style={{ padding: 10, margin: 10, fontSize: 18 }} >
-            <em>{t('organism_search.tip')}<Link to={'/app/#organism_search_docs'}>{' Here'}</Link></em>
+            <em>{t('organism_search.tip')}<HashLink to={'/app/#organism_search_docs'}>{' Here'}</HashLink></em>
           </div>
 
           <Grid container alignItems='center' alignContent='center'>

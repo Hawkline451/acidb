@@ -38,8 +38,6 @@ class Organism(models.Model):
         max_length=10, default=None, null=True, blank=True)
 
 # One organism can have one or more strains names
-
-
 class Strain(models.Model):
     organism = models.ForeignKey(
         Organism, on_delete=models.CASCADE, related_name='strains')
@@ -47,7 +45,6 @@ class Strain(models.Model):
         max_length=50, default=None, null=True, blank=True)
 
 # One organism can have one or more references
-
 class Reference(models.Model):
     organism = models.ForeignKey(
         Organism, on_delete=models.CASCADE, related_name='references')

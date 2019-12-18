@@ -56,3 +56,4 @@ urlpatterns = [
     # API router
     path('api/', include(apiurl.urls))
 ]
+

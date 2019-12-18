@@ -72,13 +72,12 @@ export default function DocumentationComponent(props) {
 
         <Grid item xs={10} >
 
-
           <span id='features'></span>
           <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h4' style={{ marginBottom: 15 }}>
               Features
             </Typography>
-            <span id='tree'></span>
+            <span id='tree_docs'></span>
             <Typography variant='h5' style={{marginTop:20}}>
               {'Taxonomy Browser'}
             </Typography>
@@ -105,7 +104,7 @@ export default function DocumentationComponent(props) {
               </Grid>
             </Grid>
 
-            <span id='table'></span>
+            <span id='table_docs'></span>
             <Typography variant='h5' style={{marginTop:20}}>
               {'DB Browser'}
             </Typography>
@@ -134,7 +133,7 @@ export default function DocumentationComponent(props) {
             </Grid>
 
 
-            <span id='charts'></span>
+            <span id='charts_docs'></span>
             <Typography variant='h5' style={{marginTop:20}}>
               {'Scatter plot'}
             </Typography>
@@ -157,13 +156,13 @@ export default function DocumentationComponent(props) {
 
               <Grid item xs={6}>
                 <Player>
-                  <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                  <source src={process.env.PUBLIC_URL + '/videos/plot.mp4'} />
                   <BigPlayButton position="center" />
                 </Player>
               </Grid>
             </Grid>
 
-            <span id='advance_organism_search'></span>
+            <span id='organism_search_docs'></span>
             <Typography variant='h5' style={{marginTop:20}}>
               {'Advance search'}
             </Typography>
@@ -176,7 +175,7 @@ export default function DocumentationComponent(props) {
             >
               <Grid item xs={6}>
                 <Player>
-                  <source src={process.env.PUBLIC_URL + '/videos/table.mp4'} />
+                  <source src={process.env.PUBLIC_URL + '/videos/search.mp4'} />
                   <BigPlayButton position="center" />
                 </Player>
               </Grid>
@@ -295,7 +294,7 @@ export default function DocumentationComponent(props) {
               </ListItem>
               <ListItem>
                 <Typography align='justify'>
-                  <b>{'Genome Size: '}</b>{'This is the size of the genome in KB. It only considers the actual genome sequence.'}
+                  <b>{'Genome Size: '}</b>{'This is the size of the genome in Mb. It only considers the actual genome sequence.'}
                 </Typography>
               </ListItem>
               <ListItem>

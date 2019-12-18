@@ -1,6 +1,6 @@
 {
   "footer":{
-    "desc": "Bioinformatics and Genome Biology, Fundación Ciencia & Vida"
+    "desc": "Center for Bioinformatics and Genome Biology, Fundación Ciencia & Vida"
   },
   "download_file": "Download CSV",
   "no_results": "No results found",
@@ -36,7 +36,7 @@
     "isolated":"Isolated",
     "state":"Assembly level",
     "seq_date":"Sequence Date",
-    "gen_size":"Genome size [Kb]",
+    "gen_size":"Genome size [Mb]",
     "gen_completeness":"Genome completeness",
     "gen_contamination":"Genome contamination",
     "gc_percentage":"GC %",
@@ -69,7 +69,7 @@
 
     "select_col": "Select Columns",
     "max_cols": "Max number of columns",
-    "filter_tooltip": "Filter support expressions, eg: 0-1, <=50, >20, etc. More examples in the documentation",
+    "filter_tooltip": "Filter support expressions, eg: 0-1, <=50, >20, etc.",
     "filter": "Filter",
     "wrong_filter": "Wrong filter",
 
@@ -84,6 +84,7 @@
   },
 
   "detail":{
+    "summary": "Summary",
     "info": "General info",
     "gen_metadata": "Genome metadata",
     "prot_metadata": "Proteome metadata",

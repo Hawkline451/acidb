@@ -2,7 +2,7 @@ from acidb.models import Protein, Ec_number, Proteome
 from rest_framework import serializers
 
 
-class PrpteomeSerializer(serializers.HyperlinkedModelSerializer):
+class ProteomeSerializer(serializers.HyperlinkedModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
     def get_name(self, obj):
         return obj.organism.name
@@ -30,7 +30,7 @@ class ProteinSearchSerializer(serializers.HyperlinkedModelSerializer):
     ec_number = EcSerializer(many=True)
     kegg_ko = EcSerializer(many=True)
     inter_fam = EcSerializer(many=True)
-    proteome_nr_id = PrpteomeSerializer(many=True)
+    proteome_nr_id = ProteomeSerializer(many=True)
 
     class Meta:
         model = Protein

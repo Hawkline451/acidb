@@ -90,7 +90,6 @@ export const stylesAppNav = makeStyles(theme => ({
   },
   tabMenu: {
     fontSize: 18,
-    width: '10%'
   },
 
   homeButton: {
@@ -194,6 +193,15 @@ export const stylesDetail = makeStyles({
     marginTop: 20,
     marginLeft: '15%',
     width: '50%',
+  },
+  tableSummaryTitle: {
+    marginTop: 20,
+    marginLeft: '15%',
+    paddingTop: 15,
+    paddingBottom: 15,
+    width: '50%',
+    backgroundColor: theme.palette.primary.main,
+    color: '#ffffff !important',
   },
   tableCell: {
     width: '50%',

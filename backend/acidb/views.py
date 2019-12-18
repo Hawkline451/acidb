@@ -145,11 +145,6 @@ class SimplePlotDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = SimplePlotSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-# Check action decorator
-
-
-
-
 # Proteome search
 
 class ProteinSearchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -177,7 +172,7 @@ class ProteinSearchViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data)
     
-        # Return only one instance
+    # Return only one instance
     @method_decorator(cache_page(60*5))
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
