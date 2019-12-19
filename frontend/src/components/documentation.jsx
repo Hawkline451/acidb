@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 // Videos
 import 'video-react/dist/video-react.css';
 import { Player, BigPlayButton } from 'video-react';
+import SimpleBarComponent from './plot_bar_chart'
 
 const useStylesDocumetation = stylesDetail
 
@@ -26,6 +27,14 @@ export default function DocumentationComponent(props) {
       <Grid container>
         <Grid item xs={2}>
           <div className={classes.fixedList}>
+            <List>
+              <ListItem className={classes.listItemTitle} button component='a' href={props.location.pathname + '#overview'}>
+                <ListItemText primary={
+                  <Typography type='body2' style={{ fontSize: 20 }}>{t('documentation.overview')}</Typography>
+                } />
+              </ListItem>
+            </List>
+
             <List>
               <ListItem className={classes.listItemTitle} button component='a' href={props.location.pathname + '#features'}>
                 <ListItemText primary={
@@ -72,13 +81,21 @@ export default function DocumentationComponent(props) {
 
         <Grid item xs={10} >
 
+          <span id='overview'></span>
+          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
+            <Typography variant='h4' style={{ marginBottom: 15 }}>
+              Overview
+            </Typography>
+            <SimpleBarComponent />
+          </Paper>
+
           <span id='features'></span>
           <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h4' style={{ marginBottom: 15 }}>
               Features
             </Typography>
             <span id='tree_docs'></span>
-            <Typography variant='h5' style={{marginTop:20}}>
+            <Typography variant='h5' style={{ marginTop: 20 }}>
               {'Taxonomy Browser'}
             </Typography>
             <Grid
@@ -105,7 +122,7 @@ export default function DocumentationComponent(props) {
             </Grid>
 
             <span id='table_docs'></span>
-            <Typography variant='h5' style={{marginTop:20}}>
+            <Typography variant='h5' style={{ marginTop: 20 }}>
               {'DB Browser'}
             </Typography>
             <Grid
@@ -134,7 +151,7 @@ export default function DocumentationComponent(props) {
 
 
             <span id='charts_docs'></span>
-            <Typography variant='h5' style={{marginTop:20}}>
+            <Typography variant='h5' style={{ marginTop: 20 }}>
               {'Scatter plot'}
             </Typography>
             <Grid
@@ -163,7 +180,7 @@ export default function DocumentationComponent(props) {
             </Grid>
 
             <span id='organism_search_docs'></span>
-            <Typography variant='h5' style={{marginTop:20}}>
+            <Typography variant='h5' style={{ marginTop: 20 }}>
               {'Advance search'}
             </Typography>
             <Grid
@@ -194,7 +211,7 @@ export default function DocumentationComponent(props) {
 
 
           <span id='methodology'></span>
-          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
+          <Paper style={{ margin: 50, marginRight: '10%', boxShadow: 'none' }}>
             <Typography variant='h4' style={{ marginBottom: 15 }}>
               Methodology
             </Typography>
@@ -217,11 +234,11 @@ export default function DocumentationComponent(props) {
           </Paper>
 
           <span id='organism_metadata'></span>
-          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
-            <Typography variant='h5' style={{ marginBottom: 15 }}>
+          <Paper style={{ margin: 50, marginRight: '10%', boxShadow: 'none' }}>
+            <Typography variant='h5' style={{ marginTop: 20, marginBottom: 20 }}>
               Organism metadata
           </Typography>
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               General identifiers
             </Typography>
             <List>
@@ -242,7 +259,7 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
 
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Genome accessions and annotation
             </Typography>
             <List >
@@ -278,7 +295,7 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
 
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Genomic features
             </Typography>
             <List>
@@ -319,7 +336,7 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
 
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Growth features
             </Typography>
             <List>
@@ -375,7 +392,7 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
 
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Taxonomy
             </Typography>
             <List>
@@ -428,14 +445,14 @@ export default function DocumentationComponent(props) {
           </Paper>
 
           <span id='proteome_metadata'></span>
-          <Paper style={{ margin: 30, marginRight: '10%', boxShadow: 'none' }}>
-            <Typography variant='h5' style={{ marginBottom: 15 }}>
+          <Paper style={{ margin: 50, marginRight: '10%', boxShadow: 'none', marginTop: 50 }}>
+            <Typography variant='h5' style={{ marginTop: 20, marginBottom: 20 }}>
               Proteome metadata
           </Typography>
             <Typography paragraph align='justify'>
               {'The predicted proteome of all the genomes present in this database was analyzed with several softwares to determine their physicochemical and biochemical characteristics. This allows to search for functions among the acidophiles’ genomes and to provide increasing amounts data for statistical analysis. The available characteristics are:'}
             </Typography>
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               General characteristics
             </Typography>
             <List>
@@ -455,7 +472,7 @@ export default function DocumentationComponent(props) {
                 </Typography>
               </ListItem>
             </List>
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Subcellular localization
             </Typography>
             <List>
@@ -470,7 +487,7 @@ export default function DocumentationComponent(props) {
                 </Typography>
               </ListItem>
             </List>
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Transmembrane predictions
             </Typography>
             <List>
@@ -485,7 +502,7 @@ export default function DocumentationComponent(props) {
                 </Typography>
               </ListItem>
             </List>
-            <Typography variant='h6'>
+            <Typography variant='h6' style={{ marginTop: 20 }}>
               Functional annotation
             </Typography>
             <List>
@@ -521,8 +538,6 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
           </Paper>
-
-
 
         </Grid>
       </Grid >

@@ -208,6 +208,7 @@ function SelectColumns(props) {
         }}
       >
         {
+          // Hide name and strains inthe menu
           colNames.slice(2).map((name, index) => (
             <MenuItem
               key={name}
@@ -222,7 +223,6 @@ function SelectColumns(props) {
                 </Grid>
                 <Grid item >{t('table.' + name)}</Grid>
               </Grid>
-
             </MenuItem>
           ))}
       </Select>

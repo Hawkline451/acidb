@@ -122,7 +122,7 @@ export default function Organism(props) {
     else return 'Extreme Acidophile'
   }
 
-  function tempClassification() {    
+  function tempClassification() {
     let val = state.data.temp_associated
     if (!val) return ''
     let min = state.data.temp_min
@@ -191,11 +191,11 @@ export default function Organism(props) {
               </Grid>
 
               <Grid item xs={9} >
-              <span id="summary"></span>
+                <span id="summary"></span>
                 <div className={classes.tableTitle}><h1>{t('detail.summary')}</h1></div>
 
                 <div className={classes.tableSummaryTitle} style={{ textAlign: 'center', fontSize: 22 }}>
-                  {`${state.data.name}  ${state.data.strains[0].strain_name}`}
+                  <i>{state.data.name}</i>  {state.data.strains[0].strain_name}
                 </div>
                 <Table className={classes.table}>
                   <TableBody>
@@ -208,7 +208,7 @@ export default function Organism(props) {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                    <TableCell style={{ textAlign: 'center', fontSize: 16, backgroundColor: phColors() }}>
+                      <TableCell style={{ textAlign: 'center', fontSize: 16, backgroundColor: phColors() }}>
                         {phClassification()}
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: 16 }}>
@@ -216,7 +216,7 @@ export default function Organism(props) {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                    <TableCell style={{ textAlign: 'center', fontSize: 16, backgroundColor: tempColors() }}>
+                      <TableCell style={{ textAlign: 'center', fontSize: 16, backgroundColor: tempColors() }}>
                         {tempClassification()}
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: 16 }}>
@@ -228,11 +228,19 @@ export default function Organism(props) {
                         {`Genome size: ${state.data.gen_size} [Mb]`}
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: 16 }}>
-                        {`GC content: ${state.data.gc_percentage}%`}
+                        {`GC content: ${state.data.gc_percentage ? state.data.gc_percentage + '%' : 'unknown'}`}
                       </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
+                <div className={classes.hint}>
+                  <div style={{fontSize:12}}>{'Moderate Acidophile if pH >=3.6'}</div>
+                  <div style={{fontSize:12}}>{'Extreme Acidophile if pH <3.6'}</div>
+                  <div style={{fontSize:12}}>{'Extreme Thermophile if temp >=60°C'}</div>
+                  <div style={{fontSize:12}}>{'Moderate Thermophile if temp >=38°C <60°C'}</div>
+                  <div style={{fontSize:12}}>{'Mesophile if temp < 38°C'}</div>
+                  <div style={{fontSize:12}}>{'Psychrotolerant if temp  <38°C and Can grow at <15°C (at least one of the temperatures optimum, min or max is below 15°C)'}</div>
+                </div>
 
                 <span id="gen_metadata"></span>
                 <div className={classes.tableTitle}><h1>{t('detail.gen_metadata')}</h1></div>
@@ -321,12 +329,14 @@ export default function Organism(props) {
                         </TableRow>
                       ))
                     }
-                    <TableCell className={classes.tableCell}>
-                      {t('table.strains')}
-                    </TableCell>
-                    <TableCell>
-                      {concatStrains(state)}
-                    </TableCell>
+                    <TableRow>
+                      <TableCell className={classes.tableCell}>
+                        {t('table.strains')}
+                      </TableCell>
+                      <TableCell>
+                        {concatStrains(state)}
+                      </TableCell>
+                    </TableRow>
                   </TableBody >
                 </Table>
 

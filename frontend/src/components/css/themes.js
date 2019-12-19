@@ -186,6 +186,12 @@ export const stylesDetail = makeStyles({
   },
   table: {
     marginLeft: '15%',
+    marginBottom: 20,
+    width: '50% !important',
+  },
+
+  hint: {
+    marginLeft: '15%',
     marginBottom: 50,
     width: '50% !important',
   },

@@ -38,7 +38,7 @@ const binSize = {
   ph_associated: 1,
   temp_associated: 10,
   gc_percentage: 5,
-  gen_size: 1000,
+  gen_size: 1,
 }
 
 export default function SimpleBarComponent() {
@@ -192,19 +192,15 @@ export default function SimpleBarComponent() {
           <Grid container
             spacing={5}
             direction='column'
-            alignItems='center'
-            justify='center'
             style={{ marginTop: 20 }}
           >
             <Grid item >
               <Grid container
                 spacing={5}
                 direction='row'
-                alignItems='center'
-                justify='center'
               >
                 <Grid item >
-                  <Typography align='center' variant={'h5'}>{t('plot.histogram')}</Typography>
+                  <Typography align='center' variant={'h5'}>{`${t('plot.histogram')} ${t('table.' + formState.histogram)}`}</Typography>
                   <XYPlot width={600} height={400} margin={{ bottom: 60 }}>
                     <HorizontalGridLines />
                     <XAxis />
@@ -235,8 +231,6 @@ export default function SimpleBarComponent() {
               <Grid container
                 spacing={5}
                 direction='row'
-                alignItems='center'
-                justify='center'
               >
                 <Grid item >
                   <Typography align='center' variant={'h5'}>{t('table.domain')}</Typography>

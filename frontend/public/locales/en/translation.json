@@ -110,7 +110,7 @@
     "organism_domain" : "Organism Domain",
     "state" : "State",
     "isolated" : "Isolated",
-    "non_isolated" : "Non Isolated",
+    "non_isolated" : "Enviromental",
     "complete" : "Completed",
     "draft" : "Draft",
 
@@ -161,6 +161,7 @@
 
   "documentation":{
     "methodology": "Methodology",
-    "features": "Features"
+    "features": "Features",
+    "overview": "Overview"
   }
 }

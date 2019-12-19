@@ -61,24 +61,24 @@ function TablePaginationActions(props) {
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
-        aria-label="first page"
+        aria-label='first page'
       >
         {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label='previous page'>
         {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(page.count / rowsPerPage) - 1}
-        aria-label="next page"
+        aria-label='next page'
       >
         {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(page.count / rowsPerPage) - 1}
-        aria-label="last page"
+        aria-label='last page'
       >
         {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
       </IconButton>
@@ -117,7 +117,7 @@ function ProteinResultsTable(props) {
   };
 
   return (
-    <Table className={classes.table} aria-label="custom pagination table" align='center' style={{width:'50%'}}>
+    <Table className={classes.table} aria-label='custom pagination table' align='center' style={{width:'50%'}}>
       {page.results ?
         <Fragment>
           <TableHead>
@@ -139,14 +139,14 @@ function ProteinResultsTable(props) {
           </TableHead>
           <TableHead>
             <TableRow>
-              <TableCell align="right">{t('protein_search.nr_id')}</TableCell>
-              <TableCell align="right">{t('protein_search.prot_len')}</TableCell>
-              <TableCell align="right">
+              <TableCell align='right'>{t('protein_search.nr_id')}</TableCell>
+              <TableCell align='right'>{t('protein_search.prot_len')}</TableCell>
+              <TableCell align='right'>
                 <Grid
                   container
-                  direction="row"
-                  justify="center"
-                  alignItems="center"
+                  direction='row'
+                  justify='center'
+                  alignItems='center'
                 >
                   <Grid item xs>{t('protein_search.organism')}</Grid>
                   <Grid item xs>{t('protein_search.protein')}</Grid>
@@ -157,7 +157,7 @@ function ProteinResultsTable(props) {
           {isLoading ?
             <TableBody>
               <TableRow>
-                <TableCell align="center">
+                <TableCell align='center'>
                   <Loader />
                 </TableCell>
               </TableRow>
@@ -167,18 +167,18 @@ function ProteinResultsTable(props) {
             <TableBody>
               {page.results.map(row => (
                 <TableRow key={row.nr_id}>
-                  <TableCell align="right" >
+                  <TableCell align='right' >
                     <Button onClick={() => props.handleOpen(row)} style={{ width: '100%', color:'#0645AD' }}>
                       {row.nr_id}
                     </Button></TableCell>
-                  <TableCell align="right">{row.prot_len}</TableCell>
-                  <TableCell align="right">
+                  <TableCell align='right'>{row.prot_len}</TableCell>
+                  <TableCell align='right'>
                     {row.proteome_nr_id.map(organism => (
                       <Grid
                         container
-                        direction="row"
-                        justify="center"
-                        alignItems="center"
+                        direction='row'
+                        justify='center'
+                        alignItems='center'
                         key={String(organism.prot_id) + String(organism.organism_id)}
                       >
                         <Grid item xs>
@@ -254,9 +254,9 @@ function GridObject(props) {
         Object.keys(val).map(key =>
           <Grid
             container
-            direction="row"
-            justify="center"
-            alignItems="flex-start"
+            direction='row'
+            justify='center'
+            alignItems='flex-start'
             key={key}
           >
             <Grid item xs>{val[key]}</Grid>
@@ -295,7 +295,7 @@ function SimpleDialog(props) {
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={onClose} color="primary">
+            <Button onClick={onClose} color='primary'>
               {t('button.close')}
             </Button>
           </DialogActions>
@@ -351,4 +351,3 @@ const MemoizedProteinResultsTable = React.memo(ProteinResultsTable, areEqual);
 const MemoizedSimpleDialog = React.memo(SimpleDialog);
 
 export const MemoizedProteinResults = React.memo(ProteinResults);
-

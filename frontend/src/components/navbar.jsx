@@ -142,7 +142,7 @@ export default function NavBar(props) {
           <Tab label={t('navbar.documentation')} component={Link} to='/app/documentation' className={classes.tabRoot} />
           <Tab label={t('navbar.tree')} component={Link} to='/app/tools_tree' className={classes.tabRoot} />
           <Tab label={t('navbar.table')} component={Link} to='/app/tools_table' className={classes.tabRoot} />
-          <TabMenuCharts />
+          <Tab label={t('navbar.scatter_plot')} component={Link} to='/app/tools_scatter_plot' className={classes.tabRoot} />
           <TabMenuSearch />
           {
             //<Tab label={t('navbar.advance_organism_search')} component={Link} to='/app/advance_search/' className={classes.tabRoot} />
