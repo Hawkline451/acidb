@@ -26,13 +26,13 @@
     "react-scripts": "3.0.1",
     "react-select": "^3.0.8",
     "react-table": "^6.11.5",
-    "react-vis": "^1.11.7",
+    "react-vis-hl": "^1.11.8",
     "typeface-roboto": "0.0.75",
     "video-react": "^0.14.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --max_old_space_size=2560 start",
+    "build": "react-scripts --max_old_space_size=2560 build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

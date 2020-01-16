@@ -129,11 +129,49 @@ function FeaturesSection() {
   );
 }
 
-function CiteUs() {
+function Team() {
   const classes = useStylesHome();
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#' }}>
 
+      <Container align='center'>
+        <Typography variant='h4' align='center'>Team</Typography>
+        <Container style={{ width: '75%' }}>
+          <p align='justify'>{'AciDB was developed by  the Center for Bioinformatics and Genome Biology at Fundación Ciencia & Vida.'}</p>
+          <p align='justify'>Diego Cortez (genomic data)</p>
+          <p align='justify'>David Holmes (tool conception/design)</p>
+          <p align='justify'>Joaquín Jil B. (core developer)</p>
+          <p align='justify'>Gonzalo Neira (tool conception/design)</p>
+        </Container>
+
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          spacing={5}
+        >
+          <Grid item xs={2}>
+            <div>
+              <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/cbgb.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', }} />
+            </div>
+          </Grid>
+          <Grid item xs={2}>
+            <div>
+              <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/fundacion.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', }} />
+            </div>
+          </Grid>
+        </Grid>
+      </Container>
+
+    </div>
+  );
+}
+
+function CiteUs() {
+  const classes = useStylesHome();
+  return (
+    <div className={classes.fixedDiv} style={{ backgroundColor: '#F5F5F5' }}>
       <Container>
         <Typography variant='h4' align='center'>Cite Us</Typography>
         <p align='center'>Jil J, Nahuel D, Neira G, Holmes D. (2020) AciDB: A database of moderate and extremely acidophilic organism.</p>
@@ -207,6 +245,8 @@ export default function Home() {
         <AboutSection />
         <span id="features"></span>
         <FeaturesSection />
+        <span id="team"></span>
+        <Team />
         <span id="cite"></span>
         <CiteUs />
       </div>

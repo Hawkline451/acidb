@@ -15,8 +15,8 @@ import {
   MarkSeries,
   Highlight,
   Hint
-} from 'react-vis';
-import 'react-vis/dist/style.css';
+} from 'react-vis-hl';
+import 'react-vis-hl/dist/style.css';
 
 import axios from 'axios';
 import { CSVLink } from 'react-csv';

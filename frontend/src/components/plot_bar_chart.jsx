@@ -14,8 +14,8 @@ import {
   VerticalBarSeries,
   Hint,
   ChartLabel
-} from 'react-vis';
-import 'react-vis/dist/style.css';
+} from 'react-vis-hl';
+import 'react-vis-hl/dist/style.css';
 
 import axios from 'axios';
 
