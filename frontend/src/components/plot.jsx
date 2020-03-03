@@ -366,7 +366,9 @@ export default function PlotComponent() {
           justify='center'
         >
           <Grid item align='center'>
-            <p>{`There are ${state.highlightedPoints.length} selected points`}</p>
+            {state.highlightedPoints.length === 1 
+            ? <p>{`There is ${state.highlightedPoints.length} selected point`}</p> 
+            : <p>{`There are ${state.highlightedPoints.length} selected points`}</p> }            
           </Grid>
           <Grid item align='center'>
             <CSVLink

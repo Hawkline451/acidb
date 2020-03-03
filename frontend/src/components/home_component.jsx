@@ -175,7 +175,7 @@ function CiteUs() {
       <Container>
         <Typography variant='h4' align='center'>Cite Us</Typography>
         <p align='center'>Jil J, Nahuel D, Neira G, Holmes D. (2020) AciDB: A database of moderate and extremely acidophilic organism.</p>
-        <p align='center'> Nucleic Acids Research 47:4442-4448. doi: <a href='http://dx.doi.org/10.1093/nar/gkz246<'>http://dx.doi.org/10.1093/nar/gkz246</a></p>
+        <p align='center'> Nucleic Acids Research 11:1111-1111. doi: <a href='http://soon_tm'>http://soon_tm</a></p>
       </Container>
     </div>
   );

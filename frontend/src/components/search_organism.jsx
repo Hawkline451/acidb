@@ -161,7 +161,13 @@ export default function AdvanceSearchComponent(props) {
       fetchData()
     }
     else {
-      setFormState(att)
+      let cleanForm = (name, val) => {
+        setFormState(oldValues => ({
+          ...oldValues,
+          [name]: val,
+        }));
+      }
+      Object.keys(att).map((key, index) => cleanForm(key, '' ));
     }
 
   }, [props,]);

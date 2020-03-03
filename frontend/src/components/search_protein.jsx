@@ -99,7 +99,13 @@ export default function AdvanceProteinSearchComponent(props) {
       fetchData()
     }
     else {
-      setFormState(att)
+      let cleanForm = (name, val) => {
+        setFormState(oldValues => ({
+          ...oldValues,
+          [name]: val,
+        }));
+      }
+      Object.keys(att).map((key, index) => cleanForm(key, '' ));
     }
 
   }, [props,]);
@@ -175,7 +181,6 @@ export default function AdvanceProteinSearchComponent(props) {
       setResultState(res.data)
       setIsLoading(false)
     })
-    console.log(url)
     fetchData()
   }
 

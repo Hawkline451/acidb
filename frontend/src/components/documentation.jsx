@@ -42,19 +42,19 @@ export default function DocumentationComponent(props) {
                 } />
               </ListItem>
               <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#tree'}>
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#tree_docs'}>
                 <ListItemText primary={t('navbar.tree')} />
               </ListItem>
               <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#table'}>
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#table_docs'}>
                 <ListItemText primary={t('navbar.table')} />
               </ListItem>
               <Divider light />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#charts'}>
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#charts_docs'}>
                 <ListItemText primary={t('navbar.charts')} />
               </ListItem>
               <Divider />
-              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#advance_organism_search'}>
+              <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#advance_organism_search_docs'}>
                 <ListItemText primary={t('navbar.advance_organism_search')} />
               </ListItem>
               <Divider />

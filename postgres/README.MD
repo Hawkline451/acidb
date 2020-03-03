@@ -1,5 +1,5 @@
 
-# Tables
+# Tables structure
 
 ## Organism
 
@@ -64,3 +64,39 @@ One to one relation with organism table
 * family : String
 * genus : String
 * species : String
+
+## Protein
+
+* nr_id : primary key
+* prot_len : Int
+* mol_weight : Float
+* tmhmm : String
+* hmmtop : String
+* psort : String
+* pfam : String
+* signal_p : String
+* cog : String
+* cog_category : String
+
+## Proteome 
+
+* organism : Foreign key
+* nr_id : Foreign key
+* prot_id : String
+
+## Kegg ko
+
+* nr_id : Foreign key
+* kegg_ko : String
+
+## Inter fam
+
+* nr_id : Foreign key
+* inter_fam : String
+
+## Ec number
+
+* nr_id : Foreign key
+* ec_number : String
+
+
