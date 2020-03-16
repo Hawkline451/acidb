@@ -29,8 +29,8 @@ function AboutSection() {
       <Container>
         <Typography variant='h4' align='center'>About</Typography>
         <p align='justify'>AciDB provides an extensive database of manually curated acidophilic organisms. AciDB includes taxonomy
-          for each of the sequenced organisms, charts to visualize the genomes with custom axis, advanced search features
-          and general information such as: Genome size, GC content, Optimal pH and temperature growth of each acidophilic
+        for each of the sequenced organisms, charts to visualize the genomes with custom axis, advanced search features
+        and general information such as: Genome size, GC content, Optimal pH and temperature growth of each acidophilic
           organism.</p>
       </Container>
 
@@ -62,69 +62,136 @@ function FeaturesSection() {
   const classes = useStylesHome();
   return (
     <div className={classes.fixedDiv} style={{ backgroundColor: '#F5F5F5' }}>
-
-      <Container>
-        <Typography variant='h4' align='center'>Features</Typography>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          spacing={5}
-        >
-          <Grid item xs={6}>
-            <Typography variant='h5' align='center'>Genomic Data of more than 600 acidophilic organisms</Typography>
-            <p align='justify'>Navigate through all organisms by using taxonomy information. Genome metadata that include the full taxonomy,
+      <MediaQuery minWidth={800}>
+        <Container>
+          <Typography variant='h4' align='center'>Features</Typography>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
+            <Grid item xs={6}>
+              <Typography variant='h5' align='center'>Genomic Data of more than 600 acidophilic organisms</Typography>
+              <p align='justify'>Navigate through all organisms by using taxonomy information. Genome metadata that include the full taxonomy,
                reported growth condition, references and direct links to the NCBI ftp site of the organism are available.</p>
+            </Grid>
+
+            <Grid item xs={6}>
+              <div>
+                <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/home_tax.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
           </Grid>
 
-          <Grid item xs={6}>
-            <div>
-              <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/home_tax.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
-            </div>
-          </Grid>
-        </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
 
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          spacing={5}
-        >
-
-          <Grid item xs={6}>
-            <div>
-              <img alt='home_plot' src={process.env.PUBLIC_URL + '/img/home_plot.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
-            </div>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant='h5' align='center'>Generate customizable scatter plots</Typography>
-            <p align='justify'>Choose between different growth conditions and genome characteristic to customize each axis.
+            <Grid item xs={6}>
+              <div>
+                <img alt='home_plot' src={process.env.PUBLIC_URL + '/img/home_plot.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant='h5' align='center'>Generate customizable scatter plots</Typography>
+              <p align='justify'>Choose between different growth conditions and genome characteristic to customize each axis.
               Select genomes in the plot and get the data as a csv file containing all the genome metadata.</p>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          spacing={5}
-        >
-          <Grid item xs={6}>
-            <Typography variant='h5' align='center'>Advance search to get a curated dataset</Typography>
-            <p align='justify'>Filter a dataset of organisms by either growth range parameters, genome metadata, taxonomic rank or
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
+            <Grid item xs={6}>
+              <Typography variant='h5' align='center'>Advance search to get a curated dataset</Typography>
+              <p align='justify'>Filter a dataset of organisms by either growth range parameters, genome metadata, taxonomic rank or
               all the previous conditions at the same time and download the obtained dataset complete information.</p>
+            </Grid>
+
+            <Grid item xs={6}>
+              <div>
+                <img alt='home_search' src={process.env.PUBLIC_URL + '/img/home_search.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
+          </Grid>
+        </Container>
+      </MediaQuery>
+
+      <MediaQuery maxWidth={800}>
+        <Container>
+          <Typography variant='h4' align='center'>Features</Typography>
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
+            <Grid item xs={12}>
+              <Typography variant='h5' align='center'>Genomic Data of more than 600 acidophilic organisms</Typography>
+              <p align='justify'>Navigate through all organisms by using taxonomy information. Genome metadata that include the full taxonomy,
+               reported growth condition, references and direct links to the NCBI ftp site of the organism are available.</p>
+            </Grid>
+
+            <Grid item xs={12}>
+              <div>
+                <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/home_tax.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
           </Grid>
 
-          <Grid item xs={6}>
-            <div>
-              <img alt='home_search' src={process.env.PUBLIC_URL + '/img/home_search.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
-            </div>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
+
+            <Grid item xs={12}>
+              <Typography variant='h5' align='center'>Generate customizable scatter plots</Typography>
+              <p align='justify'>Choose between different growth conditions and genome characteristic to customize each axis.
+              Select genomes in the plot and get the data as a csv file containing all the genome metadata.</p>
+            </Grid>
+            <Grid item xs={12}>
+              <div>
+                <img alt='home_plot' src={process.env.PUBLIC_URL + '/img/home_plot.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
+
           </Grid>
-        </Grid>
-      </Container>
+
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={5}
+          >
+            <Grid item xs={12}>
+              <Typography variant='h5' align='center'>Advance search to get a curated dataset</Typography>
+              <p align='justify'>Filter a dataset of organisms by either growth range parameters, genome metadata, taxonomic rank or
+              all the previous conditions at the same time and download the obtained dataset complete information.</p>
+            </Grid>
+
+            <Grid item xs={12}>
+              <div>
+                <img alt='home_search' src={process.env.PUBLIC_URL + '/img/home_search.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', }} />
+              </div>
+            </Grid>
+          </Grid>
+        </Container>
+      </MediaQuery>
     </div>
   );
 }
@@ -144,6 +211,35 @@ function Team() {
           <p align='justify'>Gonzalo Neira (tool conception/design)</p>
         </Container>
 
+        <Typography variant='h4' align='center'>Funding</Typography>
+        <Container style={{ width: '75%' }}>
+          <p align='justify'>
+            {"\nThis research was funded by FONDECYT 1181717 and Programa de Apoyo a Centros con Financiamiento Basal AFB170004 to Fundación Ciencia & Vida."}
+          </p>
+        </Container>
+
+        <MediaQuery maxWidth={800}>
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          spacing={5}
+        >
+          <Grid item xs={5}>
+            <div>
+              <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/cbgb.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', }} />
+            </div>
+          </Grid>
+          <Grid item xs={5}>
+            <div>
+              <img alt='home_tax' src={process.env.PUBLIC_URL + '/img/fundacion.png'} style={{ top: 0, right: 0, bottom: 0, left: 0, width: '100%', }} />
+            </div>
+          </Grid>
+        </Grid>
+        </MediaQuery>
+
+        <MediaQuery minWidth={800}>
         <Grid
           container
           direction="row"
@@ -162,6 +258,8 @@ function Team() {
             </div>
           </Grid>
         </Grid>
+        </MediaQuery>
+
       </Container>
 
     </div>

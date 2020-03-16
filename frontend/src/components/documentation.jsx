@@ -70,10 +70,13 @@ export default function DocumentationComponent(props) {
               <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#organism_metadata'}>
                 <ListItemText primary={t('navbar.organism_metadata')} />
               </ListItem>
+              {/**
               <Divider />
               <ListItem className={classes.listItem} button component='a' href={props.location.pathname + '#proteome_metadata'}>
                 <ListItemText primary={t('navbar.proteome_metadata')} />
               </ListItem>
+               **/
+              }
             </List>
 
           </div>
@@ -438,12 +441,20 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
 
-            <Typography paragraph align='justify'>
-              <b>{'Reference: '}</b>{'The reference to either the genome sequencing project’s publication or the temperatures and or pHs related to the genome. It’s either a publication in APA format, a culture collection, a biosample or a bioproject with relevant metadata. Several references can be found per genome.'}
+            <Typography variant='h6' style={{ marginTop: 20 }}>
+              Reference
             </Typography>
-
+            <List>
+              <ListItem>
+                <Typography align='justify'>
+                  {'The reference to either the genome sequencing project’s publication or the temperatures and or pHs related to the genome. It’s either a publication in APA format, a culture collection, a biosample or a bioproject with relevant metadata. Several references can be found per genome.'}
+                </Typography>
+              </ListItem>
+            </List>
           </Paper>
 
+          {
+          /** 
           <span id='proteome_metadata'></span>
           <Paper style={{ margin: 50, marginRight: '10%', boxShadow: 'none', marginTop: 50 }}>
             <Typography variant='h5' style={{ marginTop: 20, marginBottom: 20 }}>
@@ -538,6 +549,8 @@ export default function DocumentationComponent(props) {
               </ListItem>
             </List>
           </Paper>
+          **/
+          }
 
         </Grid>
       </Grid >
